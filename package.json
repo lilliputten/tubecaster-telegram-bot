@@ -8,7 +8,7 @@
   "author": "lilliputten <lilliputten@gmail.com>",
   "license": "ISC",
   "scripts": {
-    "dev": "poetry run flask --app api run",
+    "dev": "poetry run flask --app api --debug run",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
