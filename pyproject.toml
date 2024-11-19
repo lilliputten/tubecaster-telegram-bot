@@ -18,7 +18,7 @@ flask = "^3.1.0"
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
 pyright = "^1.1.389"
-# werkzeug = "^3.1.0"
+poetry-plugin-export = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -33,6 +33,7 @@ aggressive = 3
 
 [tool.blue]
 line-length = 120
+# TODO!
 
 [tool.poetry.scripts]
 dev = 'mypackage.mymodule:mycommand'

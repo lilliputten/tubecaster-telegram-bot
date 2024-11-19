@@ -9,6 +9,7 @@
   "license": "ISC",
   "scripts": {
     "dev": "poetry run flask --app api --debug run",
+    "export-requirements": "poetry export -f requirements.txt --output requirements.txt --without-hashes",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
