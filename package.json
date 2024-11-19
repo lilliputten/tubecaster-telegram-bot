@@ -1,12 +1,14 @@
 {
-  "name": "tubecaster-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "tubecaster-telegram-bot",
+  "version": "0.0.0",
+  "changed": "2024.11.20, 00:54",
+  "description": "Simple video to audio caster telegram bot",
+  "main": "api/__init__.py",
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "lilliputten <lilliputten@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "dev": "poetry run flask --app api run",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }

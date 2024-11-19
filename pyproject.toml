@@ -1,15 +1,39 @@
 [tool.poetry]
-name = "tubecaster-bot"
+name = "tubecaster-telegram-bot"
 version = "0.0.0"
-description = ""
+description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
+
+# @see https://python-poetry.org/docs/pyproject/#packages
+packages = [
+    { include = "tubecaster-telegram-bot" },
+    { include = "api" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = "^3.1.0"
 
+[tool.poetry.group.dev.dependencies]
+blue = "^0.9.1"
+pyright = "^1.1.389"
+# werkzeug = "^3.1.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.autopep8]
+max_line_length = 120
+# ignore = "E501,W6"  # or ["E501", "W6"]
+in-place = true
+recursive = true
+aggressive = 3
+
+[tool.blue]
+line-length = 120
+
+[tool.poetry.scripts]
+dev = 'mypackage.mymodule:mycommand'
+
