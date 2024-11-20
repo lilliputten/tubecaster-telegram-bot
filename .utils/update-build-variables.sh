@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Update version number & build timestamps
-# @changed 2024.11.20, 04:39
+# @changed 2024.11.20, 05:22
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
@@ -13,16 +13,7 @@ test -f "$rootPath/config-local.sh" && . "$rootPath/config-local.sh"
 # # Check basic required variables...
 # test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh" --omit-publish-folder-check
 
-# # Run js updater (make changes in `build-*` files; see list below)...
-# # TODO: To check exit status?
-# if ! node "$scriptsPath/update-build-time.js"; then
-#   echo "Failed execution of 'update-build-time.js'!"
-#   exit 1
-# fi
-
-# Read variables from changed files...
-# TIMESTAMP=`cat $rootPath/build-timestamp.txt`
-# TIMETAG=`cat $rootPath/build-timetag.txt`
+# Read (and derive) variables from changed files...
 VERSION=`cat $rootPath/VERSION`
 TIMESTAMP=`date -r $rootPath/VERSION "+%Y.%m.%d %H:%M:%S %z"`
 TIMETAG=`date -r $rootPath/VERSION "+%y%m%d-%H%M"`

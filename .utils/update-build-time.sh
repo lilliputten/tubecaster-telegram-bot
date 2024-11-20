@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Update build date/time tag file with current timestamp
-# @changed 2024.03.07, 21:06
+# @changed 2024.11.20, 05:22
 # NOTE: This script updates only .txt files not properties in `package.json`.
 # Use `update-build-variables.sh` script before build.
 
@@ -9,10 +9,10 @@ rootPath=`dirname "$scriptsPath"`
 prjPath="$rootPath" # `pwd`
 
 # Import config variables (expected variables `$DIST_REPO` and `$PUBLISH_FOLDER`)...
-test -f "$rootPath/config.sh" && . "$rootPath/config.sh"
-test -f "$rootPath/config-local.sh" && . "$rootPath/config-local.sh"
+test -f "$scriptsPath/config.sh" && . "$scriptsPath/config.sh"
+test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 
 # Check basic required variables...
-test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh"
+test -f "$scriptsPath/config-check.sh" && . "$scriptsPath/config-check.sh"
 
 # node "$scriptsPath/update-build-time.js" --tz=$TIMEZONE

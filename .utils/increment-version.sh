@@ -1,16 +1,14 @@
 #!/bin/sh
 # @desc Increment version number
-# @changed 2024.11.20, 03:07
+# @changed 2024.11.20, 05:22
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
 prjPath="$rootPath" # `pwd`
 
 # Import config variables (expected variables `$DIST_REPO` and `$PUBLISH_FOLDER`)...
-test -f "$rootPath/config.sh" && . "$rootPath/config.sh"
-test -f "$rootPath/config-local.sh" && . "$rootPath/config-local.sh"
-# test -f "$prjPath/config.sh" && . "$prjPath/config.sh"
-# test -f "$prjPath/config-local.sh" && . "$prjPath/config-local.sh"
+test -f "$scriptsPath/config.sh" && . "$scriptsPath/config.sh"
+test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 
 # Check basic required variables...
 test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh" --omit-publish-folder-check
