@@ -30,7 +30,7 @@ logger.info('Start: %s' % changed)
 logger.info('LOCAL: %s' % LOCAL)
 logger.info('TELEGRAM_TOKEN: %s' % TELEGRAM_TOKEN)
 logger.info('WERKZEUG_RUN_MAIN: %s' % WERKZEUG_RUN_MAIN)
-#  print('Start print: %s' % TELEGRAM_TOKEN)
+print('Start print: %s' % TELEGRAM_TOKEN)
 
 
 #  botApp.run_polling()
