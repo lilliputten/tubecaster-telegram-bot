@@ -15,7 +15,7 @@ def publicSiteBlueprint_root():
     render_template demo
     """
     #  return render_template('root.html')
-    return 'Site index'
+    return 'Site index %s' % appConfig.get('changed')
 
 
 # Module exports...
