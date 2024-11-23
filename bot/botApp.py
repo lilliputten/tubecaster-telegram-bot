@@ -15,11 +15,7 @@ TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
 if not TELEGRAM_TOKEN:
     raise Exception('No telegram token defined')
 
-changed = """
-@changed 2024.11.23, 22:57
-""".strip().replace(
-    '@changed ', ''
-)
+changed = appConfig.get('changed')
 
 logger = getLogger('bot/botApp')
 

@@ -1,14 +1,19 @@
 # -*- coding:utf-8 -*-
 
 import logging
+import logging.handlers
 
 from core.appConfig import appConfig
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
 
-
 LOCAL = appConfig.get('LOCAL')
+
+SYSLOG_FILE = appConfig.get('SYSLOG_FILE', 'pysyslog.log')
+SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '127.0.0.1')
+SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
+
 
 # Setup format
 nameWidth = 20
@@ -43,12 +48,21 @@ logging.basicConfig(
 )
 
 
+defaultFormatter = logging.Formatter(formatStr)
+
+
 def getLogger(id: str | None = None):
     logger = logging.getLogger(id)
+    # Syslog, @see https://docs.python.org/3/library/logging.handlers.html#sysloghandler
+    syslogHandler = logging.handlers.SysLogHandler(
+        address=(SYSLOG_HOST, SYSLOG_PORT),
+    )
+    syslogHandler.formatter = defaultFormatter
+    logger.addHandler(syslogHandler)
     if not LOCAL:
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(loggingLevel)
-        logger.addHandler(console_handler)
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setLevel(loggingLevel)
+        logger.addHandler(consoleHandler)
     return logger
 
 
