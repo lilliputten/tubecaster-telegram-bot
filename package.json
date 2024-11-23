@@ -1,7 +1,7 @@
 {
   "name": "tubecaster-telegram-bot",
   "version": "0.0.4",
-  "changed": "2024.11.20, 00:54",
+  "changed": "2024.11.23, 19:33",
   "description": "Simple video to audio caster telegram bot",
   "main": "api/__init__.py",
   "keywords": [],
@@ -14,6 +14,11 @@
     "rimraf": "^5.0.5"
   },
   "scripts": {
+    "clean": "echo --Clean cache-- && sh .utils/clean-cache.sh",
+    "pylint": "echo --Run pyright python linter-- && poetry run pyright .",
+    "pyformat-autopep8": "echo --Run autopep8 python formatter-- && poetry run autopep8 .",
+    "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
+    "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all pyformat pylint",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
     "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"

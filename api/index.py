@@ -1,28 +1,27 @@
 from flask import Flask
 
-from flask import send_from_directory
+from core.appConfig import appConfig
+from core.logger import logger
+from core.flaskApp import app
 
 
-app = Flask(
-    __name__,
-    static_url_path="",  # "/static",
-    static_folder="static",
-    # template_folder="web/templates", # TODO?
-)
-
-
-@app.route("/")
+@app.route('/')
 def home():
     #  return app.send_static_file("project-info.txt")
-    return "Site index!"
+    return 'Site index!'
 
 
-@app.route("/about")
+@app.route('/about')
 def about():
-    return "About route"
+    return 'About route'
 
 
-@app.route("/project-info")
+@app.route('/project-info')
 def static_file():
-    print("project-info")
-    return app.send_static_file("project-info.txt")
+    print('project-info')
+    return app.send_static_file('project-info.txt')
+
+
+if __name__ == '__main__':
+    test = appConfig.get('DOMAIN')
+    logger.debug('main %s' % test)
