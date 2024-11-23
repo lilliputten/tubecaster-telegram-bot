@@ -23,7 +23,7 @@ changed = """
 
 logger = getLogger('bot/botApp')
 
-logger.info('Start: %s' % changed)
+logger.info('Start: %s' % changed, TELEGRAM_TOKEN)
 
 
 async def test(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
