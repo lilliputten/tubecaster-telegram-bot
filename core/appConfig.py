@@ -1,6 +1,7 @@
 import os
 from dotenv import dotenv_values
-import json
+
+#  import json
 
 appConfig = {
     **dotenv_values('.env'),  # load shared development variables
@@ -8,8 +9,8 @@ appConfig = {
     **os.environ,  # override loaded values with environment variables
 }
 
-debugStr = json.dumps(appConfig, indent=2)
-print('Config: %s' % debugStr)
+#  debugAppConfig = json.dumps(appConfig, indent=2)
+#  print('Config: %s' % debugAppConfig)
 
 # Module exports...
 __all__ = [

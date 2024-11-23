@@ -2,10 +2,13 @@
 
 import logging
 
+from core.appConfig import appConfig
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
 
+
+LOCAL = appConfig.get('LOCAL')
 
 # Setup format
 nameWidth = 20
@@ -42,6 +45,10 @@ logging.basicConfig(
 
 def getLogger(id: str | None = None):
     logger = logging.getLogger(id)
+    if not LOCAL:
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(loggingLevel)
+        logger.addHandler(console_handler)
     return logger
 
 
