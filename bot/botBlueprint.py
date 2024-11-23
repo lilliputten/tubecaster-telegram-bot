@@ -15,7 +15,7 @@ def botBlueprint_test():
     """
     render_template demo
     """
-    TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
+    TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN', '--')
     logger.debug('botBlueprint_test %s' % TELEGRAM_TOKEN)
     #  return render_template('test.html')
     return 'Test route'

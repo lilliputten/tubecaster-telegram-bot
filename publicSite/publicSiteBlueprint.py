@@ -3,8 +3,8 @@ from flask import Blueprint
 
 from core.appConfig import appConfig
 
-#  from core.logger import logger
 
+# @see https://flask.palletsprojects.com/en/stable/blueprints
 
 publicSiteBlueprint = Blueprint('publicSiteBlueprint', __name__)
 
@@ -14,7 +14,6 @@ def publicSiteBlueprint_root():
     """
     render_template demo
     """
-    #  logger.debug('publicSiteBlueprint_root')
     #  return render_template('root.html')
     return 'Site index'
 

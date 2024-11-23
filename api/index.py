@@ -4,12 +4,16 @@ from core.flaskApp import app
 
 from publicSite.publicSiteBlueprint import publicSiteBlueprint
 from bot.botBlueprint import botBlueprint
+from bot.botApp import botApp
 
 
 logger = getLogger('api/index')
 
 
 logger.debug('Start')
+
+
+botApp.run_polling()
 
 
 # XXX? Try to avoid twice starting bug...
