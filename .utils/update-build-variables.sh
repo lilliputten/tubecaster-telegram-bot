@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Update version number & build timestamps
-# @changed 2024.11.20, 05:22
+# @changed 2024.11.23, 23:27
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
@@ -22,7 +22,7 @@ PROJECT_INFO_REP=`echo "$PROJECT_INFO" | sed 's,/,\\\\/,g'` # Quoted for replace
 
 echo "Version/time: $VERSION / $TIMESTAMP"
 
-PROJECT_INFO_FILE="api/static/project-info.txt"
+PROJECT_INFO_FILE="core/static/project-info.txt"
 
 echo "Creating '$PROJECT_INFO_FILE' file..."
 echo "$PROJECT_INFO" > $PROJECT_INFO_FILE

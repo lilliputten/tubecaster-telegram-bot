@@ -12,7 +12,8 @@ logger = getLogger('api/index')
 
 TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
 
-logger.info('Start: %s' % TELEGRAM_TOKEN)
+logger.info('Start logger: %s' % TELEGRAM_TOKEN)
+print('Start print: %s' % TELEGRAM_TOKEN)
 
 
 #  botApp.run_polling()
