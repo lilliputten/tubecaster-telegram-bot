@@ -20,7 +20,7 @@
     "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
     "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all pyformat pylint",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
-    "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes",
+    "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"
   }
 }

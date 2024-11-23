@@ -54,6 +54,7 @@ questions.yaml
 # Auto-generated files
 /uploads
 /log*
+*.log
 
 # Unused & temp files
 \!UNUSED

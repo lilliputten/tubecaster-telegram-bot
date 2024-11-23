@@ -33,7 +33,7 @@ $FINDCMD . \
     -o -name '__pycache__' \
   \) \
   -exec $RMCMD -Rf {} \; \
-  && echo OK
+  ; echo OK
 
 # $RMCMD -Rf \
 #   *_ \
