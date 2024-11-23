@@ -39,6 +39,9 @@
         // "FLASK_DEBUG": "0",
       },
       "args": [
+        "--app",
+        "api",
+        "--debug",
         "run",
         //  "--no-debugger",
       ],

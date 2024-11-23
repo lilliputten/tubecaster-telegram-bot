@@ -16,7 +16,7 @@ if not TELEGRAM_TOKEN:
     raise Exception('No telegram token defined')
 
 changed = """
-@changed 2024.11.23, 22:53
+@changed 2024.11.23, 22:57
 """.strip().replace(
     '@changed ', ''
 )
@@ -27,9 +27,12 @@ logger.info('Start: %s' % changed)
 
 
 async def test(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Sample bot command
+    """
     message = update.message
     effective_user = update.effective_user
-    userName = effective_user.first_name if effective_user else 'Anonymous'
+    userName = effective_user.first_name if effective_user else 'Noname'
     logger.info('%s: test %s' % (changed, userName))
     if message:
         await message.reply_text(f'Test {userName}: {changed}')
@@ -40,8 +43,6 @@ async def test(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 botApp = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
 botApp.add_handler(CommandHandler('test', test))
-
-#  botApp.run_polling()  # Do it in the root app
 
 
 # Module exports...
