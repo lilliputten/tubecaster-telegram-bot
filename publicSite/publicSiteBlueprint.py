@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from flask import Blueprint
 
+from core.flaskApp import flaskApp
 from core.appConfig import appConfig
 
 
@@ -16,6 +17,12 @@ def publicSiteBlueprint_root():
     """
     #  return render_template('root.html')
     return 'Site index %s' % appConfig.get('changed')
+
+
+@publicSiteBlueprint.route('/project-info')
+def static_file():
+    print('project-info')
+    return flaskApp.send_static_file('project-info.txt')
 
 
 # Module exports...

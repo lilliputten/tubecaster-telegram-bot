@@ -3,27 +3,18 @@
 #  from flask import make_response
 from datetime import datetime
 import logging
+import requests
 
 from core.appConfig import appConfig
 from core.logger import getLogger, getDebugLog
-from core.flaskApp import app
+from core.flaskApp import flaskApp
 
 from core.utils.stripHtml import stripHtml
 
-#  from publicSite.publicSiteBlueprint import publicSiteBlueprint
-#  from bot.botBlueprint import botBlueprint
-
-import requests
-
-#  from requests.adapters import HTTPAdapter
+from publicSite.publicSiteBlueprint import publicSiteBlueprint
+from bot.botBlueprint import botBlueprint
 
 #  from bot.botApp import botApp
-
-#  changed = """
-#  @changed 2024.11.24, 01:18
-#  """.strip().replace(
-#      '@changed ', ''
-#  )
 
 
 logger = getLogger('api/index')
@@ -36,8 +27,6 @@ WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
 
 #  debugAppConfig = json.dumps(appConfig, indent=2)
 #  logger.info('appConfig: %s' % debugAppConfig)
-
-#  logging.getLogger().handlers.clear()
 
 timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 logger.info('INFO: %s' % timeStr)
@@ -55,18 +44,10 @@ logger.info('WERKZEUG_RUN_MAIN: %s' % WERKZEUG_RUN_MAIN)
 # XXX? Try to avoid twice starting bug...
 #  run_main = os.environ.get('WERKZEUG_RUN_MAIN')
 #  isMain = run_main == 'true'
-doInit = True  # not config['isDev'] or isMain
-
-#  if doInit:  # NOTE: Ensure initializing only once (avoiding double initialization with `* Restarting with stat`...)
-#
-#      app.register_blueprint(publicSiteBlueprint, url_prefix='/')
-#      app.register_blueprint(botBlueprint, url_prefix='/bot')
-
-
-@app.route('/project-info')
-def static_file():
-    print('project-info')
-    return app.send_static_file('project-info.txt')
+doInit = True  # not LOCAL or isMain
+if doInit:  # NOTE: Ensure initializing only once (avoiding double initialization with `* Restarting with stat`...)
+    flaskApp.register_blueprint(publicSiteBlueprint, url_prefix='/')
+    flaskApp.register_blueprint(botBlueprint, url_prefix='/bot')
 
 
 # DEBUG!
@@ -77,7 +58,7 @@ def debugVar(obj, key: str):
     return key + ': ' + str(val)
 
 
-@app.route('/')
+@flaskApp.route('/test')
 def debug():
     timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     testStr = 'TEST ' + timeStr

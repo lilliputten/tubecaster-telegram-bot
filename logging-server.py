@@ -1,13 +1,24 @@
 #!/usr/bin/env python
 
-# NOTE: Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as an example of remote settings.
+"""
+
+This server allows to collect remote logs from the vercel hosted application via http protocol.
+
+Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as an example of remote settings.
+
+See environment variable to configure it:
+
+- LOGS_FILE
+- LOGS_SERVER_PREFIX
+- LOGS_SERVER_HOST
+- LOGS_SERVER_PORT
+- LOGS_SERVER_RETRIES
+"""
 
 import logging
 
-#  import re
 from datetime import datetime
 
-#  import socketserver
 import json
 import os
 from dotenv import dotenv_values
@@ -25,14 +36,11 @@ appConfig = {
 
 LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
 
-#  SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '0.0.0.0')
-#  SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
-
 LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
 LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '0.0.0.0')
 LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '8514'))
 LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
-#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '')
+#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '') # TODO: It's possible to add basic authentification
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 

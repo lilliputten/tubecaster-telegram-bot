@@ -4,11 +4,9 @@ import logging
 import logging.handlers
 import json
 
-#  import re
 import requests
 from requests.adapters import HTTPAdapter
 
-#  from requests.packages.urllib3.util.retry import Retry
 from urllib3.util import Retry
 
 from core.appConfig import appConfig
@@ -19,7 +17,7 @@ from core.utils.stripHtml import stripHtml
 
 LOCAL = appConfig.get('LOCAL')
 
-USE_LOGS_SERVER = bool(appConfig.get('USE_LOGS_SERVER', True))
+USE_LOGS_SERVER = bool(appConfig.get('USE_LOGS_SERVER', False))
 USE_SYSLOG_SERVER = bool(appConfig.get('USE_SYSLOG_SERVER', False))
 
 LOGS_FILE = appConfig.get('LOGS_FILE', 'pysyslog.log')
@@ -30,7 +28,7 @@ LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
 LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '127.0.0.1')
 LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '8514'))
 LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
-#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '')
+#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '') # Could be used to provide basic authentification
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 
@@ -59,6 +57,9 @@ formatStr = ' '.join(
     )
 )
 
+
+# Maintain simple logging features (to check logging system itself)
+useDebugLogs = True
 debugLogs: list[str] = []
 
 
@@ -85,7 +86,8 @@ class CustomHttpHandler(logging.Handler):
         #  self.token = token
         self.silent = silent
 
-        debugLogs.append('CustomHttpHandler url: %s' % (url))
+        if useDebugLogs:
+            debugLogs.append('CustomHttpHandler url: %s' % (url))
 
         # sets up a session with the server
         self.MAX_POOLSIZE = 100
@@ -93,11 +95,10 @@ class CustomHttpHandler(logging.Handler):
         session.headers.update(
             {
                 'Content-Type': 'application/json',
-                #  'Authorization': 'Bearer %s' % (self.token)
+                #  'Authorization': 'Bearer %s' % (self.token),
             }
         )
         self.session.mount(
-            #  'https://',
             LOGS_SERVER_PREFIX,
             HTTPAdapter(
                 max_retries=Retry(total=LOGS_SERVER_RETRIES, backoff_factor=0.5, status_forcelist=[403, 500]),
@@ -116,19 +117,11 @@ class CustomHttpHandler(logging.Handler):
             record: a log record
         """
         sendData = self.format(record)
-        #  jsonData = {
-        #      'asctime': record.asctime,
-        #      'pathname': record.pathname,
-        #      'lineno': record.lineno,
-        #      'name': record.name,
-        #      'levelname': record.levelname,
-        #      'message': record.message,
-        #  }
-        debugLogs.append('emit %s %s %s %s' % (self.url, record.name, record.levelname, record.message))
+        if useDebugLogs:
+            debugLogs.append('emit %s %s %s %s' % (self.url, record.name, record.levelname, record.message))
         try:
             url = self.url
             response = self.session.post(url, data=sendData)
-            #  response = requests.post(url, json=jsonData)
             resp = response.content.decode('utf-8')
             resp = stripHtml(resp)
             debugLogs.append('emit result: %s' % (resp))
@@ -136,7 +129,8 @@ class CustomHttpHandler(logging.Handler):
                 print(sendData)
                 print(response.content)
         except Exception as err:
-            debugLogs.append('emit error: %s' % (repr(err)))
+            if useDebugLogs:
+                debugLogs.append('emit error: %s' % (repr(err)))
             print('ERROR: Failed to send a log record:', repr(err))
             # TODO: Stop sending logs after a few errors?
 
@@ -179,15 +173,10 @@ defaultFormatter = logging.Formatter(formatStr)
 
 def getLogger(id: str | None = None):
     logger = logging.getLogger(id)
-    #  debugLogs.append('getLogger loggers count: %d' % (len(logger.handlers)))
-    #  if len(logger.handlers):
-    #      logger.removeHandler(logger.handlers[0])
     # Default handler (console)...
     consoleHandler = logging.StreamHandler()
     consoleHandler.setLevel(loggingLevel)
     consoleHandler.formatter = defaultFormatter
-    #  logger.handlers = []
-    #  logger.addHandler(consoleHandler)
     # Syslog, @see https://docs.python.org/3/library/logging.handlers.html#sysloghandler
     if USE_SYSLOG_SERVER:
         syslogHandler = logging.handlers.SysLogHandler(
@@ -196,7 +185,8 @@ def getLogger(id: str | None = None):
         syslogHandler.setLevel(loggingLevel)
         syslogHandler.formatter = defaultFormatter
         logger.addHandler(syslogHandler)
-    debugLogs.append('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
+    if useDebugLogs:
+        debugLogs.append('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
     if USE_LOGS_SERVER:
         logger.addHandler(httpHandler)
     return logger
@@ -204,6 +194,5 @@ def getLogger(id: str | None = None):
 
 # Module exports...
 __all__ = [
-    #  'logger',
     'getLogger',
 ]
