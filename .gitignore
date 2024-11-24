@@ -53,7 +53,7 @@ questions.yaml
 
 # Auto-generated files
 /uploads
-/log*
+# /log*
 *.log
 
 # Unused & temp files

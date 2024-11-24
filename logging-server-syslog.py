@@ -1,16 +1,5 @@
 #!/usr/bin/env python
 
-## Tiny Syslog Server in Python.
-##
-## This is a tiny syslog server that is able to receive UDP based syslog
-## entries on a specified port and save them to a file.
-## That's it... it does nothing else...
-## There are a few configuration parameters.
-
-#
-# NO USER SERVICEABLE PARTS BELOW HERE...
-#
-
 import logging
 import re
 import socketserver
@@ -18,15 +7,16 @@ import socketserver
 import os
 from dotenv import dotenv_values
 
-config = {
+appConfig = {
     **dotenv_values('.env'),
     **dotenv_values('.env.local'),
     **os.environ,  # override loaded values with environment variables
 }
 
-SYSLOG_FILE = config.get('SYSLOG_FILE', 'pysyslog.log')
-SYSLOG_HOST = config.get('SYSLOG_HOST', '0.0.0.0')
-SYSLOG_PORT = int(config.get('SYSLOG_PORT', '514'))
+LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
+
+SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '0.0.0.0')
+SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
 
 loggingLevel = logging.INFO
 
@@ -35,7 +25,7 @@ logging.basicConfig(
     level=loggingLevel,
     format='%(message)s',
     #  datefmt="",
-    filename=SYSLOG_FILE,
+    filename=LOGS_FILE,
     filemode='a',
 )
 
@@ -53,7 +43,7 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
 if __name__ == '__main__':
     try:
-        print('Server starting on %s:%s (with file: %s)...' % (SYSLOG_HOST, SYSLOG_PORT, SYSLOG_FILE))
+        print('Server starting on %s:%s (with file: %s)...' % (SYSLOG_HOST, SYSLOG_PORT, LOGS_FILE))
         server = socketserver.UDPServer((SYSLOG_HOST, SYSLOG_PORT), SyslogUDPHandler)
         server.serve_forever(poll_interval=0.5)
         print('Server started')
