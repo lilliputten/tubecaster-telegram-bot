@@ -36,7 +36,7 @@ nameWidth = 20
 nameFormat = '-' + str(nameWidth) + 's'
 
 # Show time in log data
-showTime = False
+showLoggerTime = True
 
 # Level (TODO: Make derived from a dev or prod environment?)
 loggingLevel = logging.INFO   # DEBUG
@@ -47,7 +47,7 @@ formatStr = ' '.join(
             None,
             [
                 # Combine log format string from items...
-                '%(asctime)s' if showTime else None,
+                '%(asctime)s' if showLoggerTime else None,
                 '%(name)' + nameFormat,
                 '%(levelname)-8s',
                 '%(message)s',
@@ -71,7 +71,7 @@ __all__ = [
     'LOGS_SERVER_URL',
     'nameWidth',
     'nameFormat',
-    'showTime',
+    'showLoggerTime',
     'loggingLevel',
     'formatStr',
 ]

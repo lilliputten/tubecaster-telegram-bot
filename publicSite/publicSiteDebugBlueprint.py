@@ -10,7 +10,7 @@ from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
 
 #  from core.logger import getDebugLog
-from core.utils import stripHtml
+from core.utils import debugObj, stripHtml, variableAndKeyString
 from core.appConfig import appConfig
 
 
@@ -23,37 +23,6 @@ publicSiteDebugBlueprint = Blueprint('publicSiteDebugBlueprint', __name__)
 testNgrok = False
 
 startTimeStr = getTimeStamp(True)
-
-
-def showStartInfo():
-    """
-    Debug: Show application start info.
-    """
-    changed = appConfig.get('changed')
-    LOCAL = appConfig.get('LOCAL')
-    TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
-    WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
-
-    #  # Show environment (couldn't fit into vercel log records entirely)
-    #  debugAppConfig = json.dumps(appConfig, indent=2)
-    #  logger.info('appConfig: %s' % debugAppConfig)
-
-    logger.info('Start: %s' % startTimeStr)
-    logger.info('Changed: %s' % changed)
-    logger.info('LOCAL: %s' % LOCAL)
-    logger.info('TELEGRAM_TOKEN: %s' % TELEGRAM_TOKEN)
-    logger.info('WERKZEUG_RUN_MAIN: %s' % WERKZEUG_RUN_MAIN)
-    #  print('Start print: %s: %s' % (changed, TELEGRAM_TOKEN))
-
-
-def debugVar(obj, key: str):
-    """
-    Debug helper: create object variable line, if exists.
-    """
-    val = obj.get(key)
-    if not val:
-        return None
-    return key + ': ' + str(val)
 
 
 @publicSiteDebugBlueprint.route('/test')
@@ -95,40 +64,28 @@ def debug():
     #  time.sleep(1)
     #  obj['debugLog'] = getDebugLog()
     # Debug data object
-    text = '\n'.join(
-        list(
-            filter(
-                None,
-                map(
-                    lambda a: debugVar(obj, a),
-                    [
-                        'startTimeStr',
-                        'timeStr',
-                        'changed',
-                        'LOCAL',
-                        'resText',
-                        'url',
-                        'debugLog',
-                        # ...
-                        'TELEGRAM_TOKEN',
-                        'WERKZEUG_RUN_MAIN',
-                        'USE_LOGS_SERVER',
-                        'USE_SYSLOG_SERVER',
-                        'LOGS_FILE',
-                        'SYSLOG_HOST',
-                        'SYSLOG_PORT',
-                        'LOGS_SERVER_PREFIX',
-                        'LOGS_SERVER_HOST',
-                        'LOGS_SERVER_PORT',
-                        'LOGS_SERVER_RETRIES',
-                    ],
-                ),
-            )
-        )
-    )
-    res = Response(text)
+    varKeys = [
+        'startTimeStr',
+        'timeStr',
+        'changed',
+        'LOCAL',
+        'resText',
+        'url',
+        'debugLog',
+        # ...
+        'TELEGRAM_TOKEN',
+        'WERKZEUG_RUN_MAIN',
+        'USE_LOGS_SERVER',
+        'USE_SYSLOG_SERVER',
+        'LOGS_FILE',
+        'SYSLOG_HOST',
+        'SYSLOG_PORT',
+        'LOGS_SERVER_PREFIX',
+        'LOGS_SERVER_HOST',
+        'LOGS_SERVER_PORT',
+        'LOGS_SERVER_RETRIES',
+    ]
+    content = debugObj(obj, varKeys)
+    res = Response(content)
     res.headers['Content-type'] = 'text/plain'
     return res
-
-
-showStartInfo()

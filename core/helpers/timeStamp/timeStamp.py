@@ -3,7 +3,7 @@
 from datetime import datetime
 
 # TODO: Move these to constants/config?
-defaultTimeFormat = '%Y-%m-%d %H:%M:%S,%f'
+defaultTimeFormat = '%Y-%m-%d %H:%M:%S'
 preciseTimeFormat = defaultTimeFormat + ',%f'
 
 
