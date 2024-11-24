@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 
 from datetime import datetime
+import traceback
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 from core.appConfig import appConfig
+from core.helpers.errors import errorToString
 from core.logger import getLogger
 
 # @see https://python-telegram-bot.org/
@@ -42,7 +44,19 @@ botApp = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 botApp.add_handler(CommandHandler('test', test))
 
 
+def startBot():
+    try:
+        timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+        logger.info('Starting bot, %s' % timeStr)
+        botApp.run_polling()
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        logger.error('Caught error %s (re-raising): %s', sError, sTraceback)
+
+
 # Module exports...
 __all__ = [
     'botApp',
+    'startBot',
 ]
