@@ -1,5 +1,19 @@
 {
   // vim: ft=jsonc ts=2 sw=2
+  "search.exclude": {
+    "*.session": true,
+    "tsconfig.tsbuildinfo": true,
+    "pnpm-lock.yaml": true,
+    "poetry.lock": true,
+    "preview-public": true,
+    "compiled-assets": true,
+    "static": true,
+    "build": true,
+    ".utils": true,
+    "node_modules": true,
+    "patches": true,
+    "publish": true
+  },
   "files.exclude": {
     // "static/**/*",
     "**/*.tmp": true,

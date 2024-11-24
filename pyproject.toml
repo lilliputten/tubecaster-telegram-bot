@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.0.0"
+version = "0.0.4"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
@@ -13,7 +13,10 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
+# werkzeug = "^3.1.3"
 flask = "^3.1.0"
+python-dotenv = "^1.0.1"
+python-telegram-bot = "^21.7"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
@@ -30,6 +33,9 @@ max_line_length = 120
 in-place = true
 recursive = true
 aggressive = 3
+
+[tool.black]
+line-length = 120
 
 [tool.blue]
 line-length = 120

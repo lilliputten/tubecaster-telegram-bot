@@ -21,9 +21,6 @@ indent_size = 2
 [{bower,package}.json]
 indent_size = 2
 
-[webpack.config.js]
-indent_size = 2
-
 # Ignore paths
 [{next/**,static/**,.vscode/launch.json,prisma/migrations/migration_lock.toml}]
 charset = unset
