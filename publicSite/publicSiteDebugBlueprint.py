@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
+
 from flask import Response
 from flask import Blueprint
 from datetime import datetime
-import json
 
 import requests
 
@@ -33,8 +33,9 @@ def showStartInfo():
     TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
     WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
 
-    debugAppConfig = json.dumps(appConfig, indent=2)
-    logger.info('appConfig: %s' % debugAppConfig)
+    #  # Show environment (couldn't fit into vercel log records entirely)
+    #  debugAppConfig = json.dumps(appConfig, indent=2)
+    #  logger.info('appConfig: %s' % debugAppConfig)
 
     logger.info('Start: %s' % startTimeStr)
     logger.info('Changed: %s' % changed)

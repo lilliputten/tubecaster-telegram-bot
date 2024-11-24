@@ -13,6 +13,15 @@ from bot.botBlueprint import botBlueprint
 
 logger = getLogger('api/index')
 
+# Missing variable `handler` or `app` in file "api/index.py".
+
+app = flaskApp
+
+__all__ = [
+    # Export `app` variable
+    'app',
+]
+
 
 #  botApp.run_polling()
 
