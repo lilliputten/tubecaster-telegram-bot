@@ -1,59 +1,45 @@
-import json
+# -*- coding:utf-8 -*-
+
 
 from core.appConfig import appConfig
 from core.logger import getLogger
-from core.flaskApp import app
+from core.flaskApp import flaskApp
 
-from publicSite.publicSiteBlueprint import publicSiteBlueprint
+from publicSite import publicSiteBlueprint, publicSiteDebugBlueprint
 from bot.botBlueprint import botBlueprint
 
-#  from bot.botApp import botApp
+from bot.botApp import startBot
 
-#  changed = """
-#  @changed 2024.11.24, 01:18
-#  """.strip().replace(
-#      '@changed ', ''
-#  )
-
+LOCAL = appConfig.get('LOCAL')
 
 logger = getLogger('api/index')
 
+# Missing variable `handler` or `app` in file "api/index.py".
 
-changed = appConfig.get('changed')
-LOCAL = appConfig.get('LOCAL')
-TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
-WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
+app = flaskApp
 
-#  debugAppConfig = json.dumps(appConfig, indent=2)
-#  logger.info('appConfig: %s' % debugAppConfig)
-
-logger.info('Start: %s' % changed)
-logger.info('LOCAL: %s' % LOCAL)
-logger.info('TELEGRAM_TOKEN: %s' % TELEGRAM_TOKEN)
-logger.warning('WERKZEUG_RUN_MAIN: %s' % WERKZEUG_RUN_MAIN)
-#  print('Start print: %s: %s' % (changed, TELEGRAM_TOKEN))
+__all__ = [
+    # Export `app` variable
+    'app',
+]
 
 
-#  botApp.run_polling()
+startBot()
 
 
 # XXX? Try to avoid twice starting bug...
 #  run_main = os.environ.get('WERKZEUG_RUN_MAIN')
 #  isMain = run_main == 'true'
-doInit = True  # not config['isDev'] or isMain
+doInit = True  # not LOCAL or isMain
+# NOTE: Ensure initializing only once (avoiding double initialization with `* Restarting with stat`...)
+if doInit:
 
-if doInit:  # NOTE: Ensure initializing only once (avoiding double initialization with `* Restarting with stat`...)
+    flaskApp.register_blueprint(publicSiteBlueprint, url_prefix='/')
+    flaskApp.register_blueprint(publicSiteDebugBlueprint, url_prefix='/')
 
-    app.register_blueprint(publicSiteBlueprint, url_prefix='/')
-    app.register_blueprint(botBlueprint, url_prefix='/bot')
-
-
-@app.route('/project-info')
-def static_file():
-    print('project-info')
-    return app.send_static_file('project-info.txt')
+    flaskApp.register_blueprint(botBlueprint, url_prefix='/bot')
 
 
 if __name__ == '__main__':
-    test = appConfig.get('TELEGRAM_TOKEN')
-    #  logger.debug('main %s' % test)
+    token = appConfig.get('TELEGRAM_TOKEN')
+    logger.debug('Token: %s' % token)

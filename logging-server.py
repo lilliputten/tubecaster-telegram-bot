@@ -1,11 +1,24 @@
 #!/usr/bin/env python
 
-# NOTE: Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as an example of remote settings.
+"""
+
+This server allows to collect remote logs from the vercel hosted application via http protocol.
+
+Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as an example of remote settings.
+
+See environment variable to configure it:
+
+- LOGS_FILE
+- LOGS_SERVER_PREFIX
+- LOGS_SERVER_HOST
+- LOGS_SERVER_PORT
+- LOGS_SERVER_RETRIES
+"""
 
 import logging
-import re
 
-#  import socketserver
+from datetime import datetime
+
 import json
 import os
 from dotenv import dotenv_values
@@ -23,21 +36,18 @@ appConfig = {
 
 LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
 
-#  SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '0.0.0.0')
-#  SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
-
 LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
 LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '0.0.0.0')
 LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '8514'))
 LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
-#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '')
+#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '') # TODO: It's possible to add basic authentification
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 
 showRequestsLog = True
 
 # Show specific parameters...
-showIp = True
+showIp = False  # It's always a localhost (if working via ngrok)
 showFile = False
 showTime = True
 
@@ -115,29 +125,37 @@ class RequestHandler(BaseHTTPRequestHandler):
         print(errStr)
 
     def do_POST(self):
+        self._set_response()
         contentType = self.headers.get('Content-Type', 'unknown')
         ip = self.request.getpeername()[0]
         if not contentType.startswith('application/json'):
-            self._set_response()
             errStr = 'Expecting json data, but got %s' % contentType
             self.wfile.write(errStr.encode('utf-8'))
             print(errStr)
             raise Exception(errStr)
         contentLength = int(self.headers.get('Content-Length', '0'))
         # Parse json...
-        jsonStr = self.rfile.read(contentLength).decode('utf-8')
-        jsonStr = sanityJson(jsonStr)
-        data = json.loads(jsonStr)
-        # Prepare data...
-        data['pathname'] = data['pathname'].replace('\\', '/')
-        data['file'] = data['pathname'] + ':' + data['lineno']
-        data['ip'] = ip
-        #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
-        logStr = formatStr % data
-        print(logStr)
-        logging.info(logStr)
-        self._set_response()
-        self.wfile.write('OK'.encode('utf-8'))
+        try:
+            jsonStr = self.rfile.read(contentLength).decode('utf-8')
+            jsonStr = sanityJson(jsonStr)
+            data = json.loads(jsonStr)
+            # Prepare data...
+            data['pathname'] = data.get('pathname', '').replace('\\', '/')
+            data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
+            data['ip'] = ip
+            #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
+            logStr = formatStr % data
+            print(logStr)
+            logging.info(logStr)
+            timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+            response = 'OK ' + timeStr
+            print('Result: ' + response)
+            self.wfile.write(response.encode('utf-8'))
+        except Exception as err:
+            errStr = 'Error parsing log data: ' + repr(err)
+            self.wfile.write(errStr.encode('utf-8'))
+            print(errStr)
+            raise Exception(errStr)
 
 
 def run(ServerClass=HTTPServer, HandlerClass=RequestHandler, port=LOGS_SERVER_PORT):
@@ -159,5 +177,5 @@ if __name__ == '__main__':
     try:
         run()
     except Exception as err:
-        print('ERROR:', str(err))
+        print('ERROR:', repr(err))
     print('Server stopped')

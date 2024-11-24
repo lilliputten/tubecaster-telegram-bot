@@ -2,7 +2,7 @@
 
 from flask import Flask
 
-app = Flask(
+flaskApp = Flask(
     __name__,
     static_url_path='',
     static_folder='static',
@@ -11,5 +11,5 @@ app = Flask(
 
 # Module exports...
 __all__ = [
-    'app',
+    'flaskApp',
 ]
