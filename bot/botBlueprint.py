@@ -14,6 +14,8 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
+from . import botCommands
+
 from . import botConfig
 
 startTimeStr = getTimeStamp(True)
@@ -88,6 +90,7 @@ def test():
             debugObj(obj, debugKeysList),
         ]
     )
+    logger.info(content)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -121,7 +124,7 @@ def start():
             debugObj(obj, debugKeysList),
         ]
     )
-
+    logger.info(content)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -147,9 +150,24 @@ def webhook():
     #  update_id = 574259009
     requestStream = request.stream.read().decode('utf-8')
     update = telebot.types.Update.de_json(requestStream)
+    obj = {
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': getTimeStamp(True),
+            'update': str(update),
+        },
+        **appConfig,
+    }
+    content = '\n\n'.join(
+        [
+            'webhook:',
+            debugObj(obj, debugKeysList),
+        ]
+    )
+    logger.info(content)
     if update:
         botApp.process_new_updates([update])
-    return 'OK', 200
+    return Response('OK', headers={'Content-type': 'text/plain'})
 
 
 # DEBUG
