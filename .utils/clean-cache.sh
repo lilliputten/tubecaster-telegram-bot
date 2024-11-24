@@ -32,7 +32,7 @@ $FINDCMD . \
     -o -name '*.tmp' \
     -o -name '__pycache__' \
   \) \
-  -exec $RMCMD -Rf {} \; \
+  -exec $RMCMD -Rvf {} \; \
   ; echo OK
 
 # $RMCMD -Rf \
