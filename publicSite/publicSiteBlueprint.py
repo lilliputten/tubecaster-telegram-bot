@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask import Response
 from datetime import datetime
 
+from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
 from core.flaskApp import flaskApp
 from core.appConfig import appConfig
@@ -22,7 +23,7 @@ def publicSiteBlueprint_root():
     render_template demo
     """
     #  return render_template('root.html')
-    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+    timeStr = getTimeStamp(True)
     testStr = 'ROOT ' + timeStr
     logger.info(testStr)
     res = Response(testStr)

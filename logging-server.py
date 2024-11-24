@@ -16,9 +16,6 @@ See environment variable to configure it:
 """
 
 import logging
-
-from datetime import datetime
-
 import json
 import os
 from dotenv import dotenv_values
@@ -26,6 +23,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from contextlib import contextmanager
 import sys
 
+from core.helpers.timeStamp import getTimeStamp
 from core.utils.sanityJson import sanityJson
 
 appConfig = {
@@ -147,7 +145,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logStr = formatStr % data
             print(logStr)
             logging.info(logStr)
-            timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+            timeStr = getTimeStamp(True)
             response = 'OK ' + timeStr
             print('Result: ' + response)
             self.wfile.write(response.encode('utf-8'))

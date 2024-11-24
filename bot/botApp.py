@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 
-from datetime import datetime
 import traceback
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 from core.appConfig import appConfig
 from core.helpers.errors import errorToString
+from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
 
 # @see https://python-telegram-bot.org/
@@ -28,13 +28,13 @@ async def test(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Sample bot command
     """
-    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+    timeStamp = getTimeStamp(True)
     message = update.message
     effective_user = update.effective_user
     userName = effective_user.first_name if effective_user else 'Noname'
-    logger.info('test message %s: test %s' % (timeStr, userName))
+    logger.info('test message %s: test %s' % (timeStamp, userName))
     if message:
-        await message.reply_text(f'Test {userName}: {timeStr}')
+        await message.reply_text(f'Test {userName}: {timeStamp}')
 
 
 # Start bot...
@@ -46,8 +46,8 @@ botApp.add_handler(CommandHandler('test', test))
 
 def startBot():
     try:
-        timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
-        logger.info('Starting bot, %s' % timeStr)
+        timeStamp = getTimeStamp(True)
+        logger.info('Starting bot, %s' % timeStamp)
         botApp.run_polling()
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)

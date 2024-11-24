@@ -6,6 +6,7 @@ from datetime import datetime
 
 import requests
 
+from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
 
 #  from core.logger import getDebugLog
@@ -21,7 +22,7 @@ publicSiteDebugBlueprint = Blueprint('publicSiteDebugBlueprint', __name__)
 
 testNgrok = False
 
-startTimeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+startTimeStr = getTimeStamp(True)
 
 
 def showStartInfo():
@@ -57,7 +58,7 @@ def debugVar(obj, key: str):
 
 @publicSiteDebugBlueprint.route('/test')
 def debug():
-    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+    timeStr = getTimeStamp(True)
     testStr = 'TEST ' + timeStr
     logger.info('LOG ' + testStr)
 
