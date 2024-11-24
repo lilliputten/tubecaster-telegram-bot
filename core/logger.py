@@ -3,6 +3,8 @@
 import logging
 import logging.handlers
 import json
+
+#  import re
 import requests
 from requests.adapters import HTTPAdapter
 
@@ -10,6 +12,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
 from core.appConfig import appConfig
+from core.utils.stripHtml import stripHtml
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
@@ -56,6 +59,12 @@ formatStr = ' '.join(
     )
 )
 
+debugLogs: list[str] = []
+
+
+def getDebugLog():
+    return '\n' + '\n'.join(debugLogs) + '\n'
+
 
 class CustomHttpHandler(logging.Handler):
     def __init__(
@@ -75,6 +84,8 @@ class CustomHttpHandler(logging.Handler):
         self.url = url
         #  self.token = token
         self.silent = silent
+
+        debugLogs.append('CustomHttpHandler url: %s' % (url))
 
         # sets up a session with the server
         self.MAX_POOLSIZE = 100
@@ -104,14 +115,29 @@ class CustomHttpHandler(logging.Handler):
         Parameters:
             record: a log record
         """
-        logEntry = self.format(record)
+        sendData = self.format(record)
+        #  jsonData = {
+        #      'asctime': record.asctime,
+        #      'pathname': record.pathname,
+        #      'lineno': record.lineno,
+        #      'name': record.name,
+        #      'levelname': record.levelname,
+        #      'message': record.message,
+        #  }
+        debugLogs.append('emit %s %s %s %s' % (self.url, record.name, record.levelname, record.message))
         try:
-            response = self.session.post(self.url, data=logEntry)
+            url = self.url
+            response = self.session.post(url, data=sendData)
+            #  response = requests.post(url, json=jsonData)
+            resp = response.content.decode('utf-8')
+            resp = stripHtml(resp)
+            debugLogs.append('emit result: %s' % (resp))
             if not self.silent:
-                print(logEntry)
+                print(sendData)
                 print(response.content)
         except Exception as err:
-            print('ERROR: Failed to send a log record:', str(err))
+            debugLogs.append('emit error: %s' % (repr(err)))
+            print('ERROR: Failed to send a log record:', repr(err))
             # TODO: Stop sending logs after a few errors?
 
 
@@ -135,11 +161,11 @@ httpHandler = CustomHttpHandler(
     #  token=LOGS_SERVER_TOKEN,
     #  silent=False,
 )
-
 httpHandler.setLevel(loggingLevel)
-
-# Add formatter to custom http handler
 httpHandler.setFormatter(remoteLoggingFormatter)
+
+# Remove default handlers...
+logging.getLogger().handlers.clear()
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 logging.basicConfig(
@@ -148,26 +174,31 @@ logging.basicConfig(
     #  filename="py_log.log", filemode="w",
 )
 
-
 defaultFormatter = logging.Formatter(formatStr)
 
 
 def getLogger(id: str | None = None):
     logger = logging.getLogger(id)
+    #  debugLogs.append('getLogger loggers count: %d' % (len(logger.handlers)))
+    #  if len(logger.handlers):
+    #      logger.removeHandler(logger.handlers[0])
+    # Default handler (console)...
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setLevel(loggingLevel)
+    consoleHandler.formatter = defaultFormatter
+    #  logger.handlers = []
+    #  logger.addHandler(consoleHandler)
     # Syslog, @see https://docs.python.org/3/library/logging.handlers.html#sysloghandler
     if USE_SYSLOG_SERVER:
         syslogHandler = logging.handlers.SysLogHandler(
             address=(SYSLOG_HOST, SYSLOG_PORT),
         )
+        syslogHandler.setLevel(loggingLevel)
         syslogHandler.formatter = defaultFormatter
         logger.addHandler(syslogHandler)
+    debugLogs.append('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
     if USE_LOGS_SERVER:
         logger.addHandler(httpHandler)
-    # Try to trick vercel...
-    if not LOCAL:
-        consoleHandler = logging.StreamHandler()
-        consoleHandler.setLevel(loggingLevel)
-        logger.addHandler(consoleHandler)
     return logger
 
 

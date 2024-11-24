@@ -3,7 +3,9 @@
 # NOTE: Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as an example of remote settings.
 
 import logging
-import re
+
+#  import re
+from datetime import datetime
 
 #  import socketserver
 import json
@@ -37,7 +39,7 @@ LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_
 showRequestsLog = True
 
 # Show specific parameters...
-showIp = True
+showIp = False  # It's always a localhost (if working via ngrok)
 showFile = False
 showTime = True
 
@@ -115,29 +117,37 @@ class RequestHandler(BaseHTTPRequestHandler):
         print(errStr)
 
     def do_POST(self):
+        self._set_response()
         contentType = self.headers.get('Content-Type', 'unknown')
         ip = self.request.getpeername()[0]
         if not contentType.startswith('application/json'):
-            self._set_response()
             errStr = 'Expecting json data, but got %s' % contentType
             self.wfile.write(errStr.encode('utf-8'))
             print(errStr)
             raise Exception(errStr)
         contentLength = int(self.headers.get('Content-Length', '0'))
         # Parse json...
-        jsonStr = self.rfile.read(contentLength).decode('utf-8')
-        jsonStr = sanityJson(jsonStr)
-        data = json.loads(jsonStr)
-        # Prepare data...
-        data['pathname'] = data['pathname'].replace('\\', '/')
-        data['file'] = data['pathname'] + ':' + data['lineno']
-        data['ip'] = ip
-        #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
-        logStr = formatStr % data
-        print(logStr)
-        logging.info(logStr)
-        self._set_response()
-        self.wfile.write('OK'.encode('utf-8'))
+        try:
+            jsonStr = self.rfile.read(contentLength).decode('utf-8')
+            jsonStr = sanityJson(jsonStr)
+            data = json.loads(jsonStr)
+            # Prepare data...
+            data['pathname'] = data.get('pathname', '').replace('\\', '/')
+            data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
+            data['ip'] = ip
+            #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
+            logStr = formatStr % data
+            print(logStr)
+            logging.info(logStr)
+            timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+            response = 'OK ' + timeStr
+            print('Result: ' + response)
+            self.wfile.write(response.encode('utf-8'))
+        except Exception as err:
+            errStr = 'Error parsing log data: ' + repr(err)
+            self.wfile.write(errStr.encode('utf-8'))
+            print(errStr)
+            raise Exception(errStr)
 
 
 def run(ServerClass=HTTPServer, HandlerClass=RequestHandler, port=LOGS_SERVER_PORT):
@@ -159,5 +169,5 @@ if __name__ == '__main__':
     try:
         run()
     except Exception as err:
-        print('ERROR:', str(err))
+        print('ERROR:', repr(err))
     print('Server stopped')
