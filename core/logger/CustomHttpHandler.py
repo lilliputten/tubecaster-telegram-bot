@@ -9,7 +9,6 @@ from requests.adapters import HTTPAdapter
 
 from urllib3.util import Retry
 
-from core.appConfig import appConfig
 from core.logger.DebugLog import addDebugLog, useDebugLogs
 from core.logger import loggerConfig
 from core.utils.stripHtml import stripHtml

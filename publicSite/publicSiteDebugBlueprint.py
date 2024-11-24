@@ -57,10 +57,17 @@ def debugVar(obj, key: str):
 
 @publicSiteDebugBlueprint.route('/test')
 def debug():
-    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
     testStr = 'TEST ' + timeStr
-    # Show log entry...
     logger.info('LOG ' + testStr)
+
+    TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
+    changed = appConfig.get('changed')
+
+    logger.info('Started: %s' % startTimeStr)
+    logger.info('Changed: %s' % changed)
+    logger.info('TELEGRAM_TOKEN: %s' % TELEGRAM_TOKEN)
+
     obj = {
         **{
             'startTimeStr': startTimeStr,

@@ -2,9 +2,9 @@
 
 from flask import Blueprint
 from flask import Response
+from datetime import datetime
 
 from core.logger import getLogger
-
 from core.flaskApp import flaskApp
 from core.appConfig import appConfig
 
@@ -22,8 +22,10 @@ def publicSiteBlueprint_root():
     render_template demo
     """
     #  return render_template('root.html')
-    content = 'Site index %s' % appConfig.get('changed')
-    res = Response(content)
+    timeStr = datetime.today().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+    testStr = 'ROOT ' + timeStr
+    logger.info(testStr)
+    res = Response(testStr)
     res.headers['Content-type'] = 'text/plain'
     return res
 

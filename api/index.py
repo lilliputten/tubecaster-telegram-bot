@@ -8,7 +8,7 @@ from core.flaskApp import flaskApp
 from publicSite import publicSiteBlueprint, publicSiteDebugBlueprint
 from bot.botBlueprint import botBlueprint
 
-#  from bot.botApp import botApp
+from bot.botApp import botApp
 
 
 logger = getLogger('api/index')
@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 
-#  botApp.run_polling()
+botApp.run_polling()
 
 
 # XXX? Try to avoid twice starting bug...
