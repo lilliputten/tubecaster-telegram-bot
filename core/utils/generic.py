@@ -61,6 +61,15 @@ def quoteStr(s, addQuotes=False, quoteDouble=False, quoteSingle=True):
     return s
 
 
+def dictFromModule(module):
+    dict = {}
+    for setting in dir(module):
+        # you can write your filter here
+        if not setting.startswith('__'):
+            dict[setting] = getattr(module, setting)
+    return dict
+
+
 def dictFromClass(cls):
     return dict(
         (key, value)

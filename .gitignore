@@ -35,6 +35,7 @@ ENV/
 env.bak/
 venv.bak/
 config.local.yml
+/out
 
 # Data
 *.db

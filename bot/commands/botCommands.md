@@ -1,0 +1,105 @@
+  Sample message: <telebot.types.Message object at 0x000002052617FC50>
+
+  ```python
+  animation: None
+  any_entities: [<telebot.types.MessageEntity object at 0x00000205247BD070>]
+  any_text: '/test'
+  audio: None
+  author_signature: None
+  boost_added: None
+  business_connection_id: None
+  caption: None
+  caption_entities: None
+  channel_chat_created: None
+  chat: <telebot.types.Chat object at 0x00000205247BD7F0>
+  chat_background_set: None
+  chat_shared: None
+  connected_website: None
+  contact: None
+  content_type: 'text'
+  date: 1732490020
+  delete_chat_photo: None
+  dice: None
+  document: None
+  edit_date: None
+  effect_id: None
+  entities: [<telebot.types.MessageEntity object at 0x00000205247BD070>]
+  external_reply: None
+  forum_topic_closed: None
+  forum_topic_created: None
+  forum_topic_edited: None
+  forum_topic_reopened: None
+  forward_date: None
+  forward_from: None
+  forward_from_chat: None
+  forward_from_message_id: None
+  forward_origin: None
+  forward_sender_name: None
+  forward_signature: None
+  from_user: <telebot.types.User object at 0x00000205263FB260>
+  general_forum_topic_hidden: None
+  general_forum_topic_unhidden: None
+  giveaway: None
+  giveaway_completed: None
+  giveaway_created: None
+  giveaway_winners: None
+  group_chat_created: None
+  has_media_spoiler: None
+  has_protected_content: None
+  html_caption: None
+  html_text: '/test'
+  id: 43
+  invoice: None
+  is_automatic_forward: None
+  is_from_offline: None
+  is_topic_message: None
+  json: {'message_id': 43, 'from': {'id': 490398083, 'is_bot': False, 'first_name': 'Ig', 'username': 'lilliputten', 'language_code': 'en'}, 'chat': {'id': 490398083, 'first_name': 'Ig', 'username': 'lilliputten', 'type': 'private'}, 'date': 1732490020, 'text': '/test', 'entities': [{...}]}
+  left_chat_member: None
+  link_preview_options: None
+  location: None
+  media_group_id: None
+  message_auto_delete_timer_changed: None
+  message_id: 43
+  message_thread_id: None
+  migrate_from_chat_id: None
+  migrate_to_chat_id: None
+  new_chat_member: None
+  new_chat_members: None
+  new_chat_photo: None
+  new_chat_title: None
+  paid_media: None
+  photo: None
+  pinned_message: None
+  proximity_alert_triggered: None
+  quote: None
+  refunded_payment: None
+  reply_markup: None
+  reply_to_message: None
+  reply_to_story: None
+  sender_boost_count: None
+  sender_business_bot: None
+  sender_chat: None
+  show_caption_above_media: None
+  sticker: None
+  story: None
+  successful_payment: None
+  supergroup_chat_created: None
+  text: '/test'
+  user_shared: None
+  users_shared: None
+  venue: None
+  via_bot: None
+  video: None
+  video_chat_ended: None
+  video_chat_participants_invited: None
+  video_chat_scheduled: None
+  video_chat_started: None
+  video_note: None
+  voice: None
+  voice_chat_ended: None
+  voice_chat_participants_invited: None
+  voice_chat_scheduled: None
+  voice_chat_started: None
+  web_app_data: None
+  write_access_allowed: None
+```

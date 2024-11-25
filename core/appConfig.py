@@ -15,6 +15,7 @@ changed = """
 appConfig = {
     **dotenv_values('.env'),
     **dotenv_values('.env.local'),
+    **dotenv_values('.env.secure'),
     **os.environ,  # override loaded values with environment variables
     **{'changed': changed},
 }
