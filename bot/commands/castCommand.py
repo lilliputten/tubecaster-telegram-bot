@@ -75,16 +75,15 @@ def getYtdlBaseOptions(cookieFile: str):
         'cachedir': tempPath,
     }
 
-    # ???
-    #  # Add cookie file
-    #  if cookieFile:
-    #      options['cookiefile'] = cookieFile
+    # Add cookie file
+    if cookieFile:
+        options['cookiefile'] = cookieFile
 
-    # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
-    YT_POTOKEN = appConfig.get('YT_POTOKEN')
-    if YT_POTOKEN:
-        logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
-        options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
+    #  # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
+    #  YT_POTOKEN = appConfig.get('YT_POTOKEN')
+    #  if YT_POTOKEN:
+    #      logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
+    #      options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
 
     #  # Add authentication params (NOTE: Not supported!)...
     #  YT_USERNAME = appConfig.get('YT_USERNAME')
@@ -209,7 +208,7 @@ def castCommand(message: telebot.types.Message):
     replyMsg = '\n\n'.join(
         [
             "Ok, we've got your video.",
-            debugData,
+            #  debugData,
         ]
     )
     logger.info(logContent)
