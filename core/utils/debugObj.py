@@ -3,7 +3,7 @@ from core.utils.variableAndKeyString import variableAndKeyString
 space = ' - '
 
 
-def debugObj(obj: dict[str, str | None], keys: list[str] | None = None):
+def debugObj(obj: dict[str, str | bool | int | None], keys: list[str] | None = None):
     if not keys:
         keys = list(filter(lambda key: not key.startswith('__'), obj.keys()))
     res = '\n'.join(

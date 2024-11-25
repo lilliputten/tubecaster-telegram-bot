@@ -22,7 +22,7 @@ from core.utils import debugObj
 
 YTDL = yt_dlp
 
-logger = getLogger('bot/commands/cast')
+logger = getLogger('bot/commands/castCommand')
 
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
 
@@ -62,78 +62,93 @@ def getFileIdFromUrl(url: str):
     return filename
 
 
+def getYtdlBaseOptions(cookieFile: str):
+    # Prepare options:
+    options: dict[str, str | bool | int | None] = {
+        # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
+        'verbose': True,
+    }
+
+    # Add cookie file
+    if cookieFile:
+        options['cookiefile'] = cookieFile
+
+    # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
+    YT_POTOKEN = appConfig.get('YT_POTOKEN')
+    if YT_POTOKEN:
+        logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
+        options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
+
+    # Add authentication params...
+    YT_USERNAME = appConfig.get('YT_USERNAME')
+    YT_PASSWORD = appConfig.get('YT_PASSWORD')
+    if YT_USERNAME and YT_PASSWORD:
+        logger.info('loadAudioFile: Using username (%s) and password (%s)' % (YT_USERNAME, YT_PASSWORD))
+        options['username'] = YT_USERNAME
+        options['password'] = YT_PASSWORD
+
+    return options
+
+
 def loadAudioFile(url):
     """
     Returns local temporarily saved audio file name.
     """
     try:
-        logger.info('loadAudioFile: Started downloading video from url: %s' % url)
-
-        # Extract video info
-        video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
-        if not video_info:
-            raise Exception('No video info has been returned')
-        webpageUrl = video_info['webpage_url']
-        logger.info('loadAudioFile: Got webpageUrl: %s' % webpageUrl)
+        logger.info('loadAudioFile: Trying to fetch a video from the url: %s' % url)
 
         # Create file url:
         fileid = getFileIdFromUrl(url)
         filename = 'temp-' + fileid + audioFileExt
         cwd = os.getcwd()
-        filepath = os.path.join(cwd, filename)
-        logger.info('loadAudioFile: Prepared filepath: %s' % filepath)
+        destFIle = os.path.join(cwd, filename)
+        logger.info('loadAudioFile: Prepared destFIle: %s' % destFIle)
+        cookieFile = ''
 
         # Use cookies (if provided):
         YT_COOKIE = appConfig.get('YT_COOKIE')
-        ytCookieFile = filepath + '.cookie'
         if YT_COOKIE:
             logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
-            logger.info('loadAudioFile: Writing to ytCookieFile: %s' % ytCookieFile)
+            cookieFile = destFIle + '.cookie'
+            logger.info('loadAudioFile: Writing cookieFile: %s' % cookieFile)
             YT_COOKIE = YT_COOKIE.strip()
             #  YTDL.cookies = YT_COOKIE
             # Writing cookie data to a file...
-            with open(ytCookieFile, 'wb') as fh:
+            with open(cookieFile, 'w') as fh:
                 fh.write(YT_COOKIE.strip().encode('utf-8'))
 
-        # Prepare options:
+        # Prepare options for information fetch...
+        options = getYtdlBaseOptions(cookieFile)
+
+        # DEBUG: Show options...
+        logger.info('loadAudioFile: Fetching info with options:\n%s' % debugObj(options))
+
+        # Extract video info
+        video_info = YTDL.YoutubeDL(options).extract_info(url=url, download=False)
+        if not video_info:
+            raise Exception('No video info has been returned')
+        webpageUrl = video_info['webpage_url']
+        logger.info('loadAudioFile: Got webpageUrl: %s' % webpageUrl)
+
+        # Extend options for download:
         options = {
+            **options,
             # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
             'format': 'bestaudio/best',
             'keepvideo': False,
-            'outtmpl': filepath,
+            'outtmpl': destFIle,
             'verbose': True,
-            #  'extractor_args': 'youtube:player-client=web;po_token=web+PO_TOKEN_VALUE_HERE',
-            #  'skip_download': True,  # ???
         }
 
-        # Add cookie file
-        if YT_COOKIE and ytCookieFile:
-            options['cookiefile'] = ytCookieFile
-
-        # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
-        YT_POTOKEN = appConfig.get('YT_POTOKEN')
-        if YT_POTOKEN:
-            logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
-            options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
-
-        # Add authentication params...
-        YT_USERNAME = appConfig.get('YT_USERNAME')
-        YT_PASSWORD = appConfig.get('YT_PASSWORD')
-        if YT_USERNAME and YT_PASSWORD:
-            logger.info('loadAudioFile: Using username (%s) and password (%s)' % (YT_USERNAME, YT_PASSWORD))
-            options['username'] = YT_USERNAME
-            options['password'] = YT_PASSWORD
-
         # DEBUG: Show options...
-        logger.info('loadAudioFile: Using options:\n%s' % debugObj(options))
+        logger.info('loadAudioFile: Downloading with options:\n%s' % debugObj(options))
 
         # Downloading...
-        logger.info('loadAudioFile: Downloading...')
         with YTDL.YoutubeDL(options) as ydl:
             ydl.download([webpageUrl])
             # Done!
-            logger.info('loadAudioFile: Success, the audio has loaded from url %s into file %s' % (url, filepath))
-            return filepath
+            logger.info('loadAudioFile: Success, the audio has loaded from url %s into file %s' % (url, destFIle))
+            return destFIle
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

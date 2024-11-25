@@ -46,7 +46,7 @@ showRequestsLog = True
 
 # Show specific parameters...
 showIp = False  # It's always a localhost (if working via ngrok)
-showFile = False
+showFile = True
 showTime = True
 
 # Setup format
@@ -66,7 +66,7 @@ formatStr = ' '.join(
                 # Combine log format string from items...
                 #  '%(pathname)', # .../api/index.py (full pathname)
                 #  '%(lineno)', # 30
-                #  '%(file)' + fileFormat if showFile else None,  # pathname:lineno
+                '%(file)' + fileFormat if showFile else None,  # pathname:lineno
                 '%(ip)s' if showIp else None,
                 '%(asctime)s' if showTime else None,  # 2024-11-24 05:41:29,110
                 '%(name)' + nameFormat,  # api/index

@@ -1,4 +1,4 @@
-def variableAndKeyString(obj: dict[str, str | None], key: str):
+def variableAndKeyString(obj: dict[str, str | bool | int | None], key: str):
     """
     Debug helper: create object variable line, if exists.
     """

@@ -17,8 +17,10 @@ from core.utils.stripHtml import stripHtml
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
 
+
 def prepareJson(s: str):
-    return s;
+    return s
+
 
 class CustomHttpHandler(logging.Handler):
     def __init__(
