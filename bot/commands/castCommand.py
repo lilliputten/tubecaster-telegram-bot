@@ -139,7 +139,7 @@ def loadAudioFile(url):
         if logTraceback:
             errMsg += sTraceback
         else:
-            logger.debug('loadAudioFile: Traceback for the following error:' + sTraceback)
+            logger.info('loadAudioFile: Traceback for the following error:' + sTraceback)
         logger.error('loadAudioFile: ' + errMsg)
         raise Exception(errMsg)
 

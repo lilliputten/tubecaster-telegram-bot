@@ -16,7 +16,8 @@
     "syslog-server": "^1.0.1"
   },
   "scripts": {
-    "ngrok": "echo --Start ngrok tunnel for flask (don't forget to add WEBHOOK_HOST to .env)-- && ngrok http 5000",
+    "ngrok-flask": "echo --Start ngrok tunnel for flask (don't forget to add following ngrok address WEBHOOK_HOST to .env)-- && ngrok http 5000",
+    "ngrok-logging": "echo --Start ngrok tunnel for logging server (don't forget to add the following ngrok address to vercel's LOGS_SERVER_HOST parameter, and re-deploy the project)-- && ngrok http 8514",
     "clean": "echo --Clean cache-- && sh .utils/clean-cache.sh",
     "pylint": "echo --Run pyright python linter-- && poetry run pyright .",
     "logging-server": "echo --Run local logging server-- && poetry run python logging-server.py",

@@ -16,7 +16,7 @@ def getDebugLog():
 
 
 def addDebugLog(s: str):
-    addDebugLog(s)
+    debugLogs.append(s)
 
 
 # Module exports...
