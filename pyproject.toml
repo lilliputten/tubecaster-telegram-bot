@@ -18,6 +18,8 @@ flask = "^3.1.0"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 pytelegrambotapi = "^4.24.0"
+# youtube-dl = "^2021.12.17"
+youtube-dl = {git = "https://github.com/ytdl-org/youtube-dl.git", rev = "master"}
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"

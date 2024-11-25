@@ -25,6 +25,7 @@ debugKeysList = [
 
 isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
 
+
 @botApp.message_handler(commands=['cast'])
 def cast(message: telebot.types.Message):
     # Get core parameters
