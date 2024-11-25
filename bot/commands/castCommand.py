@@ -75,9 +75,10 @@ def getYtdlBaseOptions(cookieFile: str):
         'cachedir': tempPath,
     }
 
-    # Add cookie file
-    if cookieFile:
-        options['cookiefile'] = cookieFile
+    # ???
+    #  # Add cookie file
+    #  if cookieFile:
+    #      options['cookiefile'] = cookieFile
 
     # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
     YT_POTOKEN = appConfig.get('YT_POTOKEN')
