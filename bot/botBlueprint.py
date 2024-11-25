@@ -15,8 +15,7 @@ from bot.botApp import botApp
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
-from . import botCommands
-
+from .commands import registerCommands
 from . import botConfig
 
 startTimeStr = getTimeStamp(True)
@@ -85,7 +84,7 @@ def initWebhook():
 
 
 @botBlueprint.route('/')
-def root():
+def initialize():
     """
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
@@ -109,14 +108,21 @@ def root():
             'timeStr': timeStr,
         },
     }
-    content = '\n\n'.join(
+    debugData = debugObj(obj, debugKeysList)
+    logContent = '\n\n'.join(
         [
             'route: root @ %s' % timeStr,
-            debugObj(obj, debugKeysList),
+            debugData,
             'Use `/start` to start telegram bot',
         ]
     )
-    logger.info(content)
+    content = '\n\n'.join(
+        [
+            'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
+            debugData,
+        ]
+    )
+    logger.info(logContent)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -125,25 +131,9 @@ def stop():
     """
     Remove recent webhook from the telegram bot.
     """
-    timeStr = getTimeStamp(True)
     botApp.remove_webhook()
-    obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **{
-            'startTimeStr': startTimeStr,
-            'timeStr': timeStr,
-        },
-    }
-    content = '\n\n'.join(
-        [
-            'route: stop @ %s' % timeStr,
-            'The webhook has been deleted',
-            debugObj(obj, debugKeysList),
-        ]
-    )
-    logger.info(content)
-    return Response(content, headers={'Content-type': 'text/plain'})
+    logger.info('route: stop')
+    return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 
 
 @botBlueprint.route('/webhook', methods=['POST'])
@@ -206,9 +196,10 @@ def webhook():
 # DEBUG
 logStart()
 
+# Start commands
+registerCommands()
 
 # Module exports...
 __all__ = [
     'botBlueprint',
-    'botCommands', # Just to calm 'unused' warning
 ]

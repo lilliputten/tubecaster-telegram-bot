@@ -12,15 +12,10 @@ from core.utils import debugObj
 
 #  from . import botConfig
 
-startTimeStr = getTimeStamp(True)
-
-logger = getLogger('bot/botCommands')
+logger = getLogger('bot/commands/test')
 
 # Trace keys in logger and reponses
 debugKeysList = [
-    'webhookUrl',
-    # ...
-    'startTimeStr',
     'timeStr',
     'chatId',
     'username',
@@ -39,7 +34,6 @@ def test(message: telebot.types.Message):
     #  json = message.json
     obj = {
         **{
-            'startTimeStr': startTimeStr,
             'timeStr': getTimeStamp(True),
             'chatId': chatId,
             'username': username,
