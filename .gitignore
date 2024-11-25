@@ -26,8 +26,9 @@ pip-delete-this-directory.txt
 *.stats
 
 # Environments
-# Only `.env` is stored in the repository, not `.env.local` and all other `.env.*`
+# No `.env` files are stored in the repository, except `*.SAMPLE` ones
 .env*
+!.env*.SAMPLE
 .venv
 env/
 venv/

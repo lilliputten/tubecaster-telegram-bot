@@ -25,6 +25,8 @@ logger = getLogger('bot/botBlueprint')
 
 botBlueprint = Blueprint('botBlueprint', __name__)
 
+logTraceback = False
+
 
 # Trace keys in logger and reponses
 debugKeysList = [
@@ -98,9 +100,13 @@ def initRoute():
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errStr = 'initRoute: Error registering webhook: ' + sError
-        logger.error(errStr)
-        return Response(errStr, headers={'Content-type': 'text/plain'})
+        errMsg = 'initRoute: Error registering webhook: ' + sError
+        if logTraceback:
+            errMsg += sTraceback
+        else:
+            logger.info('initRoute: Traceback for the following error:' + sTraceback)
+        logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
 
     obj = {
         **appConfig,
@@ -186,10 +192,13 @@ def webhookRoute():
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
-            errStr = 'webhookRoute: Error processing webhook update: ' + sError
-            logger.error(errStr)
-            print(sTraceback)
-            return Response(errStr, headers={'Content-type': 'text/plain'})
+            errMsg = 'webhookRoute: Error processing webhook update: ' + sError
+            if logTraceback:
+                errMsg += sTraceback
+            else:
+                logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
+            logger.error(errMsg)
+            return Response(errMsg, headers={'Content-type': 'text/plain'})
 
     return Response('OK', headers={'Content-type': 'text/plain'})
 

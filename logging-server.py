@@ -32,7 +32,7 @@ appConfig = {
     **os.environ,  # override loaded values with environment variables
 }
 
-LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
+LOGS_FILE = appConfig.get('LOGS_FILE', 'logging-server.log')
 
 LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
 LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '0.0.0.0')
@@ -66,8 +66,8 @@ formatStr = ' '.join(
                 # Combine log format string from items...
                 #  '%(pathname)', # .../api/index.py (full pathname)
                 #  '%(lineno)', # 30
+                #  '%(file)' + fileFormat if showFile else None,  # pathname:lineno
                 '%(ip)s' if showIp else None,
-                '%(file)' + fileFormat if showFile else None,  # pathname:lineno
                 '%(asctime)s' if showTime else None,  # 2024-11-24 05:41:29,110
                 '%(name)' + nameFormat,  # api/index
                 '%(levelname)-8s',  # INFO
@@ -135,11 +135,12 @@ class RequestHandler(BaseHTTPRequestHandler):
         # Parse json...
         try:
             jsonStr = self.rfile.read(contentLength).decode('utf-8')
-            jsonStr = sanityJson(jsonStr)
+            # jsonStr = sanityJson(jsonStr)
             data = json.loads(jsonStr)
             # Prepare data...
             data['pathname'] = data.get('pathname', '').replace('\\', '/')
-            data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
+            if data.get('pathname') and data.get('lineno'):
+                data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
             data['ip'] = ip
             #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
             logStr = formatStr % data

@@ -15,9 +15,18 @@ appConfig = {
     **dotenv_values('.env'),
     **dotenv_values('.env.local'),
     **dotenv_values('.env.secure'),
-    **os.environ,  # override loaded values with environment variables
+
+    # NOTE: DEBUG: Testing remote logging configurations
+    **dotenv_values('.env.logging-ngrok.SAMPLE'),
+    #  **dotenv_values('.env.logging-local.SAMPLE'),
+
+    # Override loaded values with environment variables
+    **os.environ,
     **{'changed': changed},
 }
+
+# TEST = appConfig.get('LOGS_SERVER_PORT')
+# print('XXX', TEST)
 
 # Module exports...
 __all__ = [

@@ -24,6 +24,8 @@ YTDL = yt_dlp
 
 logger = getLogger('bot/commands/cast')
 
+demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
+
 # Trace keys in logger and reponses
 debugKeysList = [
     'url',

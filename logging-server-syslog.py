@@ -13,7 +13,7 @@ appConfig = {
     **os.environ,  # override loaded values with environment variables
 }
 
-LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
+LOGS_FILE = appConfig.get('LOGS_FILE', 'logging-server.log')
 
 SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '0.0.0.0')
 SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
