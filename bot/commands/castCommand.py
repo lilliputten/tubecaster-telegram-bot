@@ -43,7 +43,7 @@ isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
 
 audioFileExt = '.mp3'
 
-useTraceback = False
+logTraceback = False
 
 
 def getFileIdFromName(name: str):
@@ -81,7 +81,6 @@ def loadAudioFile(url):
         filepath = os.path.join(cwd, filename)
         logger.info('loadAudioFile: Prepared filepath: %s' % filepath)
 
-
         # Use cookies (if provided):
         YT_COOKIE = appConfig.get('YT_COOKIE')
         ytCookieFile = filepath + '.cookie'
@@ -101,12 +100,19 @@ def loadAudioFile(url):
             'keepvideo': False,
             'outtmpl': filepath,
             'verbose': True,
+            #  'extractor_args': 'youtube:player-client=web;po_token=web+PO_TOKEN_VALUE_HERE',
             #  'skip_download': True,  # ???
         }
 
         # Add cookie file
-        if YT_COOKIE:
+        if YT_COOKIE and ytCookieFile:
             options['cookiefile'] = ytCookieFile
+
+        # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
+        YT_POTOKEN = appConfig.get('YT_POTOKEN')
+        if YT_POTOKEN:
+            logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
+            options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
 
         # Add authentication params...
         YT_USERNAME = appConfig.get('YT_USERNAME')
@@ -128,10 +134,12 @@ def loadAudioFile(url):
             return filepath
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
-        sTraceback = str(traceback.format_exc())
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Video download error: ' + errText
-        if useTraceback:
-            errMsg += '\n\n' + sTraceback + '\n\n'
+        if logTraceback:
+            errMsg += sTraceback
+        else:
+            logger.debug('loadAudioFile: Traceback for the following error:' + sTraceback)
         logger.error('loadAudioFile: ' + errMsg)
         raise Exception(errMsg)
 
@@ -163,7 +171,6 @@ def castCommand(message: telebot.types.Message):
     obj = {
         **{
             'url': url,
-            #  'args': ', '.join(args),
             'timeStr': getTimeStamp(True),
             'chatId': chatId,
             'username': username,
@@ -184,9 +191,8 @@ def castCommand(message: telebot.types.Message):
         ]
     )
     logger.info(logContent)
-    #  botApp.send_message(chatId, replyMsg)
     botApp.reply_to(message, replyMsg)
-    # Lets, start...
+    # Let's start...
     botApp.send_message(
         chatId, "Now we're trying to download the video and fetch the audio from it... Be patient, please."
     )
