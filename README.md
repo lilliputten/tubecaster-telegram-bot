@@ -1,6 +1,6 @@
 <!--
  @since 2024.11.20, 02:55
- @changed 2024.11.20, 02:55
+ @changed 2024.11.25, 19:54
 -->
 
 
@@ -41,7 +41,7 @@ Don't forget to:
 Settings -> Deployment Protection
 ```
 
-2. Connect the github repository to automate builds:
+2. Connect the github repository to allow automatically track the builds:
 
 ```
 Settings -> Git

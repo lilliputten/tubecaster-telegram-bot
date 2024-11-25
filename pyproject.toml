@@ -19,7 +19,8 @@ python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 pytelegrambotapi = "^4.24.0"
 # youtube-dl = "^2021.12.17"
-youtube-dl = {git = "https://github.com/ytdl-org/youtube-dl.git", rev = "master"}
+# youtube-dl = {git = "https://github.com/ytdl-org/youtube-dl.git", rev = "master"} # UNUSED? Due to unsolvabe sign-in related bugs. 2024.11.25
+yt-dlp = "^2024.11.18"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"

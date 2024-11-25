@@ -3,8 +3,11 @@
 import traceback
 import telebot  # pyTelegramBotAPI
 import re
-import youtube_dl
 import os
+
+# Youtube download libraries
+# import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
+import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
 
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
@@ -17,6 +20,7 @@ from core.utils import debugObj
 
 # @see https://github.com/ytdl-org/youtube-dl
 
+YTLIB = yt_dlp
 
 logger = getLogger('bot/commands/cast')
 
@@ -31,7 +35,7 @@ debugKeysList = [
     'LOCAL',
     #  'YT_USERNAME',
     #  'YT_PASSWORD',
-    'YT_COOKIE',
+    #  'YT_COOKIE',
 ]
 
 
@@ -62,7 +66,7 @@ def loadAudioFile(url):
         logger.info('loadAudioFile: Started downloading video from url: %s' % url)
 
         # Extract video info
-        video_info = youtube_dl.YoutubeDL().extract_info(url=url, download=False)
+        video_info = YTLIB.YoutubeDL().extract_info(url=url, download=False)
         if not video_info:
             raise Exception('No video info has been returned')
         webpageUrl = video_info['webpage_url']
@@ -75,8 +79,8 @@ def loadAudioFile(url):
         filepath = os.path.join(cwd, filename)
         logger.info('loadAudioFile: Prepared filepath: %s' % filepath)
 
-        # Prepare cookies:
-        YT_COOKIE = appConfig.get('YT_COOKIE')
+        # Use cookies (if provided):
+        YT_COOKIE = None   # appConfig.get('YT_COOKIE')
         ytCookieFile = filepath + '.cookie'
         if YT_COOKIE:
             logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
@@ -91,7 +95,7 @@ def loadAudioFile(url):
             'format': 'bestaudio/best',
             'keepvideo': False,
             'outtmpl': filepath,
-            'skip_download': True,  # ???
+            #  'skip_download': True,  # ???
             #  'username': appConfig.get('YT_USERNAME'),
             #  'password': appConfig.get('YT_PASSWORD'),
             #  'cookiefile': 'youtube_cookies.txt',  # https://www.reddit.com/r/youtubedl/comments/1e6bzu4/comment/lod50pa
@@ -102,7 +106,7 @@ def loadAudioFile(url):
 
         # Downloading...
         logger.info('loadAudioFile: Downloading...')
-        with youtube_dl.YoutubeDL(options) as ydl:
+        with YTLIB.YoutubeDL(options) as ydl:
             ydl.download([webpageUrl])
             # Done!
             logger.info('loadAudioFile: Loaded audio from url %s to file %s' % (url, filepath))
@@ -166,7 +170,9 @@ def castCommand(message: telebot.types.Message):
     #  botApp.send_message(chatId, replyMsg)
     botApp.reply_to(message, replyMsg)
     # Lets, start...
-    botApp.send_message(chatId, "Now we're trying to download the video and fetch the audio from it... Be patient, please.")
+    botApp.send_message(
+        chatId, "Now we're trying to download the video and fetch the audio from it... Be patient, please."
+    )
     try:
         # Load audio from url...
         result = loadAudioFile(url)
