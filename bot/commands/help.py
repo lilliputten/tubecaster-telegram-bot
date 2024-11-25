@@ -2,7 +2,6 @@
 
 import telebot  # pytelegrambotapi
 
-#  from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig
@@ -10,9 +9,9 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
-#  from . import botConfig
+from .commandsInfo import commandsInfo
 
-logger = getLogger('bot/commands/test')
+logger = getLogger('bot/commands/help')
 
 # Trace keys in logger and reponses
 debugKeysList = [
@@ -20,23 +19,20 @@ debugKeysList = [
     'chatId',
     'username',
     'first_name',
-    'last_name',
     'language_code',
     'LOCAL',
 ]
 
 
-@botApp.message_handler(commands=['test'])
-def test(message: telebot.types.Message):
+@botApp.message_handler(commands=['help'])
+def help(message: telebot.types.Message):
     text = message.text
     chat = message.chat
     chatId = chat.id
     username = chat.username
     first_name = chat.first_name
     last_name = chat.last_name
-    name = first_name if first_name else username
-    json = message.json
-    language_code = json.form.language_code
+    #  name = first_name if first_name else username
     obj = {
         **{
             'timeStr': getTimeStamp(True),
@@ -44,7 +40,6 @@ def test(message: telebot.types.Message):
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
-            'language_code': language_code,
         },
         **appConfig,
     }
@@ -54,12 +49,9 @@ def test(message: telebot.types.Message):
             debugObj(obj, debugKeysList),
         ]
     )
-    content = '\n\n'.join(
-        [
-            'Hi, %s! Welcome to the TubeCaster bot!' % name,
-            debugObj(obj, debugKeysList),
-            'Type /help to find all commands.',
-        ]
-    )
     logger.info(logContent)
-    botApp.send_message(chatId, content)
+    helpText = 'The following commands are available: \n\n'
+    for key in commandsInfo:
+        helpText += '/' + key + ': '
+        helpText += commandsInfo[key] + '\n'
+    botApp.send_message(chatId, helpText)
