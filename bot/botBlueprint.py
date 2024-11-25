@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import time
+import traceback
 from flask import Blueprint
 from flask import Response
 from flask import request
@@ -34,7 +35,7 @@ debugKeysList = [
 ]
 
 
-def logStart():
+def logBotStarted():
     """
     Debug: Show application start info.
     """
@@ -49,7 +50,7 @@ def logStart():
     }
     content = '\n\n'.join(
         [
-            'call: logStart @ %s' % timeStr,
+            'logBotStarted @ %s' % timeStr,
             debugObj(obj, debugKeysList),
         ]
     )
@@ -84,7 +85,7 @@ def initWebhook():
 
 
 @botBlueprint.route('/')
-def initialize():
+def init():
     """
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
@@ -95,7 +96,7 @@ def initialize():
         initWebhook()
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
-        #  sTraceback = str(traceback.format_exc())
+        sTraceback = str(traceback.format_exc())
         errStr = 'route: start: Error registering web hook: ' + sError
         logger.error(errStr)
         return Response(errStr, headers={'Content-type': 'text/plain'})
@@ -111,7 +112,7 @@ def initialize():
     debugData = debugObj(obj, debugKeysList)
     logContent = '\n\n'.join(
         [
-            'route: root @ %s' % timeStr,
+            'route: init @ %s' % timeStr,
             debugData,
             'Use `/start` to start telegram bot',
         ]
@@ -185,16 +186,17 @@ def webhook():
             botApp.process_new_updates([update])
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
-            #  sTraceback = str(traceback.format_exc())
+            sTraceback = str(traceback.format_exc())
             errStr = 'route: webhook: Error processing webhook update: ' + sError
             logger.error(errStr)
+            print(sTraceback)
             return Response(errStr, headers={'Content-type': 'text/plain'})
 
     return Response('OK', headers={'Content-type': 'text/plain'})
 
 
 # DEBUG
-logStart()
+logBotStarted()
 
 # Start commands
 registerCommands()

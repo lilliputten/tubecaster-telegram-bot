@@ -47,7 +47,7 @@ questions.yaml
 /local-image.*
 /test-image.*
 /test-*
-/temp/*
+/temp*
 
 # Linked or generated build
 /html-app*
