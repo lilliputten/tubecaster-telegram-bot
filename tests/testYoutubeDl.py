@@ -1,6 +1,12 @@
-import youtube_dl
 import re
 import os
+
+# Youtube download libraries
+# import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
+import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
+
+
+YTDL = yt_dlp
 
 
 def getFileIdFromName(name: str):
@@ -13,7 +19,7 @@ def getFileIdFromName(name: str):
 def run():
     url = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
     #  url = input("please enter youtube video url:")
-    video_info = youtube_dl.YoutubeDL().extract_info(url=url, download=False)
+    video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
     if not video_info:
         raise Exception('No video info has been returned')
     title = video_info['title']
@@ -29,7 +35,7 @@ def run():
         'outtmpl': filepath,
     }
 
-    with youtube_dl.YoutubeDL(options) as ydl:
+    with YTDL.YoutubeDL(options) as ydl:
         ydl.download([webpage_url])
 
     print('Download complete...')

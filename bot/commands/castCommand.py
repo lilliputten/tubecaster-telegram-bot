@@ -20,14 +20,14 @@ from core.utils import debugObj
 
 # @see https://github.com/ytdl-org/youtube-dl
 
-YTLIB = yt_dlp
+YTDL = yt_dlp
 
 logger = getLogger('bot/commands/cast')
 
 # Trace keys in logger and reponses
 debugKeysList = [
     'url',
-    'args',
+    #  'args',
     'text',
     'timeStr',
     'chatId',
@@ -66,7 +66,7 @@ def loadAudioFile(url):
         logger.info('loadAudioFile: Started downloading video from url: %s' % url)
 
         # Extract video info
-        video_info = YTLIB.YoutubeDL().extract_info(url=url, download=False)
+        video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
         if not video_info:
             raise Exception('No video info has been returned')
         webpageUrl = video_info['webpage_url']
@@ -79,12 +79,15 @@ def loadAudioFile(url):
         filepath = os.path.join(cwd, filename)
         logger.info('loadAudioFile: Prepared filepath: %s' % filepath)
 
+
         # Use cookies (if provided):
-        YT_COOKIE = None   # appConfig.get('YT_COOKIE')
+        YT_COOKIE = appConfig.get('YT_COOKIE')
         ytCookieFile = filepath + '.cookie'
         if YT_COOKIE:
             logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
             logger.info('loadAudioFile: Writing to ytCookieFile: %s' % YT_COOKIE)
+            YT_COOKIE = YT_COOKIE.strip()
+            #  YTDL.cookies = YT_COOKIE
             # Writing cookie data to a file...
             with open(ytCookieFile, 'wb') as fh:
                 fh.write(YT_COOKIE.strip().encode('utf-8'))
@@ -98,7 +101,6 @@ def loadAudioFile(url):
             #  'skip_download': True,  # ???
             #  'username': appConfig.get('YT_USERNAME'),
             #  'password': appConfig.get('YT_PASSWORD'),
-            #  'cookiefile': 'youtube_cookies.txt',  # https://www.reddit.com/r/youtubedl/comments/1e6bzu4/comment/lod50pa
         }
         if YT_COOKIE:
             options['cookiefile'] = ytCookieFile
@@ -106,7 +108,7 @@ def loadAudioFile(url):
 
         # Downloading...
         logger.info('loadAudioFile: Downloading...')
-        with YTLIB.YoutubeDL(options) as ydl:
+        with YTDL.YoutubeDL(options) as ydl:
             ydl.download([webpageUrl])
             # Done!
             logger.info('loadAudioFile: Loaded audio from url %s to file %s' % (url, filepath))
@@ -146,7 +148,7 @@ def castCommand(message: telebot.types.Message):
     obj = {
         **{
             'url': url,
-            'args': ', '.join(args),
+            #  'args': ', '.join(args),
             'timeStr': getTimeStamp(True),
             'chatId': chatId,
             'username': username,

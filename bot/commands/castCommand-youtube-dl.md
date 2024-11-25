@@ -1,7 +1,9 @@
-> @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
 
 Available options:
 
+> Collected from `https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312`.
+
+```
 username:          Username for authentication purposes.
 password:          Password for authentication purposes.
 videopassword:     Password for accessing a video.
@@ -176,3 +178,4 @@ youtube_include_dash_manifest: If True (default), DASH manifests and related
                     data will be downloaded and processed by extractor.
                     You can reduce network I/O by disabling it if you don't
                     care about DASH.
+```
