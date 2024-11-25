@@ -73,19 +73,20 @@ def getYtdlBaseOptions(cookieFile: str):
         # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
         'verbose': True,
         'cachedir': tempPath,
+        #  'debug_printtraffic': True,
     }
 
     # Add cookie file
     if cookieFile:
         options['cookiefile'] = cookieFile
 
-    #  # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
-    #  YT_POTOKEN = appConfig.get('YT_POTOKEN')
-    #  if YT_POTOKEN:
-    #      logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
-    #      options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
+    # Add PO Token (if exists), see https://github.com/yt-dlp/yt-dlp/wiki/Extractors#manually-acquiring-a-po-token-from-a-browser-for-use-when-logged-out
+    YT_POTOKEN = appConfig.get('YT_POTOKEN')
+    if YT_POTOKEN:
+        logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
+        options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
 
-    #  # Add authentication params (NOTE: Not supported!)...
+    #  # Add authentication params (NOTE: Unused as not supported)
     #  YT_USERNAME = appConfig.get('YT_USERNAME')
     #  YT_PASSWORD = appConfig.get('YT_PASSWORD')
     #  if YT_USERNAME and YT_PASSWORD:
@@ -142,6 +143,10 @@ def loadAudioFile(url):
             'keepvideo': False,
             'outtmpl': destFIle,
             'verbose': True,
+            #  'simulate': True,
+            #  'skip_download': True,
+            #  'check_formats': False,
+            #  'ignoreerrors': True,
         }
 
         # DEBUG: Show options...
@@ -149,7 +154,7 @@ def loadAudioFile(url):
 
         # Downloading...
         with YTDL.YoutubeDL(options) as ydl:
-            ydl.download([webpageUrl])
+            #  ydl.download([webpageUrl])  # BUG: It fails silently here
             # Done!
             logger.info('loadAudioFile: Success, the audio has loaded from url %s into file %s' % (url, destFIle))
             return destFIle
