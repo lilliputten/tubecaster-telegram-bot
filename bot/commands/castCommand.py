@@ -43,6 +43,8 @@ isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
 
 audioFileExt = '.mp3'
 
+useTraceback = False
+
 
 def getFileIdFromName(name: str):
     filename = name.lower()
@@ -85,7 +87,7 @@ def loadAudioFile(url):
         ytCookieFile = filepath + '.cookie'
         if YT_COOKIE:
             logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
-            logger.info('loadAudioFile: Writing to ytCookieFile: %s' % YT_COOKIE)
+            logger.info('loadAudioFile: Writing to ytCookieFile: %s' % ytCookieFile)
             YT_COOKIE = YT_COOKIE.strip()
             #  YTDL.cookies = YT_COOKIE
             # Writing cookie data to a file...
@@ -98,26 +100,39 @@ def loadAudioFile(url):
             'format': 'bestaudio/best',
             'keepvideo': False,
             'outtmpl': filepath,
+            'verbose': True,
             #  'skip_download': True,  # ???
-            #  'username': appConfig.get('YT_USERNAME'),
-            #  'password': appConfig.get('YT_PASSWORD'),
         }
+
+        # Add cookie file
         if YT_COOKIE:
             options['cookiefile'] = ytCookieFile
-        logger.info('loadAudioFile: Using options: %s' % debugObj(options))
+
+        # Add authentication params...
+        YT_USERNAME = appConfig.get('YT_USERNAME')
+        YT_PASSWORD = appConfig.get('YT_PASSWORD')
+        if YT_USERNAME and YT_PASSWORD:
+            logger.info('loadAudioFile: Using username (%s) and password (%s)' % (YT_USERNAME, YT_PASSWORD))
+            options['username'] = YT_USERNAME
+            options['password'] = YT_PASSWORD
+
+        # DEBUG: Show options...
+        logger.info('loadAudioFile: Using options:\n%s' % debugObj(options))
 
         # Downloading...
         logger.info('loadAudioFile: Downloading...')
         with YTDL.YoutubeDL(options) as ydl:
             ydl.download([webpageUrl])
             # Done!
-            logger.info('loadAudioFile: Loaded audio from url %s to file %s' % (url, filepath))
+            logger.info('loadAudioFile: Success, the audio has loaded from url %s into file %s' % (url, filepath))
             return filepath
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'Video download error: ' + errText
-        logger.error('loadAudioFile: ' + errMsg + '\n\n' + sTraceback + '\n\n')
+        if useTraceback:
+            errMsg += '\n\n' + sTraceback + '\n\n'
+        logger.error('loadAudioFile: ' + errMsg)
         raise Exception(errMsg)
 
 
@@ -183,8 +198,7 @@ def castCommand(message: telebot.types.Message):
         # TODO: Send audio to the bot
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
-        sTraceback = str(traceback.format_exc())
+        #  sTraceback = str(traceback.format_exc())
         errMsg = 'Error fetching audio: ' + errText
         logger.error('castCommand: ' + errMsg)
-        print(sTraceback)
         botApp.reply_to(message, errMsg)

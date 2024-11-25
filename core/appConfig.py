@@ -3,7 +3,6 @@
 import os
 from dotenv import dotenv_values
 
-#  import json
 
 changed = """
 @changed 2024.11.24, 10:51
@@ -19,12 +18,6 @@ appConfig = {
     **os.environ,  # override loaded values with environment variables
     **{'changed': changed},
 }
-
-#  YT_COOKIE = appConfig.get('YT_COOKIE')
-#  print('YT_COOKIE:', YT_COOKIE)
-
-#  debugAppConfig = json.dumps(appConfig, indent=2)
-#  print('Config: %s' % debugAppConfig)
 
 # Module exports...
 __all__ = [

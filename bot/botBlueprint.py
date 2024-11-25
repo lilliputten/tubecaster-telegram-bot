@@ -92,8 +92,9 @@ def initRoute():
     """
     timeStr = getTimeStamp(True)
 
+    result: bool
     try:
-        initWebhook()
+        result = initWebhook()
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
@@ -112,7 +113,7 @@ def initRoute():
     debugData = debugObj(obj, debugKeysList)
     logContent = '\n\n'.join(
         [
-            'initRoute',
+            'initRoute: %r' % result,
             debugData,
         ]
     )
