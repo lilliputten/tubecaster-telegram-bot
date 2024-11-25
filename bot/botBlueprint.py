@@ -13,6 +13,7 @@ from core.appConfig import appConfig
 
 from bot.botApp import botApp
 from core.utils import debugObj
+from core.utils.generic import dictFromModule
 
 from . import botCommands
 
@@ -27,17 +28,10 @@ botBlueprint = Blueprint('botBlueprint', __name__)
 
 # Trace keys in logger and reponses
 debugKeysList = [
-    'webhookUrl',
-    # ...
     'startTimeStr',
     'timeStr',
-    #  'changed',
     'LOCAL',
-    # ...
-    'WEBHOOK_HOST',
-    'WEBHOOK_PATH',
-    'TELEGRAM_TOKEN',
-    'WERKZEUG_RUN_MAIN',
+    'WEBHOOK_URL',
 ]
 
 
@@ -45,48 +39,38 @@ def logStart():
     """
     Debug: Show application start info.
     """
+    timeStr = getTimeStamp(True)
     obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
         **{
             'startTimeStr': startTimeStr,
-            'timeStr': getTimeStamp(True),
+            'timeStr': timeStr,
         },
-        **appConfig,
-    }
-    content = 'logStart:\n\n' + debugObj(obj, debugKeysList)
-    logger.info(content)
-
-
-@botBlueprint.route('/')
-def root():
-    obj = {
-        **{
-            'startTimeStr': startTimeStr,
-            'timeStr': getTimeStamp(True),
-        },
-        **appConfig,
     }
     content = '\n\n'.join(
         [
-            'root:',
+            'call: logStart @ %s' % timeStr,
             debugObj(obj, debugKeysList),
-            'Use `/start` to start telegram bot',
         ]
     )
-    return Response(content, headers={'Content-type': 'text/plain'})
+    logger.info(content)
 
 
 @botBlueprint.route('/test')
 def test():
+    timeStr = getTimeStamp(True)
     obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
         **{
             'startTimeStr': startTimeStr,
-            'timeStr': getTimeStamp(True),
+            'timeStr': timeStr,
         },
-        **appConfig,
     }
     content = '\n\n'.join(
         [
-            'test:',
+            'route: test @ %s' % timeStr,
             debugObj(obj, debugKeysList),
         ]
     )
@@ -94,33 +78,67 @@ def test():
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
-@botBlueprint.route('/start')
-def start():
+def initWebhook():
     botApp.remove_webhook()
     time.sleep(1)
-    webhookUrl = botConfig.WEBHOOK_HOST + botConfig.WEBHOOK_PATH
+    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
+
+
+@botBlueprint.route('/')
+def root():
+    """
+    Root page:
+    Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
+    """
+    timeStr = getTimeStamp(True)
 
     try:
-        botApp.set_webhook(url=webhookUrl)
+        initWebhook()
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         #  sTraceback = str(traceback.format_exc())
-        errStr = 'Error registering web hook: ' + sError
+        errStr = 'route: start: Error registering web hook: ' + sError
         logger.error(errStr)
         return Response(errStr, headers={'Content-type': 'text/plain'})
 
     obj = {
-        **{
-            'webhookUrl': webhookUrl,
-            'startTimeStr': startTimeStr,
-            'timeStr': getTimeStamp(True),
-        },
         **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': timeStr,
+        },
     }
     content = '\n\n'.join(
         [
-            'start:',
-            'The telegram bot has already set up for the webhook',
+            'route: root @ %s' % timeStr,
+            debugObj(obj, debugKeysList),
+            'Use `/start` to start telegram bot',
+        ]
+    )
+    logger.info(content)
+    return Response(content, headers={'Content-type': 'text/plain'})
+
+
+@botBlueprint.route('/stop')
+def stop():
+    """
+    Remove recent webhook from the telegram bot.
+    """
+    timeStr = getTimeStamp(True)
+    botApp.remove_webhook()
+    obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': timeStr,
+        },
+    }
+    content = '\n\n'.join(
+        [
+            'route: stop @ %s' % timeStr,
+            'The webhook has been deleted',
             debugObj(obj, debugKeysList),
         ]
     )
@@ -130,6 +148,13 @@ def start():
 
 @botBlueprint.route('/webhook', methods=['POST'])
 def webhook():
+    """
+    Process the telegram bot webhook.
+    """
+    timeStr = getTimeStamp(True)
+    logger.info('route: webhook start %s' % timeStr)
+    requestStream = request.stream.read().decode('utf-8')
+    update = telebot.types.Update.de_json(requestStream)
     #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
     #  chosen_inline_result = None
     #  deleted_business_messages = None
@@ -148,25 +173,33 @@ def webhook():
     #  removed_chat_boost = None
     #  shipping_query = None
     #  update_id = 574259009
-    requestStream = request.stream.read().decode('utf-8')
-    update = telebot.types.Update.de_json(requestStream)
     obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
         **{
             'startTimeStr': startTimeStr,
-            'timeStr': getTimeStamp(True),
-            'update': str(update),
+            'timeStr': timeStr,
+            'update': type(update),
         },
-        **appConfig,
     }
     content = '\n\n'.join(
         [
-            'webhook:',
+            'route: webhook %s info' % timeStr,
             debugObj(obj, debugKeysList),
         ]
     )
     logger.info(content)
+
     if update:
-        botApp.process_new_updates([update])
+        try:
+            botApp.process_new_updates([update])
+        except Exception as err:
+            sError = errorToString(err, show_stacktrace=False)
+            #  sTraceback = str(traceback.format_exc())
+            errStr = 'route: webhook: Error processing webhook update: ' + sError
+            logger.error(errStr)
+            return Response(errStr, headers={'Content-type': 'text/plain'})
+
     return Response('OK', headers={'Content-type': 'text/plain'})
 
 
@@ -177,4 +210,5 @@ logStart()
 # Module exports...
 __all__ = [
     'botBlueprint',
+    'botCommands', # Just to calm 'unused' warning
 ]

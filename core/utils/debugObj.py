@@ -1,8 +1,10 @@
 from core.utils.variableAndKeyString import variableAndKeyString
 
+space = ' - '
+
 
 def debugObj(obj: dict[str, str | None], keys: list[str]):
-    return '\n'.join(
+    res = '\n'.join(
         list(
             filter(
                 None,
@@ -13,3 +15,5 @@ def debugObj(obj: dict[str, str | None], keys: list[str]):
             )
         )
     )
+    res = space + res.strip().replace('\n', '\n' + space)
+    return res

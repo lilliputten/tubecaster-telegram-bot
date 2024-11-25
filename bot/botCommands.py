@@ -25,11 +25,7 @@ debugKeysList = [
     'chatId',
     'username',
     'first_name',
-    #  'changed',
     'LOCAL',
-    # ...
-    #  'WEBHOOK_HOST',
-    #  'WEBHOOK_PATH',
 ]
 
 
