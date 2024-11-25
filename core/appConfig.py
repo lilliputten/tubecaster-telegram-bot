@@ -20,6 +20,9 @@ appConfig = {
     **{'changed': changed},
 }
 
+#  YT_COOKIE = appConfig.get('YT_COOKIE')
+#  print('YT_COOKIE:', YT_COOKIE)
+
 #  debugAppConfig = json.dumps(appConfig, indent=2)
 #  print('Config: %s' % debugAppConfig)
 

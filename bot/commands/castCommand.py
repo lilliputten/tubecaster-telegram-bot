@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import traceback
-import telebot  # pytelegrambotapi
+import telebot  # pyTelegramBotAPI
 import re
 import youtube_dl
 import os
@@ -29,6 +29,9 @@ debugKeysList = [
     'chatId',
     'username',
     'LOCAL',
+    #  'YT_USERNAME',
+    #  'YT_PASSWORD',
+    'YT_COOKIE',
 ]
 
 
@@ -56,35 +59,59 @@ def loadAudioFile(url):
     Returns local temporarily saved audio file name.
     """
     try:
-        logger.info('loadAudioFile: Loading video from url: %s' % url)
-        #  url = input("please enter youtube video url:")
+        logger.info('loadAudioFile: Started downloading video from url: %s' % url)
+
+        # Extract video info
         video_info = youtube_dl.YoutubeDL().extract_info(url=url, download=False)
         if not video_info:
             raise Exception('No video info has been returned')
-        #  title = video_info['title']
-        #  fileid = getFileIdFromName(title)
+        webpageUrl = video_info['webpage_url']
+        logger.info('loadAudioFile: Got webpageUrl: %s' % webpageUrl)
+
+        # Create file url:
         fileid = getFileIdFromUrl(url)
         filename = 'temp-' + fileid + audioFileExt
-        webpageUrl = video_info['webpage_url']
         cwd = os.getcwd()
         filepath = os.path.join(cwd, filename)
-        print('filepath: %s' % filepath)
+        logger.info('loadAudioFile: Prepared filepath: %s' % filepath)
+
+        # Prepare cookies:
+        YT_COOKIE = appConfig.get('YT_COOKIE')
+        ytCookieFile = filepath + '.cookie'
+        if YT_COOKIE:
+            logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
+            logger.info('loadAudioFile: Writing to ytCookieFile: %s' % YT_COOKIE)
+            # Writing cookie data to a file...
+            with open(ytCookieFile, 'wb') as fh:
+                fh.write(YT_COOKIE.strip().encode('utf-8'))
+
+        # Prepare options:
         options = {
             # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
             'format': 'bestaudio/best',
             'keepvideo': False,
             'outtmpl': filepath,
+            'skip_download': True,  # ???
+            #  'username': appConfig.get('YT_USERNAME'),
+            #  'password': appConfig.get('YT_PASSWORD'),
+            #  'cookiefile': 'youtube_cookies.txt',  # https://www.reddit.com/r/youtubedl/comments/1e6bzu4/comment/lod50pa
         }
+        if YT_COOKIE:
+            options['cookiefile'] = ytCookieFile
+        logger.info('loadAudioFile: Using options: %s' % debugObj(options))
+
+        # Downloading...
+        logger.info('loadAudioFile: Downloading...')
         with youtube_dl.YoutubeDL(options) as ydl:
             ydl.download([webpageUrl])
+            # Done!
             logger.info('loadAudioFile: Loaded audio from url %s to file %s' % (url, filepath))
             return filepath
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errMsg = 'Error loading video: ' + errText
-        logger.error('loadAudioFile: ' + errMsg)
-        print(sTraceback)
+        errMsg = 'Video download error: ' + errText
+        logger.error('loadAudioFile: ' + errMsg + '\n\n' + sTraceback + '\n\n')
         raise Exception(errMsg)
 
 
@@ -131,7 +158,7 @@ def castCommand(message: telebot.types.Message):
     )
     replyMsg = '\n\n'.join(
         [
-            'Ok, we\'ve got your video.',
+            "Ok, we've got your video.",
             debugData,
         ]
     )
@@ -139,7 +166,7 @@ def castCommand(message: telebot.types.Message):
     #  botApp.send_message(chatId, replyMsg)
     botApp.reply_to(message, replyMsg)
     # Lets, start...
-    botApp.send_message(chatId, 'Now we\'re downloading and processing... Be patient, please.')
+    botApp.send_message(chatId, "Now we're trying to download the video and fetch the audio from it... Be patient, please.")
     try:
         # Load audio from url...
         result = loadAudioFile(url)
@@ -149,7 +176,7 @@ def castCommand(message: telebot.types.Message):
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errMsg = 'Error dosnloading audio for video: ' + errText
+        errMsg = 'Error fetching audio: ' + errText
         logger.error('castCommand: ' + errMsg)
         print(sTraceback)
         botApp.reply_to(message, errMsg)

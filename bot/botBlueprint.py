@@ -58,7 +58,7 @@ def logBotStarted():
 
 
 @botBlueprint.route('/test')
-def test():
+def testRoute():
     timeStr = getTimeStamp(True)
     obj = {
         **appConfig,
@@ -70,7 +70,7 @@ def test():
     }
     content = '\n\n'.join(
         [
-            'route: test @ %s' % timeStr,
+            'testRoute @ %s' % timeStr,
             debugObj(obj, debugKeysList),
         ]
     )
@@ -85,7 +85,7 @@ def initWebhook():
 
 
 @botBlueprint.route('/')
-def init():
+def initRoute():
     """
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
@@ -97,7 +97,7 @@ def init():
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errStr = 'route: start: Error registering web hook: ' + sError
+        errStr = 'initRoute: Error registering webhook: ' + sError
         logger.error(errStr)
         return Response(errStr, headers={'Content-type': 'text/plain'})
 
@@ -112,9 +112,8 @@ def init():
     debugData = debugObj(obj, debugKeysList)
     logContent = '\n\n'.join(
         [
-            'route: init @ %s' % timeStr,
+            'initRoute',
             debugData,
-            'Use `/start` to start telegram bot',
         ]
     )
     content = '\n\n'.join(
@@ -128,22 +127,21 @@ def init():
 
 
 @botBlueprint.route('/stop')
-def stop():
+def stopRoute():
     """
     Remove recent webhook from the telegram bot.
     """
     botApp.remove_webhook()
-    logger.info('route: stop')
+    logger.info('stopRoute')
     return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 
 
 @botBlueprint.route('/webhook', methods=['POST'])
-def webhook():
+def webhookRoute():
     """
     Process the telegram bot webhook.
     """
     timeStr = getTimeStamp(True)
-    logger.info('route: webhook start %s' % timeStr)
     requestStream = request.stream.read().decode('utf-8')
     update = telebot.types.Update.de_json(requestStream)
     #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
@@ -175,7 +173,7 @@ def webhook():
     }
     content = '\n\n'.join(
         [
-            'route: webhook %s info' % timeStr,
+            'webhookRoute',
             debugObj(obj, debugKeysList),
         ]
     )
@@ -187,7 +185,7 @@ def webhook():
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
-            errStr = 'route: webhook: Error processing webhook update: ' + sError
+            errStr = 'webhookRoute: Error processing webhook update: ' + sError
             logger.error(errStr)
             print(sTraceback)
             return Response(errStr, headers={'Content-type': 'text/plain'})

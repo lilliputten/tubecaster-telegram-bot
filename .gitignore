@@ -26,8 +26,8 @@ pip-delete-this-directory.txt
 *.stats
 
 # Environments
-Only `.env` is stored in the repository, not `.env.local` and all other `.env.*`
-.env.*
+# Only `.env` is stored in the repository, not `.env.local` and all other `.env.*`
+.env*
 .venv
 env/
 venv/
@@ -67,5 +67,7 @@ zia*
 \!ARC*
 *.session
 *crashed-session*
+
+.vercel
 
 .vercel
