@@ -42,11 +42,11 @@ LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 
-showRequestsLog = True
+showRequestsLog = False
 
 # Show specific parameters...
 showIp = False  # It's always a localhost (if working via ngrok)
-showFile = True
+showFile = False
 showTime = True
 
 # Setup format
@@ -148,7 +148,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logging.info(logStr)
             timeStr = getTimeStamp(True)
             response = 'OK ' + timeStr
-            print('Result: ' + response)
+            # print('Result: ' + response)
             self.wfile.write(response.encode('utf-8'))
         except Exception as err:
             errStr = 'Error parsing log data: ' + repr(err)

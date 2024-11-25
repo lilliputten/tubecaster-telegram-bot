@@ -16,7 +16,7 @@ WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
 
 logger = getLogger('api/index')
 
-logger.info('App starting, LOCAL=%s, WERKZEUG_RUN_MAIN=%s' % (LOCAL, WERKZEUG_RUN_MAIN))
+logger.info('App started, LOCAL=%s, WERKZEUG_RUN_MAIN=%s' % (LOCAL, WERKZEUG_RUN_MAIN))
 
 # Missing variable `handler` or `app` in file "api/index.py".
 

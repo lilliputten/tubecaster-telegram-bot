@@ -72,6 +72,7 @@ def getYtdlBaseOptions(cookieFile: str):
     options: dict[str, str | bool | int | None] = {
         # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
         'verbose': True,
+        'cachedir': tempPath,
     }
 
     # Add cookie file
@@ -84,13 +85,13 @@ def getYtdlBaseOptions(cookieFile: str):
         logger.info('loadAudioFile: Using YT_POTOKEN: %s' % (YT_POTOKEN))
         options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
 
-    # Add authentication params...
-    YT_USERNAME = appConfig.get('YT_USERNAME')
-    YT_PASSWORD = appConfig.get('YT_PASSWORD')
-    if YT_USERNAME and YT_PASSWORD:
-        logger.info('loadAudioFile: Using username (%s) and password (%s)' % (YT_USERNAME, YT_PASSWORD))
-        options['username'] = YT_USERNAME
-        options['password'] = YT_PASSWORD
+    #  # Add authentication params (NOTE: Not supported!)...
+    #  YT_USERNAME = appConfig.get('YT_USERNAME')
+    #  YT_PASSWORD = appConfig.get('YT_PASSWORD')
+    #  if YT_USERNAME and YT_PASSWORD:
+    #      logger.info('loadAudioFile: Using username (%s) and password (***)' % (YT_USERNAME))
+    #      options['username'] = YT_USERNAME
+    #      options['password'] = YT_PASSWORD
 
     return options
 
@@ -106,13 +107,13 @@ def loadAudioFile(url):
         fileid = getFileIdFromUrl(url)
         filename = fileid + audioFileExt
         destFIle = os.path.join(tempPath, filename)
-        logger.info('loadAudioFile: Prepared destFIle: %s' % destFIle)
+        logger.info('loadAudioFile: Prepared destFIle file name: %s' % destFIle)
         cookieFile = ''
 
         # Use cookies (if provided):
         YT_COOKIE = appConfig.get('YT_COOKIE')
         if YT_COOKIE:
-            logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
+            logger.info('loadAudioFile: Found YT_COOKIE: %s' % '***') # YT_COOKIE)
             cookieFile = destFIle + '.cookie'
             logger.info('loadAudioFile: Writing cookieFile: %s' % cookieFile)
             YT_COOKIE = YT_COOKIE

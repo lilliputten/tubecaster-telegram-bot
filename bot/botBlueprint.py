@@ -41,19 +41,19 @@ def logBotStarted():
     """
     Debug: Show application start info.
     """
-    timeStr = getTimeStamp(True)
-    obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **{
-            'startTimeStr': startTimeStr,
-            'timeStr': timeStr,
-        },
-    }
+    #  timeStr = getTimeStamp(True)
+    #  obj = {
+    #      **appConfig,
+    #      **dictFromModule(botConfig),
+    #      **{
+    #          'startTimeStr': startTimeStr,
+    #          'timeStr': timeStr,
+    #      },
+    #  }
     content = '\n\n'.join(
         [
-            'logBotStarted @ %s' % timeStr,
-            debugObj(obj, debugKeysList),
+            'logBotStarted: botBlueprint started',
+            #  debugObj(obj, debugKeysList),
         ]
     )
     logger.info(content)

@@ -23,9 +23,9 @@ if not TELEGRAM_TOKEN:
 
 logger = getLogger('bot/botApp')
 
-logger.info('Token: %s' % TELEGRAM_TOKEN)
-
 botApp = telebot.TeleBot(token=TELEGRAM_TOKEN, threaded=False)
+
+logger.info('botApp started with token: %s' % TELEGRAM_TOKEN)
 
 
 # Module exports...
