@@ -26,6 +26,11 @@ logger = getLogger('bot/commands/castCommand')
 
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
 
+LOCAL = appConfig.get('LOCAL')
+
+# Use local 'temp' or vercel specific '/tmp' folders for temporarily files
+tempPath = os.path.join(os.getcwd(), 'temp') if LOCAL else '/tmp'
+
 # Trace keys in logger and reponses
 debugKeysList = [
     'url',
@@ -99,9 +104,8 @@ def loadAudioFile(url):
 
         # Create file url:
         fileid = getFileIdFromUrl(url)
-        filename = 'temp-' + fileid + audioFileExt
-        cwd = os.getcwd()
-        destFIle = os.path.join(cwd, filename)
+        filename = fileid + audioFileExt
+        destFIle = os.path.join(tempPath, filename)
         logger.info('loadAudioFile: Prepared destFIle: %s' % destFIle)
         cookieFile = ''
 
@@ -111,11 +115,10 @@ def loadAudioFile(url):
             logger.info('loadAudioFile: Found YT_COOKIE: %s' % YT_COOKIE)
             cookieFile = destFIle + '.cookie'
             logger.info('loadAudioFile: Writing cookieFile: %s' % cookieFile)
-            YT_COOKIE = YT_COOKIE.strip()
-            #  YTDL.cookies = YT_COOKIE
+            YT_COOKIE = YT_COOKIE
             # Writing cookie data to a file...
             with open(cookieFile, 'w') as fh:
-                fh.write(YT_COOKIE.strip().encode('utf-8'))
+                fh.write(YT_COOKIE.strip())
 
         # Prepare options for information fetch...
         options = getYtdlBaseOptions(cookieFile)

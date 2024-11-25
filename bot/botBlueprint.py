@@ -119,7 +119,7 @@ def initRoute():
     debugData = debugObj(obj, debugKeysList)
     logContent = '\n\n'.join(
         [
-            'initRoute: %r' % result,
+            'initRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
             debugData,
         ]
     )

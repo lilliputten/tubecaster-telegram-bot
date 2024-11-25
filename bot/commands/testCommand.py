@@ -12,9 +12,7 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
-#  from . import botConfig
-
-logger = getLogger('bot/commands/test')
+logger = getLogger('bot/commands/testCommand')
 
 # Trace keys in logger and reponses
 debugKeysList = [
