@@ -114,7 +114,7 @@ def loadAudioFile(url):
         # Use cookies (if provided):
         YT_COOKIE = appConfig.get('YT_COOKIE')
         if YT_COOKIE:
-            logger.info('loadAudioFile: Found YT_COOKIE: %s' % '***') # YT_COOKIE)
+            logger.info('loadAudioFile: Found YT_COOKIE: %s' % '***')   # YT_COOKIE)
             cookieFile = destFIle + '.cookie'
             logger.info('loadAudioFile: Writing cookieFile: %s' % cookieFile)
             YT_COOKIE = YT_COOKIE

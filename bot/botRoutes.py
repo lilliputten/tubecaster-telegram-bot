@@ -21,9 +21,9 @@ from . import botConfig
 
 startTimeStr = getTimeStamp(True)
 
-logger = getLogger('bot/botBlueprint')
+logger = getLogger('bot/botRoutes')
 
-botBlueprint = Blueprint('botBlueprint', __name__)
+botRoutes = Blueprint('botRoutes', __name__)
 
 logTraceback = False
 
@@ -52,14 +52,14 @@ def logBotStarted():
     #  }
     content = '\n\n'.join(
         [
-            'logBotStarted: botBlueprint started',
+            'logBotStarted: botRoutes started',
             #  debugObj(obj, debugKeysList),
         ]
     )
     logger.info(content)
 
 
-@botBlueprint.route('/test')
+@botRoutes.route('/test')
 def testRoute():
     timeStr = getTimeStamp(True)
     obj = {
@@ -86,8 +86,40 @@ def initWebhook():
     return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
-@botBlueprint.route('/')
-def initRoute():
+@botRoutes.route('/')
+def rootRoute():
+    """
+    Root page:
+    Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
+    """
+    timeStr = getTimeStamp(True)
+    obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': timeStr,
+        },
+    }
+    debugData = debugObj(obj, debugKeysList)
+    logContent = '\n\n'.join(
+        [
+            'rootRoute: Empty test route',
+            debugData,
+        ]
+    )
+    content = '\n\n'.join(
+        [
+            'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
+            debugData,
+        ]
+    )
+    logger.info(logContent)
+    return Response(content, headers={'Content-type': 'text/plain'})
+
+
+@botRoutes.route('/')
+def startRoute():
     """
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
@@ -100,11 +132,11 @@ def initRoute():
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errMsg = 'initRoute: Error registering webhook: ' + sError
+        errMsg = 'startRoute: Error registering webhook: ' + sError
         if logTraceback:
             errMsg += sTraceback
         else:
-            logger.info('initRoute: Traceback for the following error:' + sTraceback)
+            logger.info('startRoute: Traceback for the following error:' + sTraceback)
         logger.error(errMsg)
         return Response(errMsg, headers={'Content-type': 'text/plain'})
 
@@ -119,7 +151,7 @@ def initRoute():
     debugData = debugObj(obj, debugKeysList)
     logContent = '\n\n'.join(
         [
-            'initRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
+            'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
             debugData,
         ]
     )
@@ -133,7 +165,7 @@ def initRoute():
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
-@botBlueprint.route('/stop')
+@botRoutes.route('/stop')
 def stopRoute():
     """
     Remove recent webhook from the telegram bot.
@@ -143,7 +175,7 @@ def stopRoute():
     return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 
 
-@botBlueprint.route('/webhook', methods=['POST'])
+@botRoutes.route('/webhook', methods=['POST'])
 def webhookRoute():
     """
     Process the telegram bot webhook.
@@ -211,5 +243,5 @@ registerCommands()
 
 # Module exports...
 __all__ = [
-    'botBlueprint',
+    'botRoutes',
 ]

@@ -7,7 +7,7 @@ from core.logger import getLogger
 from flaskApp.flaskApp import flaskApp
 
 #  from publicSite import publicSiteBlueprint, publicSiteDebugBlueprint
-from bot.botBlueprint import botBlueprint
+from bot.botRoutes import botRoutes
 
 from bot.botApp import botApp
 
@@ -29,7 +29,7 @@ if doInit:
     #  flaskApp.register_blueprint(publicSiteBlueprint, url_prefix='/')
     #  flaskApp.register_blueprint(publicSiteDebugBlueprint, url_prefix='/')
 
-    flaskApp.register_blueprint(botBlueprint, url_prefix='/')
+    flaskApp.register_blueprint(botRoutes, url_prefix='/')
 
 # Expose `app` variable
 app = flaskApp
