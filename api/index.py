@@ -4,7 +4,7 @@
 from core.appConfig import appConfig
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
-from core.flaskApp import flaskApp
+from flaskApp.flaskApp import flaskApp
 
 #  from publicSite import publicSiteBlueprint, publicSiteDebugBlueprint
 from bot.botBlueprint import botBlueprint

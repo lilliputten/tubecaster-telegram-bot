@@ -31,3 +31,6 @@ fi
 
 # Timezone for timestamps (GMT, Europe/Moscow, Asia/Bangkok, Asia/Tashkent, etc)
 TIMEZONE="Europe/Moscow"
+
+PROJECT_INFO_FILE="flaskApp/static/project-info.txt"
+
