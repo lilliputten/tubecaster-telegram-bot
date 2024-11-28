@@ -111,7 +111,7 @@ def rootRoute():
         )
         content = '\n\n'.join(
             [
-                'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
+                'Route processed',
                 debugData,
             ]
         )
