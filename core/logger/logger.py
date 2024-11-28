@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+import os
+
 import logging
 import logging.handlers
 
@@ -41,11 +43,12 @@ def getLogger(id: str | None = None):
     consoleHandler.formatter = defaultFormatter
     # Add local file logger
     if loggerConfig.LOCAL_LOG_FILE:
+        cwd = os.getcwd()
         localLogFileHandler = ConcurrentRotatingFileHandler(
             # @see:
             # - https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
             # - [logging - Rotating file handler gives error in python logw](https://stackoverflow.com/questions/68253737/rotating-file-handler-gives-error-in-python-log/77394567#77394567)
-            filename=loggerConfig.LOCAL_LOG_FILE,
+            filename=os.path.join(cwd, loggerConfig.LOCAL_LOG_FILE),
             mode='a',
             encoding='utf-8',
             maxBytes=100000,
