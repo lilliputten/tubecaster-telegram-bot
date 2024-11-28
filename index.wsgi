@@ -3,7 +3,7 @@
 # @module index.wsgi
 # @desc Fullspace hosting server start script
 # @since 2024.11.27, 00:00
-# @changed 2024.11.28, 01:49
+# @changed 2024.11.29, 00:34
 
 import sys  # noqa
 import os  # noqa
@@ -13,8 +13,6 @@ venv = '.venv-default'
 # Server only params (start locally with dev-mode flask command, or `pnpm run dev`)...
 venvRoot = '/var/www'
 venvActivateScript = 'bin/activate_this.py'
-venvActivateLocal = 'Scripts/activate_this.py'
-# TODO: Check if it's server or local run?
 
 # Activate venv...
 activateThis = os.path.join(venvRoot, venv, venvActivateScript)
