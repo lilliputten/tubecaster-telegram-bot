@@ -86,6 +86,28 @@ def testRoute():
 #      return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
+@botRoutes.route('/test')
+def testRoute():
+    timeStr = getTimeStamp(True)
+    obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
+        },
+    }
+    debugData = debugObj(obj, debugKeysList)
+    content = '\n\n'.join(
+        [
+            'rootRoute: Empty test route',
+            debugData,
+        ]
+    )
+    logger.info(content)
+    return Response(content, headers={'Content-type': 'text/plain'})
+
+
 @botRoutes.route('/')
 def rootRoute():
     """
@@ -111,7 +133,7 @@ def rootRoute():
         )
         content = '\n\n'.join(
             [
-                'Route processed',
+                'Test route processed',
                 debugData,
             ]
         )
