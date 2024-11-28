@@ -70,13 +70,19 @@ def testRoute():
             'startTimeStr': startTimeStr,
         },
     }
+    logContent = '\n'.join(
+        [
+            'testRoute: Test @ %s' % timeStr,
+            debugObj(obj, debugKeysList),
+        ]
+    )
     content = '\n\n'.join(
         [
             'testRoute: Test @ %s' % timeStr,
             debugObj(obj, debugKeysList),
         ]
     )
-    logger.info(content)
+    logger.info(logContent)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -103,7 +109,7 @@ def rootRoute():
             },
         }
         debugData = debugObj(obj, debugKeysList)
-        logContent = '\n\n'.join(
+        logContent = '\n'.join(
             [
                 'rootRoute: Empty test route',
                 debugData,
@@ -116,7 +122,7 @@ def rootRoute():
             ]
         )
         logger.info(logContent)
-        raise Exception('Debugging error')
+        #  raise Exception('Debugging error') # DEBUG
         return Response(content, headers={'Content-type': 'text/plain'})
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)

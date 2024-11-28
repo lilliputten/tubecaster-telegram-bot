@@ -58,6 +58,7 @@ questions.yaml
 # /log*
 *.log
 local.log.*
+*.lock
 
 # Unused & temp files
 \!UNUSED
