@@ -16,7 +16,7 @@ appConfig = {
     **dotenv_values('.env.local'),
     **dotenv_values('.env.secure'),
     # NOTE: DEBUG: Testing remote logging configurations
-    **dotenv_values('.env.logging-ngrok.SAMPLE'),
+    #  **dotenv_values('.env.logging-ngrok.SAMPLE'),
     #  **dotenv_values('.env.logging-local.SAMPLE'),
     # Override loaded values with environment variables
     **os.environ,

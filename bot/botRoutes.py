@@ -30,8 +30,8 @@ logTraceback = False
 
 # Trace keys in logger and reponses
 debugKeysList = [
-    'startTimeStr',
     'timeStr',
+    'startTimeStr',
     'LOCAL',
     'WEBHOOK_URL',
 ]
@@ -66,8 +66,8 @@ def testRoute():
         **appConfig,
         **dictFromModule(botConfig),
         **{
-            'startTimeStr': startTimeStr,
             'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
         },
     }
     content = '\n\n'.join(
@@ -80,10 +80,10 @@ def testRoute():
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
-def initWebhook():
-    botApp.remove_webhook()
-    time.sleep(1)
-    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
+#  def initWebhook():
+#      botApp.remove_webhook()
+#      time.sleep(1)
+#      return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
 @botRoutes.route('/')
@@ -97,8 +97,8 @@ def rootRoute():
         **appConfig,
         **dictFromModule(botConfig),
         **{
-            'startTimeStr': startTimeStr,
             'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
         },
     }
     debugData = debugObj(obj, debugKeysList)

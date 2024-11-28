@@ -31,6 +31,11 @@ LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 
+# Local logging
+
+LOCAL_LOG_FILE = appConfig.get('LOCAL_LOG_FILE', 'local.log')
+
+
 # Setup format
 nameWidth = 20
 nameFormat = '-' + str(nameWidth) + 's'
@@ -39,7 +44,7 @@ nameFormat = '-' + str(nameWidth) + 's'
 showLoggerTime = True
 
 # Level (TODO: Make derived from a dev or prod environment?)
-loggingLevel = logging.INFO   # DEBUG
+loggingLevel = logging.DEBUG   # .INFO   # DEBUG
 
 formatStr = ' '.join(
     list(

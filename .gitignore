@@ -57,6 +57,7 @@ questions.yaml
 /uploads
 # /log*
 *.log
+local.log.*
 
 # Unused & temp files
 \!UNUSED
@@ -68,7 +69,5 @@ zia*
 \!ARC*
 *.session
 *crashed-session*
-
-.vercel
 
 .vercel
