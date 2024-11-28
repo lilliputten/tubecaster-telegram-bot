@@ -2,16 +2,8 @@
 
 import logging
 import logging.handlers
-import json
-
-import requests
-from requests.adapters import HTTPAdapter
-
-from urllib3.util import Retry
 
 from core.appConfig import appConfig
-from core.logger.DebugLog import addDebugLog, useDebugLogs
-from core.utils.stripHtml import stripHtml
 
 
 LOCAL = appConfig.get('LOCAL')

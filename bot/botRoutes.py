@@ -93,29 +93,41 @@ def rootRoute():
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
     """
     timeStr = getTimeStamp(True)
-    obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **{
-            'timeStr': timeStr,
-            'startTimeStr': startTimeStr,
-        },
-    }
-    debugData = debugObj(obj, debugKeysList)
-    logContent = '\n\n'.join(
-        [
-            'rootRoute: Empty test route',
-            debugData,
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
-            debugData,
-        ]
-    )
-    logger.info(logContent)
-    return Response(content, headers={'Content-type': 'text/plain'})
+    try:
+        obj = {
+            **appConfig,
+            **dictFromModule(botConfig),
+            **{
+                'timeStr': timeStr,
+                'startTimeStr': startTimeStr,
+            },
+        }
+        debugData = debugObj(obj, debugKeysList)
+        logContent = '\n\n'.join(
+            [
+                'rootRoute: Empty test route',
+                debugData,
+            ]
+        )
+        content = '\n\n'.join(
+            [
+                'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
+                debugData,
+            ]
+        )
+        logger.info(logContent)
+        raise Exception('Debugging error')
+        return Response(content, headers={'Content-type': 'text/plain'})
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'rootRoute: Error processing route: ' + sError
+        if logTraceback:
+            errMsg += sTraceback
+        else:
+            logger.info('rootRoute: Traceback for the following error:' + sTraceback)
+        logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
 
 
 #  @botRoutes.route('/start')
