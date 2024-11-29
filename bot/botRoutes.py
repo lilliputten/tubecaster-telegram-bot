@@ -14,7 +14,7 @@ from core.appConfig import appConfig
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
-#  from bot.botApp import botApp
+from bot.botApp import botApp
 
 from .commands import registerCommands
 from . import botConfig
@@ -41,55 +41,66 @@ def logBotStarted():
     """
     Debug: Show application start info.
     """
-    #  timeStr = getTimeStamp(True)
-    #  obj = {
-    #      **appConfig,
-    #      **dictFromModule(botConfig),
-    #      **{
-    #          'startTimeStr': startTimeStr,
-    #          'timeStr': timeStr,
-    #      },
-    #  }
     content = '\n\n'.join(
         [
             'logBotStarted: botRoutes started',
-            #  debugObj(obj, debugKeysList),
         ]
     )
     logger.info(content)
 
 
+def getRemoteAddr():
+    # request.remote_addr
+    if 'X-Forwarded-For' in request.headers:
+        proxy_data = request.headers['X-Forwarded-For']
+        ip_list = proxy_data.split(',')
+        return ip_list[0]  # first address in list is User IP
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        return request.environ['REMOTE_ADDR']
+    else:
+        return request.environ['HTTP_X_FORWARDED_FOR']
+
+
 @botRoutes.route('/test')
 def testRoute():
     timeStr = getTimeStamp(True)
+    # TODO: Dig into the vpn configuration to get the reason of absence of the real ip (looked for those `X-Forwarded` etc)
+    #  remoteAddr = request.remote_addr # request.access_route # getAccessRoute()
+    extraParams = {
+        'timeStr': timeStr,
+        'startTimeStr': startTimeStr,
+        #  'remoteAddr': remoteAddr,
+        #  'accessRoute': list(accessRoute),
+        'headers': debugObj(dict(request.headers)),
+        'environ': debugObj(dict(request.environ)),
+        #  'requestDict': debugObj(request.__dict__),
+    }
     obj = {
         **appConfig,
         **dictFromModule(botConfig),
-        **{
-            'timeStr': timeStr,
-            'startTimeStr': startTimeStr,
-        },
+        **extraParams,
     }
+    keysList = debugKeysList + list(extraParams.keys())
     logContent = '\n'.join(
         [
             'testRoute: Test @ %s' % timeStr,
-            debugObj(obj, debugKeysList),
+            debugObj(obj, keysList),
         ]
     )
     content = '\n\n'.join(
         [
             'testRoute: Test @ %s' % timeStr,
-            debugObj(obj, debugKeysList),
+            debugObj(obj, keysList),
         ]
     )
     logger.info(logContent)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
-#  def initWebhook():
-#      botApp.remove_webhook()
-#      time.sleep(1)
-#      return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
+def initWebhook():
+    botApp.remove_webhook()
+    time.sleep(1)
+    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
 @botRoutes.route('/')
@@ -136,121 +147,121 @@ def rootRoute():
         return Response(errMsg, headers={'Content-type': 'text/plain'})
 
 
-#  @botRoutes.route('/start')
-#  def startRoute():
-#      """
-#      Root page:
-#      Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
-#      """
-#      timeStr = getTimeStamp(True)
-#
-#      result: bool
-#      try:
-#          result = initWebhook()
-#      except Exception as err:
-#          sError = errorToString(err, show_stacktrace=False)
-#          sTraceback = str(traceback.format_exc())
-#          errMsg = 'startRoute: Error registering webhook: ' + sError
-#          if logTraceback:
-#              errMsg += sTraceback
-#          else:
-#              logger.info('startRoute: Traceback for the following error:' + sTraceback)
-#          logger.error(errMsg)
-#          return Response(errMsg, headers={'Content-type': 'text/plain'})
-#
-#      obj = {
-#          **appConfig,
-#          **dictFromModule(botConfig),
-#          **{
-#              'startTimeStr': startTimeStr,
-#              'timeStr': timeStr,
-#          },
-#      }
-#      debugData = debugObj(obj, debugKeysList)
-#      logContent = '\n\n'.join(
-#          [
-#              'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
-#              debugData,
-#          ]
-#      )
-#      content = '\n\n'.join(
-#          [
-#              'The webhook has been already initialized with url "%s".' % botConfig.WEBHOOK_URL,
-#              debugData,
-#          ]
-#      )
-#      logger.info(logContent)
-#      return Response(content, headers={'Content-type': 'text/plain'})
-#
-#
-#  @botRoutes.route('/stop')
-#  def stopRoute():
-#      """
-#      Remove recent webhook from the telegram bot.
-#      """
-#      botApp.remove_webhook()
-#      logger.info('stopRoute')
-#      return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
-#
-#
-#  @botRoutes.route('/webhook', methods=['POST'])
-#  def webhookRoute():
-#      """
-#      Process the telegram bot webhook.
-#      """
-#      timeStr = getTimeStamp(True)
-#      requestStream = request.stream.read().decode('utf-8')
-#      update = telebot.types.Update.de_json(requestStream)
-#      #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
-#      #  chosen_inline_result = None
-#      #  deleted_business_messages = None
-#      #  edited_business_message = None
-#      #  edited_channel_post = None
-#      #  edited_message = None
-#      #  inline_query = None
-#      #  message = <telebot.types.Message object at 0x0000024A1904B560>
-#      #  message_reaction = None
-#      #  message_reaction_count = None
-#      #  my_chat_member = None
-#      #  poll = None
-#      #  poll_answer = None
-#      #  pre_checkout_query = None
-#      #  purchased_paid_media = None
-#      #  removed_chat_boost = None
-#      #  shipping_query = None
-#      #  update_id = 574259009
-#      obj = {
-#          **appConfig,
-#          **dictFromModule(botConfig),
-#          **{
-#              'startTimeStr': startTimeStr,
-#              'timeStr': timeStr,
-#              'update': type(update),
-#          },
-#      }
-#      content = '\n\n'.join(
-#          [
-#              'webhookRoute',
-#              debugObj(obj, debugKeysList),
-#          ]
-#      )
-#      logger.info(content)
-#
-#      if update:
-#          try:
-#              botApp.process_new_updates([update])
-#          except Exception as err:
-#              sError = errorToString(err, show_stacktrace=False)
-#              sTraceback = str(traceback.format_exc())
-#              errMsg = 'webhookRoute: Error processing webhook update: ' + sError
-#              if logTraceback:
-#                  errMsg += sTraceback
-#              else:
-#                  logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
-#              logger.error(errMsg)
-#              return Response(errMsg, headers={'Content-type': 'text/plain'})
-#
-#      return Response('OK', headers={'Content-type': 'text/plain'})
+@botRoutes.route('/start')
+def startRoute():
+    """
+    Root page:
+    Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
+    """
+    timeStr = getTimeStamp(True)
+
+    result: bool
+    try:
+        result = initWebhook()
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'startRoute: Error registering webhook: ' + sError
+        if logTraceback:
+            errMsg += sTraceback
+        else:
+            logger.info('startRoute: Traceback for the following error:' + sTraceback)
+        logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
+
+    obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': timeStr,
+        },
+    }
+    debugData = debugObj(obj, debugKeysList)
+    logContent = '\n'.join(
+        [
+            'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
+            debugData,
+        ]
+    )
+    content = '\n\n'.join(
+        [
+            'Webhook has been already initialized' if result else 'Webhook initalisation failed',
+            debugData,
+        ]
+    )
+    logger.info(logContent)
+    return Response(content, headers={'Content-type': 'text/plain'})
+
+
+@botRoutes.route('/stop')
+def stopRoute():
+    """
+    Remove recent webhook from the telegram bot.
+    """
+    botApp.remove_webhook()
+    logger.info('stopRoute')
+    return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
+
+
+@botRoutes.route('/webhook', methods=['POST'])
+def webhookRoute():
+    """
+    Process the telegram bot webhook.
+    """
+    timeStr = getTimeStamp(True)
+    requestStream = request.stream.read().decode('utf-8')
+    update = telebot.types.Update.de_json(requestStream)
+    #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
+    #  chosen_inline_result = None
+    #  deleted_business_messages = None
+    #  edited_business_message = None
+    #  edited_channel_post = None
+    #  edited_message = None
+    #  inline_query = None
+    #  message = <telebot.types.Message object at 0x0000024A1904B560>
+    #  message_reaction = None
+    #  message_reaction_count = None
+    #  my_chat_member = None
+    #  poll = None
+    #  poll_answer = None
+    #  pre_checkout_query = None
+    #  purchased_paid_media = None
+    #  removed_chat_boost = None
+    #  shipping_query = None
+    #  update_id = 574259009
+    obj = {
+        **appConfig,
+        **dictFromModule(botConfig),
+        **{
+            'startTimeStr': startTimeStr,
+            'timeStr': timeStr,
+            'update': type(update),
+        },
+    }
+    content = '\n\n'.join(
+        [
+            'webhookRoute',
+            debugObj(obj, debugKeysList),
+        ]
+    )
+    logger.info(content)
+
+    if update:
+        try:
+            botApp.process_new_updates([update])
+        except Exception as err:
+            sError = errorToString(err, show_stacktrace=False)
+            sTraceback = str(traceback.format_exc())
+            errMsg = 'webhookRoute: Error processing webhook update: ' + sError
+            if logTraceback:
+                errMsg += sTraceback
+            else:
+                logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
+            logger.error(errMsg)
+            return Response(errMsg, headers={'Content-type': 'text/plain'})
+
+    return Response('OK', headers={'Content-type': 'text/plain'})
 
 
 # DEBUG
