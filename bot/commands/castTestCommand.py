@@ -72,9 +72,11 @@ def castTestCommand(message: telebot.types.Message):
     )
     try:
         # Load audio from url...
-        result = loadAudioFile(url)
-        _logger.info('castTestCommand: Loaded: ' + result)
-        botApp.send_message(chatId, 'Your audio file is: `%s`' % result)
+        audioFile = loadAudioFile(url)
+        _logger.info('castTestCommand: Loaded: ' + audioFile)
+        #  botApp.send_message(chatId, 'Your audio file is: `%s`' % audioFile)
+        with open(audioFile, 'rb') as audio:
+            botApp.send_audio(chatId, audio=audio)
         # TODO: Send audio to the bot
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

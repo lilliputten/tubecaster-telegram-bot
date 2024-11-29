@@ -5,6 +5,7 @@ from core.appConfig import appConfig
 TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')  # Telegram token from env or vercel settings
 
 VERCEL_URL = appConfig.get('VERCEL_URL', '')  # Should be provided by vercel environment for production
+IS_VERCEL = True if VERCEL_URL else False
 
 # Should be vds remote host name an ngrok relay link (for the local mode)
 WEBHOOK_HOST = appConfig.get('WEBHOOK_HOST', '127.0.0.1')

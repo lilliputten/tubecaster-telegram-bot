@@ -14,34 +14,19 @@ from core.appConfig import appConfig
 
 from core.utils import debugObj
 
+from .. import botConfig
+
 
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
 
 _YTDL = yt_dlp
 
-_logger = getLogger('bot/commands/castCommand')
+_logger = getLogger('bot/commands/castHelpers')
 
 _LOCAL = appConfig.get('LOCAL')
 
 # Use local 'temp' or vercel specific '/tmp' folders for temporarily files
-_tempPath = os.path.join(os.getcwd(), 'temp') if _LOCAL else '/tmp'
-
-# Trace keys in logger and reponses
-debugKeysList = [
-    'url',
-    #  'args',
-    'text',
-    'timeStr',
-    'chatId',
-    'username',
-    '_LOCAL',
-    #  'YT_USERNAME',
-    #  'YT_PASSWORD',
-    #  'YT_COOKIE',
-]
-
-
-#  _isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
+_tempPath = os.path.join(os.getcwd(), 'temp') if _LOCAL or botConfig.IS_VERCEL else '/tmp'
 
 _audioFileExt = '.mp3'
 
