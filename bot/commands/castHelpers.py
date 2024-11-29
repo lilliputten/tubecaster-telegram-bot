@@ -149,7 +149,7 @@ def loadAudioFile(url):
 
         # Downloading...
         with _YTDL.YoutubeDL(options) as ydl:
-            #  ydl.download([webpageUrl])  # BUG: It fails silently here
+            ydl.download([webpageUrl])  # BUG: It fails silently here for vercel serverless funciton
             # Done!
             _logger.info('loadAudioFile: Success, the audio has loaded from url %s into file %s' % (url, destFIle))
             return destFIle
