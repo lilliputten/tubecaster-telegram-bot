@@ -11,10 +11,10 @@ from core.utils import debugObj
 
 from .commandsInfo import commandsInfo
 
-logger = getLogger('bot/commands/help')
+_logger = getLogger('bot/commands/help')
 
 # Trace keys in logger and reponses
-debugKeysList = [
+_debugKeysList = [
     'timeStr',
     'chatId',
     'username',
@@ -43,13 +43,13 @@ def help(message: telebot.types.Message):
         },
         **appConfig,
     }
-    logContent = '\n\n'.join(
+    logContent = '\n'.join(
         [
             'command: %s' % text,
-            debugObj(obj, debugKeysList),
+            debugObj(obj, _debugKeysList),
         ]
     )
-    logger.info(logContent)
+    _logger.info(logContent)
     helpText = 'The following commands are available: \n\n'
     for key in commandsInfo:
         helpText += '/' + key + ': '

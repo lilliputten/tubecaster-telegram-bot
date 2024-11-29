@@ -5,5 +5,6 @@ commandsInfo = {
 }
 
 hiddenCommands = [
+    'castTest'
     'test',
 ]

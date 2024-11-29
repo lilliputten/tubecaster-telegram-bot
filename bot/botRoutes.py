@@ -19,13 +19,13 @@ from bot.botApp import botApp
 from .commands import registerCommands
 from . import botConfig
 
-startTimeStr = getTimeStamp(True)
-
-logger = getLogger('bot/botRoutes')
-
 botRoutes = Blueprint('botRoutes', __name__)
 
-logTraceback = False
+startTimeStr = getTimeStamp(True)
+
+_logger = getLogger('bot/botRoutes')
+
+_logTraceback = False
 
 
 # Trace keys in logger and reponses
@@ -46,7 +46,7 @@ def logBotStarted():
             'logBotStarted: botRoutes started',
         ]
     )
-    logger.info(content)
+    _logger.info(content)
 
 
 def getRemoteAddr():
@@ -93,7 +93,7 @@ def testRoute():
             debugObj(obj, keysList),
         ]
     )
-    logger.info(logContent)
+    _logger.info(logContent)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -132,18 +132,18 @@ def rootRoute():
                 debugData,
             ]
         )
-        logger.info(logContent)
+        _logger.info(logContent)
         #  raise Exception('Debugging error') # DEBUG
         return Response(content, headers={'Content-type': 'text/plain'})
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'rootRoute: Error processing route: ' + sError
-        if logTraceback:
+        if _logTraceback:
             errMsg += sTraceback
         else:
-            logger.info('rootRoute: Traceback for the following error:' + sTraceback)
-        logger.error(errMsg)
+            _logger.info('rootRoute: Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
         return Response(errMsg, headers={'Content-type': 'text/plain'})
 
 
@@ -162,11 +162,11 @@ def startRoute():
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'startRoute: Error registering webhook: ' + sError
-        if logTraceback:
+        if _logTraceback:
             errMsg += sTraceback
         else:
-            logger.info('startRoute: Traceback for the following error:' + sTraceback)
-        logger.error(errMsg)
+            _logger.info('startRoute: Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
         return Response(errMsg, headers={'Content-type': 'text/plain'})
 
     obj = {
@@ -190,7 +190,7 @@ def startRoute():
             debugData,
         ]
     )
-    logger.info(logContent)
+    _logger.info(logContent)
     return Response(content, headers={'Content-type': 'text/plain'})
 
 
@@ -200,7 +200,7 @@ def stopRoute():
     Remove recent webhook from the telegram bot.
     """
     botApp.remove_webhook()
-    logger.info('stopRoute')
+    _logger.info('stopRoute')
     return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 
 
@@ -239,13 +239,13 @@ def webhookRoute():
             'update': type(update),
         },
     }
-    content = '\n\n'.join(
+    logContent = '\n'.join(
         [
             'webhookRoute',
             debugObj(obj, debugKeysList),
         ]
     )
-    logger.info(content)
+    _logger.info(logContent)
 
     if update:
         try:
@@ -254,11 +254,11 @@ def webhookRoute():
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
             errMsg = 'webhookRoute: Error processing webhook update: ' + sError
-            if logTraceback:
+            if _logTraceback:
                 errMsg += sTraceback
             else:
-                logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
-            logger.error(errMsg)
+                _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
+            _logger.error(errMsg)
             return Response(errMsg, headers={'Content-type': 'text/plain'})
 
     return Response('OK', headers={'Content-type': 'text/plain'})

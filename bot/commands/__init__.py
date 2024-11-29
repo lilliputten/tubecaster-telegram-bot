@@ -2,6 +2,7 @@ from . import testCommand
 from . import start
 from . import help
 from . import castCommand
+from . import castTestCommand
 
 
 def registerCommands():
@@ -15,4 +16,5 @@ __all__ = [
     'start',
     'help',
     'castCommand',
+    'castTestCommand',
 ]

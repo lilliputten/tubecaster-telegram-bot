@@ -9,10 +9,11 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
-logger = getLogger('bot/commands/start')
+
+_logger = getLogger('bot/commands/start')
 
 # Trace keys in logger and reponses
-debugKeysList = [
+_debugKeysList = [
     'timeStr',
     'chatId',
     'username',
@@ -42,10 +43,10 @@ def start(message: telebot.types.Message):
         },
         **appConfig,
     }
-    logContent = '\n\n'.join(
+    logContent = '\n'.join(
         [
             'command: %s' % text,
-            debugObj(obj, debugKeysList),
+            debugObj(obj, _debugKeysList),
         ]
     )
     content = '\n\n'.join(
@@ -55,5 +56,5 @@ def start(message: telebot.types.Message):
             'Type /help to find all commands.',
         ]
     )
-    logger.info(logContent)
+    _logger.info(logContent)
     botApp.send_message(chatId, content)

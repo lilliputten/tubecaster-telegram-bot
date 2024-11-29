@@ -1,13 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import traceback
 import telebot  # pyTelegramBotAPI
-import re
-import os
-
-# Youtube download libraries
-# import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
-import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
 
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
@@ -17,22 +10,12 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
-from .castHelpers import loadAudioFile
+from .castHelpers import loadAudioFile, demoVideo
 
-
-# @see https://github.com/ytdl-org/youtube-dl
-
-_logger = getLogger('bot/commands/castCommand')
-
-demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
-
-_LOCAL = appConfig.get('LOCAL')
-
-# Use local 'temp' or vercel specific '/tmp' folders for temporarily files
-tempPath = os.path.join(os.getcwd(), 'temp') if _LOCAL else '/tmp'
+_logger = getLogger('bot/commands/castTestCommand')
 
 # Trace keys in logger and reponses
-debugKeysList = [
+_debugKeysList = [
     'url',
     #  'args',
     'text',
@@ -46,14 +29,8 @@ debugKeysList = [
 ]
 
 
-_isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
-
-#  _audioFileExt = '.mp3'
-#  _logTraceback = False
-
-
-@botApp.message_handler(commands=['cast'])
-def castCommand(message: telebot.types.Message):
+@botApp.message_handler(commands=['castTest'])
+def castTestCommand(message: telebot.types.Message):
     # Get core parameters
     text = message.text
     chat = message.chat
@@ -63,18 +40,7 @@ def castCommand(message: telebot.types.Message):
     if not text:
         botApp.reply_to(message, 'Some arguments expected.')
         return
-    args = text.strip().split()
-    argsCount = len(args) - 1
-    if argsCount < 1:
-        botApp.reply_to(message, 'Too few arguments.')
-        return
-    elif argsCount > 1:
-        botApp.reply_to(message, 'Too many arguments.')
-        return
-    url = args[1]
-    if not _isYoutubeLink.match(url):
-        botApp.reply_to(message, 'The url should be a valid youtube link (like `https://youtube.com/...`).')
-        return
+    url = demoVideo   # args[1]
     # Ok, show info...
     obj = {
         **{
@@ -85,10 +51,10 @@ def castCommand(message: telebot.types.Message):
         },
         **appConfig,
     }
-    debugData = debugObj(obj, debugKeysList)
-    logContent = '\n\n'.join(
+    debugData = debugObj(obj, _debugKeysList)
+    logContent = '\n'.join(
         [
-            'castCommand',
+            'castTestCommand',
             debugData,
         ]
     )
@@ -107,12 +73,17 @@ def castCommand(message: telebot.types.Message):
     try:
         # Load audio from url...
         result = loadAudioFile(url)
-        _logger.info('castCommand: Loaded: ' + result)
+        _logger.info('castTestCommand: Loaded: ' + result)
         botApp.send_message(chatId, 'Your audio file is: `%s`' % result)
         # TODO: Send audio to the bot
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         #  sTraceback = str(traceback.format_exc())
         errMsg = 'Error fetching audio: ' + errText
-        _logger.error('castCommand: ' + errMsg)
+        _logger.error('castTestCommand: ' + errMsg)
         botApp.reply_to(message, errMsg)
+
+
+__all__ = [
+    'castTestCommand',
+]
