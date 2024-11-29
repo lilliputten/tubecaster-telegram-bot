@@ -4,6 +4,7 @@ import os
 
 import logging
 import logging.handlers
+import posixpath
 
 from core.logger import loggerConfig
 from core.logger.CustomHttpHandler import CustomHttpHandler, customHttpHandlerFormatter
@@ -48,7 +49,7 @@ def getLogger(id: str | None = None):
             # @see:
             # - https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
             # - [logging - Rotating file handler gives error in python logw](https://stackoverflow.com/questions/68253737/rotating-file-handler-gives-error-in-python-log/77394567#77394567)
-            filename=os.path.join(cwd, loggerConfig.LOCAL_LOG_FILE),
+            filename=posixpath.join(cwd, loggerConfig.LOCAL_LOG_FILE),
             mode='a',
             encoding='utf-8',
             maxBytes=100000,

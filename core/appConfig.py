@@ -12,7 +12,7 @@ changed = """
 
 
 appConfig = {
-    **dotenv_values('.env'),
+    **dotenv_values('.env.server'),
     **dotenv_values('.env.local'),
     **dotenv_values('.env.secure'),
     # NOTE: DEBUG: Testing remote logging configurations

@@ -12,7 +12,7 @@ Simple video to audio caster telegram bot
 
 ## Build info (auto-generated)
 
-- Project info: v.0.0.6 / 2024.11.29 01:44:17 +0300
+- Project info: v.0.0.7 / 2024.11.29 11:46:38 +0300
 
 
 ## Resources

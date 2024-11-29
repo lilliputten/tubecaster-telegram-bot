@@ -98,6 +98,7 @@ def testRoute():
 
 
 def initWebhook():
+    _logger.info('startRoute: Starting to register webhook:' + botConfig.WEBHOOK_URL)
     botApp.remove_webhook()
     time.sleep(1)
     return botApp.set_webhook(url=botConfig.WEBHOOK_URL)

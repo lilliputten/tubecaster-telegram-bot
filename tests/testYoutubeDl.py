@@ -1,3 +1,4 @@
+import posixpath
 import re
 import os
 
@@ -27,7 +28,7 @@ def run():
     fileid = getFileIdFromName(title)
     filename = 'temp-' + fileid + '.mp3'
     cwd = os.getcwd()
-    filepath = os.path.join(cwd, filename)
+    filepath = posixpath.join(cwd, filename)
     print('filepath: %s' % filepath)
     options = {
         'format': 'bestaudio/best',
