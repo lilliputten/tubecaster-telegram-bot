@@ -13,7 +13,7 @@ appConfig = {
     **os.environ,  # override loaded values with environment variables
 }
 
-LOGS_FILE = appConfig.get('LOGS_FILE', 'logging-server.log')
+LOGGING_SERRVER_LOG_FILE = appConfig.get('LOGGING_SERRVER_LOG_FILE', 'logging-server.log')
 
 SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '0.0.0.0')
 SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
@@ -25,7 +25,7 @@ logging.basicConfig(
     level=loggingLevel,
     format='%(message)s',
     #  datefmt="",
-    filename=LOGS_FILE,
+    filename=LOGGING_SERRVER_LOG_FILE,
     filemode='a',
 )
 
@@ -43,7 +43,7 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
 if __name__ == '__main__':
     try:
-        print('Server starting on %s:%s (with file: %s)...' % (SYSLOG_HOST, SYSLOG_PORT, LOGS_FILE))
+        print('Server starting on %s:%s (with file: %s)...' % (SYSLOG_HOST, SYSLOG_PORT, LOGGING_SERRVER_LOG_FILE))
         server = socketserver.UDPServer((SYSLOG_HOST, SYSLOG_PORT), SyslogUDPHandler)
         server.serve_forever(poll_interval=0.5)
         print('Server started')

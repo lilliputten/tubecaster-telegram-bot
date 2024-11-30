@@ -81,15 +81,16 @@ def testRoute():
         **extraParams,
     }
     keysList = debugKeysList + list(extraParams.keys())
+    titleStr = 'testRoute: Test @ %s' % timeStr
     logContent = '\n'.join(
         [
-            'testRoute: Test @ %s' % timeStr,
+            titleStr,
             debugObj(obj, keysList),
         ]
     )
     content = '\n\n'.join(
         [
-            'testRoute: Test @ %s' % timeStr,
+            titleStr,
             debugObj(obj, keysList),
         ]
     )
@@ -120,17 +121,17 @@ def rootRoute():
                 'startTimeStr': startTimeStr,
             },
         }
-        debugData = debugObj(obj, debugKeysList)
+        debugStr = debugObj(obj, debugKeysList)
         logContent = '\n'.join(
             [
                 'rootRoute: Empty test route',
-                debugData,
+                debugStr,
             ]
         )
         content = '\n\n'.join(
             [
                 'Test route processed',
-                debugData,
+                debugStr,
             ]
         )
         _logger.info(logContent)
@@ -178,17 +179,17 @@ def startRoute():
             'timeStr': timeStr,
         },
     }
-    debugData = debugObj(obj, debugKeysList)
+    debugStr = debugObj(obj, debugKeysList)
     logContent = '\n'.join(
         [
             'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
-            debugData,
+            debugStr,
         ]
     )
     content = '\n\n'.join(
         [
             'Webhook has been already initialized' if result else 'Webhook initalisation failed',
-            debugData,
+            debugStr,
         ]
     )
     _logger.info(logContent)

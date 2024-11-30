@@ -1,3 +1,4 @@
+import pathlib
 import posixpath
 import re
 import os
@@ -27,7 +28,7 @@ def run():
     webpage_url = video_info['webpage_url']
     fileid = getFileIdFromName(title)
     filename = 'temp-' + fileid + '.mp3'
-    cwd = os.getcwd()
+    cwd = pathlib.Path(os.getcwd()).as_posix()
     filepath = posixpath.join(cwd, filename)
     print('filepath: %s' % filepath)
     options = {

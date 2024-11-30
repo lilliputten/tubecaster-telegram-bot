@@ -23,6 +23,8 @@ from core.utils import debugObj
 from .. import botConfig
 
 
+# Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
+
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'   # Short vide, 00:05
 #  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU'   # Video with a russian title, 02:47
 #  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg'   # Video with a russian title, 00:18
@@ -36,11 +38,15 @@ _logger = getLogger('bot/commands/castHelpers')
 _LOCAL = appConfig.get('LOCAL')
 
 # Use local 'temp' or vercel specific '/tmp' folders for temporarily files
-_tempPath = posixpath.join(os.getcwd(), 'temp') if _LOCAL or not botConfig.IS_VERCEL else '/tmp'
+_tempPath = (
+    posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if _LOCAL or not botConfig.IS_VERCEL else '/tmp'
+)
 
 _audioFileExt = ''   # '.mp3'
 
 _logTraceback = False
+
+_isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
 
 
 def getIdFromName(name: str):
@@ -231,6 +237,10 @@ def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
     chat = message.chat
     chatId = chat.id
     username = str(chat.username)
+
+    if not _isYoutubeLink.match(url):
+        botApp.reply_to(message, 'The url should be a valid youtube link.')
+        return
 
     # Start...
     obj = {

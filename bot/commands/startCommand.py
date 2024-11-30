@@ -10,22 +10,11 @@ from bot.botApp import botApp
 from core.utils import debugObj
 
 
-_logger = getLogger('bot/commands/start')
-
-# Trace keys in logger and reponses
-_debugKeysList = [
-    'timeStr',
-    'chatId',
-    'username',
-    'first_name',
-    'last_name',
-    'language_code',
-    'LOCAL',
-]
+_logger = getLogger('bot/commands/startCommand')
 
 
 @botApp.message_handler(commands=['start'])
-def start(message: telebot.types.Message):
+def startCommand(message: telebot.types.Message):
     text = message.text
     chat = message.chat
     chatId = chat.id
@@ -34,19 +23,17 @@ def start(message: telebot.types.Message):
     last_name = chat.last_name
     name = first_name if first_name else username
     obj = {
-        **{
-            'timeStr': getTimeStamp(True),
-            'chatId': chatId,
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
-        },
-        **appConfig,
+        'timeStr': getTimeStamp(True),
+        'chatId': chatId,
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
+        'LOCAL': appConfig.get('LOCAL'),
     }
     logContent = '\n'.join(
         [
-            'command: %s' % text,
-            debugObj(obj, _debugKeysList),
+            'startCommand: %s' % text,
+            debugObj(obj),
         ]
     )
     content = '\n\n'.join(

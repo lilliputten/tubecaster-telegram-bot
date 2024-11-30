@@ -4,6 +4,7 @@ import os
 
 import logging
 import logging.handlers
+import pathlib
 import posixpath
 
 from core.logger import loggerConfig
@@ -33,7 +34,7 @@ logging.basicConfig(
     format=loggerConfig.formatStr,
 )
 
-defaultFormatter = logging.Formatter(loggerConfig.formatStr)
+_defaultFormatter = logging.Formatter(loggerConfig.formatStr)
 
 
 def getLogger(id: str | None = None):
@@ -41,10 +42,10 @@ def getLogger(id: str | None = None):
     # Default handler (console)...
     consoleHandler = logging.StreamHandler()
     consoleHandler.setLevel(loggerConfig.loggingLevel)
-    consoleHandler.formatter = defaultFormatter
+    consoleHandler.formatter = _defaultFormatter
     # Add local file logger
     if loggerConfig.LOCAL_LOG_FILE:
-        cwd = os.getcwd()
+        cwd = pathlib.Path(os.getcwd()).as_posix()
         localLogFileHandler = ConcurrentRotatingFileHandler(
             # @see:
             # - https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
@@ -57,9 +58,9 @@ def getLogger(id: str | None = None):
             #  delay=True,
             #  errors=True,
         )  # max log file size 100 MB
-        localLogFileHandler.setFormatter(defaultFormatter)
+        localLogFileHandler.setFormatter(_defaultFormatter)
         localLogFileHandler.setLevel(loggerConfig.loggingLevel)
-        localLogFileHandler.formatter = defaultFormatter
+        localLogFileHandler.formatter = _defaultFormatter
         localLogFileHandler.level = loggerConfig.loggingLevel
         logger.addHandler(localLogFileHandler)
     # Syslog, @see https://docs.python.org/3/library/logging.handlers.html#sysloghandler
@@ -68,7 +69,7 @@ def getLogger(id: str | None = None):
             address=(loggerConfig.SYSLOG_HOST, loggerConfig.SYSLOG_PORT),
         )
         syslogHandler.setLevel(loggerConfig.loggingLevel)
-        syslogHandler.formatter = defaultFormatter
+        syslogHandler.formatter = _defaultFormatter
         logger.addHandler(syslogHandler)
     # if useDebugLogs:
     #     addDebugLog('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))

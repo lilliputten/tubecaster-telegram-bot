@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pytelegrambotapi
+import telebot  # pyTelegramBotAPI
 import traceback
 
 #  from core.helpers.errors import errorToString
@@ -12,19 +12,9 @@ from core.appConfig import appConfig
 from bot.botApp import botApp
 from core.utils import debugObj
 
-logger = getLogger('bot/commands/testCommand')
+from .. import botConfig
 
-# Trace keys in logger and reponses
-debugKeysList = [
-    'text',
-    'timeStr',
-    'chatId',
-    'username',
-    'first_name',
-    'last_name',
-    'language_code',
-    'LOCAL',
-]
+_logger = getLogger('bot/commands/testCommand')
 
 
 @botApp.message_handler(commands=['test'])
@@ -38,37 +28,42 @@ def testCommand(message: telebot.types.Message):
         last_name = chat.last_name
         name = first_name if first_name else username
         json = message.json
-        language_code = json.get('from', {}).get('language_code')
+        fromData: dict = json.get('from', {})
+        languageCode = fromData.get('language_code')
+        userId = fromData.get('id')
+        if not botConfig.TELEGRAM_OWNER_ID or botConfig.TELEGRAM_OWNER_ID != chatId:
+            botApp.reply_to(message, 'Sorry you are not allowed to use this command.')
+            return
         obj = {
-            **{
-                'text': text,
-                'timeStr': getTimeStamp(True),
-                'chatId': chatId,
-                'username': username,
-                'first_name': first_name,
-                'last_name': last_name,
-                'language_code': language_code,
-            },
-            **appConfig,
+            'text': text,
+            'timeStr': getTimeStamp(True),
+            'chatId': chatId,
+            'userId': userId,
+            'username': username,
+            'first_name': first_name,
+            'last_name': last_name,
+            'languageCode': languageCode,
+            'LOCAL': appConfig.get('LOCAL'),
         }
-        logContent = '\n\n'.join(
+        debugStr = debugObj(obj)   # , _debugKeysList)
+        logContent = '\n'.join(
             [
-                'testCommand',
-                debugObj(obj, debugKeysList),
+                'testCommand: %s' % text,
+                debugStr,
             ]
         )
         content = '\n\n'.join(
             [
                 'Hi, %s! Here is your test results:' % name,
-                debugObj(obj, debugKeysList),
+                debugStr,
             ]
         )
-        logger.info(logContent)
+        _logger.info(logContent)
         botApp.send_message(chatId, content)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'Error: ' + errText
-        logger.error('testCommand: ' + errMsg)
+        _logger.error('testCommand: ' + errMsg)
         print(sTraceback)
         botApp.reply_to(message, errMsg)

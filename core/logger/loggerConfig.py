@@ -11,21 +11,22 @@ LOCAL = appConfig.get('LOCAL')
 USE_LOGS_SERVER = bool(appConfig.get('USE_LOGS_SERVER', False))
 USE_SYSLOG_SERVER = bool(appConfig.get('USE_SYSLOG_SERVER', False))
 
-LOGS_FILE = appConfig.get('LOGS_FILE', 'pysyslog.log')
-SYSLOG_HOST = appConfig.get('SYSLOG_HOST', '127.0.0.1')
+LOGGING_SERRVER_LOG_FILE = str(appConfig.get('LOGGING_SERRVER_LOG_FILE', 'logging-server.log'))
+
+SYSLOG_HOST = str(appConfig.get('SYSLOG_HOST', '127.0.0.1'))
 SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
 
-LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
-LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '127.0.0.1')
-LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '8514'))
+LOGS_SERVER_PREFIX = str(appConfig.get('LOGS_SERVER_PREFIX', 'http://'))
+LOGS_SERVER_HOST = str(appConfig.get('LOGS_SERVER_HOST', '127.0.0.1'))
+LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '5000'))
 LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
-#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '') # Could be used to provide basic authentification
+#  LOGS_SERVER_TOKEN = str(appConfig.get('LOGS_SERVER_TOKEN', '') # Could be used to provide basic authentification)
 
 LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
 
 # Local logging
 
-LOCAL_LOG_FILE = appConfig.get('LOCAL_LOG_FILE', 'local.log')
+LOCAL_LOG_FILE = str(appConfig.get('LOCAL_LOG_FILE', 'local.log'))
 
 
 # Setup format
@@ -57,7 +58,7 @@ __all__ = [
     'LOCAL',
     'USE_LOGS_SERVER',
     'USE_SYSLOG_SERVER',
-    'LOGS_FILE',
+    'LOGGING_SERRVER_LOG_FILE',
     'SYSLOG_HOST',
     'SYSLOG_PORT',
     'LOGS_SERVER_PREFIX',

@@ -13,19 +13,9 @@ from .commandsInfo import commandsInfo
 
 _logger = getLogger('bot/commands/help')
 
-# Trace keys in logger and reponses
-_debugKeysList = [
-    'timeStr',
-    'chatId',
-    'username',
-    'first_name',
-    'language_code',
-    'LOCAL',
-]
-
 
 @botApp.message_handler(commands=['help'])
-def help(message: telebot.types.Message):
+def helpCommand(message: telebot.types.Message):
     text = message.text
     chat = message.chat
     chatId = chat.id
@@ -34,19 +24,17 @@ def help(message: telebot.types.Message):
     last_name = chat.last_name
     #  name = first_name if first_name else username
     obj = {
-        **{
-            'timeStr': getTimeStamp(True),
-            'chatId': chatId,
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
-        },
-        **appConfig,
+        'timeStr': getTimeStamp(True),
+        'chatId': chatId,
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
+        'LOCAL': appConfig.get('LOCAL'),
     }
     logContent = '\n'.join(
         [
-            'command: %s' % text,
-            debugObj(obj, _debugKeysList),
+            'helpCommand: %s' % text,
+            debugObj(obj),
         ]
     )
     _logger.info(logContent)
