@@ -29,7 +29,7 @@ _logTraceback = False
 
 
 # Trace keys in logger and reponses
-debugKeysList = [
+_debugKeysList = [
     'timeStr',
     'startTimeStr',
     'LOCAL',
@@ -80,7 +80,7 @@ def testRoute():
         **dictFromModule(botConfig),
         **extraParams,
     }
-    keysList = debugKeysList + list(extraParams.keys())
+    keysList = _debugKeysList + list(extraParams.keys())
     titleStr = 'testRoute: Test @ %s' % timeStr
     logContent = '\n'.join(
         [
@@ -121,7 +121,7 @@ def rootRoute():
                 'startTimeStr': startTimeStr,
             },
         }
-        debugStr = debugObj(obj, debugKeysList)
+        debugStr = debugObj(obj, _debugKeysList)
         logContent = '\n'.join(
             [
                 'rootRoute: Empty test route',
@@ -130,8 +130,8 @@ def rootRoute():
         )
         content = '\n\n'.join(
             [
-                'Test route processed',
-                debugStr,
+                'Root route',
+                #  debugStr,
             ]
         )
         _logger.info(logContent)
@@ -179,7 +179,7 @@ def startRoute():
             'timeStr': timeStr,
         },
     }
-    debugStr = debugObj(obj, debugKeysList)
+    debugStr = debugObj(obj, _debugKeysList)
     logContent = '\n'.join(
         [
             'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
@@ -244,7 +244,7 @@ def webhookRoute():
     logContent = '\n'.join(
         [
             'webhookRoute',
-            debugObj(obj, debugKeysList),
+            debugObj(obj, _debugKeysList),
         ]
     )
     _logger.info(logContent)
