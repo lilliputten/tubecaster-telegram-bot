@@ -349,13 +349,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
                 )
             )
         )
-        logContent = '\n'.join(
-            [
-                'sendInfoToChat',
-                debugStr,
-                infoStr
-            ]
-        )
+        logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
         _logger.info(logContent)
         replyOrSend(replyMsg, chat, message)
         cleanFiles(options)
@@ -450,7 +444,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                 audio=audio,
                 caption=videoInfo['title'],
                 duration=videoInfo['duration'],
-                #  thumb=videoInfo['thumbnail'],
+                thumb=videoInfo['thumbnail'],
             )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

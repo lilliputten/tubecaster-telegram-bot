@@ -1,6 +1,6 @@
 <!--
  @since 2024.11.20, 02:55
- @changed 2024.11.27, 15:01
+ @changed 2024.12.01, 02:26
 -->
 
 
@@ -12,7 +12,7 @@ Simple video to audio caster telegram bot
 
 ## Build info (auto-generated)
 
-- Project info: v.0.0.7 / 2024.11.29 11:46:38 +0300
+- Project info: v.0.0.8 / 2024.12.01 02:21:05 +0300
 
 
 ## Resources
@@ -22,6 +22,13 @@ Repository: https://github.com/lilliputten/tubecaster-telegram-bot
 Vercel panel: https://vercel.com/lilliputtens-projects/tubecaster-telegram-bot
 
 Vercel hosted application: https://tubecaster-telegram-bot.vercel.app/
+
+
+## Updating and deploying
+
+Don't forget to invoke `/start` route from the deployed appliaction to point the telegram webhook api to the actual address (see also `WEBHOOK_HOST` environment parameters).
+
+Keep in mind that deploy on the dedicated VDS server is actually proceeded only for the `main` branch (or other specific if they included into the automatic-webhook-deploy configuration).
 
 
 ## See also

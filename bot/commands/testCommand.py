@@ -20,7 +20,7 @@ _logger = getLogger('bot/commands/testCommand')
 
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     try:
-        chatId = chat.id
+        chatId = chat.id  # Is userId
         text = message.text
         username = chat.username
         first_name = chat.first_name
@@ -29,7 +29,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         json = message.json
         fromData: dict = json.get('from', {})
         languageCode = fromData.get('language_code')
-        userId = fromData.get('id')
+        #  userId = fromData.get('id')
         if not botConfig.TELEGRAM_OWNER_ID or botConfig.TELEGRAM_OWNER_ID != chatId:
             botApp.reply_to(message, 'Sorry you are not allowed to use this command.')
             return
@@ -37,12 +37,14 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'text': text,
             'timeStr': getTimeStamp(True),
             'chatId': chatId,
-            'userId': userId,
+            #  'userId': userId,
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
             'languageCode': languageCode,
             'LOCAL': appConfig.get('LOCAL'),
+            'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
+            'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
         }
         debugStr = debugObj(obj)   # , _debugKeysList)
         logContent = '\n'.join(
