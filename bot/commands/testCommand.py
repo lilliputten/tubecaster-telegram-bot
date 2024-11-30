@@ -14,15 +14,14 @@ from core.utils import debugObj
 
 from .. import botConfig
 
+
 _logger = getLogger('bot/commands/testCommand')
 
 
-@botApp.message_handler(commands=['test'])
-def testCommand(message: telebot.types.Message):
+def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     try:
-        text = message.text
-        chat = message.chat
         chatId = chat.id
+        text = message.text
         username = chat.username
         first_name = chat.first_name
         last_name = chat.last_name

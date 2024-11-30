@@ -189,7 +189,7 @@ def startRoute():
     content = '\n\n'.join(
         [
             'Webhook has been already initialized' if result else 'Webhook initalisation failed',
-            debugStr,
+            #  debugStr,
         ]
     )
     _logger.info(logContent)
@@ -269,8 +269,10 @@ def webhookRoute():
 # DEBUG
 logBotStarted()
 
+
 # Start commands
 registerCommands()
+
 
 # Module exports...
 __all__ = [

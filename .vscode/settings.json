@@ -9,6 +9,7 @@
     "compiled-assets": true,
     "static": true,
     "build": true,
+    ".venv": true,
     ".utils": true,
     "node_modules": true,
     "patches": true,

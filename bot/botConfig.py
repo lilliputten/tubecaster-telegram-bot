@@ -1,5 +1,9 @@
 # -*- coding:utf-8 -*-
 
+import os
+import posixpath
+import pathlib
+
 from core.appConfig import appConfig
 
 # Telegram token from env or vercel settings
@@ -25,3 +29,9 @@ WEBHOOK_RESOLVED_HOST = VERCEL_URL if VERCEL_URL else WEBHOOK_HOST
 WEBHOOK_URL = WEBHOOK_RESOLVED_HOST + WEBHOOK_PATH
 if not WEBHOOK_URL.startswith('http'):
     WEBHOOK_URL = WEBHOOK_PREFIX + WEBHOOK_URL
+
+# Image for show as a help and start banner
+visualImageFile = 'static/img/bot-visual-640x360.jpg'
+
+cwdPath = pathlib.Path(os.getcwd()).as_posix()
+visualImagePath = posixpath.join(cwdPath, visualImageFile)

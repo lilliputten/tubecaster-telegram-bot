@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pytelegrambotapi
+from functools import partial
 
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
@@ -10,36 +11,47 @@ from bot.botApp import botApp
 from core.utils import debugObj
 
 
+from .castHelpers import sendInfoToChat, replyOrSend
+
+
 _logger = getLogger('bot/commands/infoCommand')
 
 
-@botApp.message_handler(commands=['info'])
-def infoCommand(message: telebot.types.Message):
+def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
     text = message.text
-    chat = message.chat
     chatId = chat.id
-    username = chat.username
-    first_name = chat.first_name
-    last_name = chat.last_name
-    #  name = first_name if first_name else username
+    username = str(chat.username)
+    if not text:
+        botApp.reply_to(message, 'Video url is expected.')
+        return
+    url = text
     obj = {
-        'timeStr': getTimeStamp(True),
+        'url': url,
         'chatId': chatId,
         'username': username,
-        'first_name': first_name,
-        'last_name': last_name,
-        'LOCAL': appConfig.get('LOCAL'),
     }
+    debugStr = debugObj(obj)
     logContent = '\n'.join(
         [
-            'infoCommand: %s' % text,
-            debugObj(obj),
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            'infoCommand: %s' % text,
+            'infoForUrlStep: Start',
+            debugStr,
         ]
     )
     _logger.info(logContent)
-    botApp.send_message(chatId, content)
+    sendInfoToChat(url, chat, message)
+
+
+def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+    text = message.text if message and message.text else ''
+    args = text.strip().split()
+    argsCount = len(args) - 1
+    if argsCount < 1:
+        replyMsg = 'Ok, now send the video address:'
+        replyOrSend(replyMsg, chat, message)
+        botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
+        return
+    elif argsCount > 1:
+        botApp.reply_to(message, 'Too many arguments (expected only video address).')
+        return
+    url = args[1]
+    sendInfoToChat(url, chat, message)

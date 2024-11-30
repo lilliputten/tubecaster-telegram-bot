@@ -24,6 +24,14 @@ def getTimeFormat(precise: bool | str | None = None):
     return defaultTimeFormat
 
 
+def formatTime(precise: bool | str | None = None):
+    format = getTimeFormat(precise)
+    stamp = datetime.today().strftime(format)
+    if precise == True or precise == 'precise':
+        stamp = stamp[:-3]
+    return stamp
+
+
 def getTimeStamp(precise: bool | str | None = None):
     format = getTimeFormat(precise)
     stamp = datetime.today().strftime(format)

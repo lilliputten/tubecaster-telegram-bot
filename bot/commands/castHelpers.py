@@ -2,6 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 from typing import TypedDict, Optional
+from datetime import timedelta
 import traceback
 import re
 import os
@@ -24,6 +25,7 @@ from .. import botConfig
 
 
 # Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
+# Eg: /info https://www.youtube.com/watch?v=EngW7tLk6R8
 
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'   # Short vide, 00:05
 #  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU'   # Video with a russian title, 02:47
@@ -37,7 +39,7 @@ _logger = getLogger('bot/commands/castHelpers')
 
 _LOCAL = appConfig.get('LOCAL')
 
-# Use local 'temp' or vercel specific '/tmp' folders for temporarily files
+# Use local 'temp' or vercel specific '/tmp' folders for temporary files
 _tempPath = (
     posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if _LOCAL or not botConfig.IS_VERCEL else '/tmp'
 )
@@ -118,7 +120,7 @@ def getYtdlBaseOptions():
 
 def prepareLinkInfo(url: str, username: str):
     """
-    Returns local temporarily saved audio file name.
+    Returns local temporary saved audio file name.
     """
     try:
         _logger.info('prepareAudioFile: Trying to get an info for the video url: %s' % url)
@@ -177,7 +179,7 @@ def prepareLinkInfo(url: str, username: str):
 
 def downloadAudioFile(options: OptionsType, videoInfo):
     """
-    Returns local temporarily saved audio file name.
+    Returns local temporary saved audio file name.
     """
     try:
         webpageUrl = videoInfo['webpage_url']
@@ -189,7 +191,8 @@ def downloadAudioFile(options: OptionsType, videoInfo):
         options = {
             **options,
             # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
-            'format': 'bestaudio/best',
+            'format': 'worstaudio/worst',
+            #  'format': 'bestaudio/best',
             'keepvideo': False,
             'verbose': True,
             #  'outtmpl': destFIle,
@@ -233,14 +236,20 @@ def sizeofFmt(num, suffix='B'):
     return f'{num:.1f}Yi{suffix}'
 
 
-def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
-    chat = message.chat
+def replyOrSend(text: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
+    if message:
+        botApp.reply_to(message, text)
+    else:
+        chatId = chat.id
+        botApp.send_message(chatId, text)
+
+
+def downloadInfo(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
     chatId = chat.id
     username = str(chat.username)
 
     if not _isYoutubeLink.match(url):
-        botApp.reply_to(message, 'The url should be a valid youtube link.')
-        return
+        raise Exception('The url should be a valid youtube link. But we got: %s' % url)
 
     # Start...
     obj = {
@@ -252,7 +261,7 @@ def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
     debugData = debugObj(obj)
     logContent = '\n'.join(
         [
-            'downloadAndSendAudioToChat',
+            'downloadInfo',
             debugData,
         ]
     )
@@ -263,32 +272,136 @@ def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
         ]
     )
     _logger.info(logContent)
-    botApp.reply_to(message, replyMsg)
+    replyOrSend(replyMsg, chat, message)
 
-    # Prepare...
-    options, videoInfo = prepareLinkInfo(url, username)
+    return prepareLinkInfo(url, username)
 
-    #  title = videoInfo['title']
-    filesize = videoInfo['filesize']
-    filesizeApprox = videoInfo['filesize_approx']
-    sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
 
-    #  infoMsg = f'Going to start downloading the video "{title}" of size ({sizeFmt})...'
-    infoMsg = ''.join(
-        list(
-            filter(
-                None,
-                [
-                    'Ok, downloading the video',
-                    f' ({sizeFmt})' if sizeFmt else '',
-                    '...',
-                ],
-            )
-        )
-    )
-    botApp.reply_to(message, infoMsg)
+def prepareYoutubeDate(date: str | None):
+    if not date:
+        return ''
+    ymd = re.compile(r'^(\d\d\d\d)(\d\d)(\d\d)')
+    if ymd.match(date):
+        return re.sub(ymd, r'\1.\2.\3', date)
+    return date
+
+
+def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
+    options: OptionsType | None = None
 
     try:
+        # Use for test: /info https://www.youtube.com/watch?v=EngW7tLk6R8
+        options, videoInfo = downloadInfo(url, chat, message)
+        filesize = videoInfo['filesize']
+        filesizeApprox = videoInfo['filesize_approx']
+        sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
+        debugData = {
+            'Link': videoInfo['webpage_url'],
+            'Title': videoInfo['title'],
+            #  'Description': videoInfo['description'],
+            'Channel': videoInfo['channel'],  # '进出口服务（AHUANG）'
+            'Channel link': videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+        }
+        infoData = {
+            #  'Link': videoInfo['webpage_url'],
+            #  'Title': videoInfo['title'],
+            #  'Description': videoInfo['description'],
+            'Duration': timedelta(seconds=int(videoInfo['duration'])) if videoInfo['duration'] else None,
+            'Upload date': prepareYoutubeDate(videoInfo['upload_date']),  # '20160511'
+            'Release year': videoInfo['release_year'],  # None
+            'Tags': ', '.join(videoInfo['tags']) if videoInfo['tags'] else None,  # [...]
+            'Categories': ', '.join(videoInfo['categories']) if videoInfo['categories'] else None,  # [...]
+            'Comments count': videoInfo['comment_count'],
+            'Views count': videoInfo['view_count'],
+            'File size': sizeFmt,
+            'Audio channels': videoInfo['audio_channels'],  # 2
+            #  'Channel': videoInfo['channel'],  # '进出口服务（AHUANG）'
+            #  'Channel link': videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+            'Format note': videoInfo['format_note'],  # '360p'
+            'Format': videoInfo['format'],  # '18 - 640x360 (360p)'
+            'Width': videoInfo['width'],  # 640
+            'Height': videoInfo['height'],  # 360
+            'Aspect ratio': videoInfo['aspect_ratio'],  # 1.78
+            'FPS': videoInfo['fps'],  # 25
+            'Resolution': videoInfo['resolution'],  # '640x360'
+            'Language': videoInfo['language'],  # 'ru' ???
+            'Vcodec': videoInfo['vcodec'],  # 'avc1.42001E'
+            'Acodec': videoInfo['acodec'],  # 'mp4a.40.2'
+        }
+        debugStr = debugObj(debugData)
+        infoStr = debugObj(infoData)
+        replyMsg = '\n\n'.join(
+            list(
+                filter(
+                    None,
+                    [
+                        'Ok, your video details is:',
+                        'Title: %s' % videoInfo['title'],
+                        'Link: %s' % videoInfo['webpage_url'],
+                        'Channel: %s' % videoInfo['channel'],  # '进出口服务（AHUANG）'
+                        'Channel link: %s'
+                        % videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+                        'Description:\n\n%s' % str(videoInfo['description']) if videoInfo['description'] else None,
+                        'Other parameters:',
+                        infoStr,
+                        #  debugData,
+                    ],
+                )
+            )
+        )
+        logContent = '\n'.join(
+            [
+                'sendInfoToChat',
+                debugStr,
+                infoStr
+            ]
+        )
+        _logger.info(logContent)
+        replyOrSend(replyMsg, chat, message)
+        cleanFiles(options)
+    except Exception as err:
+        errText = errorToString(err, show_stacktrace=False)
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+        errMsg = 'Error fetching audio: ' + errText
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
+        _logger.error('sendInfoToChat: ' + errMsg)
+        replyOrSend(errMsg, chat, message)
+        #  raise Exception(errMsg)
+    finally:
+        # Remove temporary files and folders
+        if options:
+            cleanFiles(options)
+
+
+def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
+    options: OptionsType | None = None
+
+    try:
+        options, videoInfo = downloadInfo(url, chat, message)
+
+        #  title = videoInfo['title']
+        filesize = videoInfo['filesize']
+        filesizeApprox = videoInfo['filesize_approx']
+        sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
+
+        #  infoMsg = f'Going to start downloading the video "{title}" of size ({sizeFmt})...'
+        infoMsg = ''.join(
+            list(
+                filter(
+                    None,
+                    [
+                        'Ok, fetching the audio from the video',
+                        f' ({sizeFmt})' if sizeFmt else '',
+                        '...',
+                    ],
+                )
+            )
+        )
+        replyOrSend(infoMsg, chat, message)
+
         # Load audio from url...
         audioFile = downloadAudioFile(options, videoInfo)
         if not audioFile:
@@ -308,8 +421,7 @@ def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
                 )
             )
         )
-        botApp.reply_to(message, infoMsg)
-        #  botApp.send_message(chatId, 'Your audio file is: `%s`' % audioFile)
+        replyOrSend(infoMsg, chat, message)
         with open(audioFile, 'rb') as audio:
             # send_audio params:
             #  chat_id: int | str,
@@ -334,30 +446,32 @@ def downloadAndSendAudioToChat(url: str, message: telebot.types.Message):
             #  message_effect_id: str | None = None,
             #  allow_paid_broadcast: bool | None = None
             botApp.send_audio(
-                chatId,
+                chat.id,
                 audio=audio,
                 caption=videoInfo['title'],
                 duration=videoInfo['duration'],
-                thumb=videoInfo['thumbnail'],
+                #  thumb=videoInfo['thumbnail'],
             )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Video download error: ' + errText
+        errMsg = 'Error fetching audio: ' + errText
         if _logTraceback:
             errMsg += sTraceback
         else:
             _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
         _logger.error('downloadAndSendAudioToChat: ' + errMsg)
-        raise Exception(errMsg)
+        replyOrSend(errMsg, chat, message)
+        #  raise Exception(errMsg)
     finally:
-        # Remove temporarily files and folders
-        cleanFiles(options)
+        # Remove temporary files and folders
+        if options:
+            cleanFiles(options)
 
 
 def cleanFiles(options: OptionsType):
     """
-    Clean temporarily files and folders created in prepareAudioFile, downloadAudioFile
+    Clean temporary files and folders created in prepareAudioFile, downloadAudioFile
     """
     cookieFile = options['cookiefile']
     destFile = options['_destFile']

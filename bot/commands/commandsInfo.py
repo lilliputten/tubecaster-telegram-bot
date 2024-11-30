@@ -7,7 +7,7 @@ commandsInfo = {
 
 # Provide commands list in the format of `{command} - {explanation}`
 _infoStr = '\n'.join(['%s - %s' % (k.split()[0], commandsInfo[k]) for k in commandsInfo])
-print('\nBot commands to provide to the BotFather:\n\n' + _infoStr + '\n')
+print('\nHere are the bot commands list to provide to the BotFather:\n\n' + _infoStr + '\n')
 
 hiddenCommands = [
     'castTest',

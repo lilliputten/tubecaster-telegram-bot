@@ -1,20 +1,5 @@
-from . import castCommand
-from . import castTestCommand
-from . import helpCommand
-from . import startCommand
-from . import testCommand
+# -*- coding:utf-8 -*-
 
+from .commands import registerCommands
 
-def registerCommands():
-    # TODO?
-    pass
-
-
-__all__ = [
-    'castCommand',
-    'castTestCommand',
-    'helpCommand',
-    'registerCommands',
-    'startCommand',
-    'testCommand',
-]
+__all__ = ['registerCommands']
