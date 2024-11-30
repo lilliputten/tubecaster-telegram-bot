@@ -18,6 +18,10 @@ from core.utils.stripHtml import stripHtml
 # @see https://docs.python.org/3/library/logging
 
 
+def prepareJson(s: str):
+    return s
+
+
 class CustomHttpHandler(logging.Handler):
     def __init__(
         self,
@@ -69,14 +73,24 @@ class CustomHttpHandler(logging.Handler):
         Parameters:
             record: a log record
         """
-        sendData = self.format(record)
+        sendData = self.format(record)  # NOTE: This isn't a valid json format
+        logData = {
+            'asctime': record.asctime,
+            'pathname': record.pathname,
+            'lineno': record.lineno,
+            'name': record.name,
+            'levelname': record.levelname,
+            'message': record.message,
+        }
+        jsonData = json.dumps(logData)
         if useDebugLogs:
             addDebugLog(
                 'logger:CustomHttpHandler:emit %s %s %s %s' % (self.url, record.name, record.levelname, record.message)
             )
         try:
             url = self.url
-            response = self.session.post(url, data=sendData)
+            response = self.session.post(url, data=jsonData)
+            #  response = self.session.post(url, data=sendData)
             resp = response.content.decode('utf-8')
             resp = stripHtml(resp)
             addDebugLog('logger:CustomHttpHandler:emit result: %s' % (resp))

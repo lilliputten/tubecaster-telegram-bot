@@ -1,14 +1,37 @@
 # -*- coding:utf-8 -*-
 
+import os
+import posixpath
+import pathlib
+
 from core.appConfig import appConfig
 
-TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
+# Telegram token from env or vercel settings
+TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
 
-VERCEL_URL = appConfig.get('VERCEL_URL', '')
+# Bot owner id
+TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))
 
-WEBHOOK_PREFIX = appConfig.get('WEBHOOK_PREFIX', 'https://')
-WEBHOOK_HOST = appConfig.get('WEBHOOK_HOST', '127.0.0.1')
-WEBHOOK_PATH = appConfig.get('WEBHOOK_PATH', '/webhook')
+# Should be provided by vercel environment for production
+VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
+IS_VERCEL = True if VERCEL_URL else False
 
+# Should be vds remote host name an ngrok relay link (for the local mode)
+WEBHOOK_HOST = str(appConfig.get('WEBHOOK_HOST', '127.0.0.1'))
+
+# Default bot route
+WEBHOOK_PATH = str(appConfig.get('WEBHOOK_PATH', '/webhook'))  # Local route, see implementation in `botRoutes.py`
+
+WEBHOOK_PREFIX = str(appConfig.get('WEBHOOK_PREFIX', 'https://'))
+
+# Compose correct webhook fully-qualified url...
 WEBHOOK_RESOLVED_HOST = VERCEL_URL if VERCEL_URL else WEBHOOK_HOST
-WEBHOOK_URL = WEBHOOK_PREFIX + WEBHOOK_RESOLVED_HOST + WEBHOOK_PATH
+WEBHOOK_URL = WEBHOOK_RESOLVED_HOST + WEBHOOK_PATH
+if not WEBHOOK_URL.startswith('http'):
+    WEBHOOK_URL = WEBHOOK_PREFIX + WEBHOOK_URL
+
+# Image for show as a help and start banner
+visualImageFile = 'static/img/bot-visual-640x360.jpg'
+
+cwdPath = pathlib.Path(os.getcwd()).as_posix()
+visualImagePath = posixpath.join(cwdPath, visualImageFile)

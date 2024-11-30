@@ -8,7 +8,7 @@ Use ngrok to expose a local server to the remote app. See `.env.local.SAMPLE` as
 
 See environment variable to configure it:
 
-- LOGS_FILE
+- LOGGING_SERRVER_LOG_FILE
 - LOGS_SERVER_PREFIX
 - LOGS_SERVER_HOST
 - LOGS_SERVER_PORT
@@ -16,48 +16,50 @@ See environment variable to configure it:
 """
 
 import logging
+import pathlib
+import posixpath
 import json
 import os
-from dotenv import dotenv_values
+
+#  from dotenv import dotenv_values
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from contextlib import contextmanager
 import sys
+from concurrent_log_handler import ConcurrentRotatingFileHandler
+
+from core.logger import loggerConfig
 
 from core.helpers.timeStamp import getTimeStamp
-from core.utils.sanityJson import sanityJson
 
-appConfig = {
-    **dotenv_values('.env'),
-    **dotenv_values('.env.local'),
-    **os.environ,  # override loaded values with environment variables
-}
+#  _appConfig = {
+#      **dotenv_values('.env'),
+#      **dotenv_values('.env.local'),
+#      **os.environ,  # override loaded values with environment variables
+#  }
 
-LOGS_FILE = appConfig.get('LOGS_FILE', 'logs-server.log')
+_useLocalLogFile = True
 
-LOGS_SERVER_PREFIX = appConfig.get('LOGS_SERVER_PREFIX', 'http://')
-LOGS_SERVER_HOST = appConfig.get('LOGS_SERVER_HOST', '0.0.0.0')
-LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '8514'))
-LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
-#  LOGS_SERVER_TOKEN = appConfig.get('LOGS_SERVER_TOKEN', '') # TODO: It's possible to add basic authentification
-
-LOGS_SERVER_URL = LOGS_SERVER_PREFIX + LOGS_SERVER_HOST + ':' + str(LOGS_SERVER_PORT)
-
-showRequestsLog = True
+# Trick to hide server logs: hide stderr output (requires extra attention to handle errors)
+_showRequestsLog = False
 
 # Show specific parameters...
-showIp = False  # It's always a localhost (if working via ngrok)
-showFile = False
-showTime = True
+_showIp = False  # It's always a localhost (if working via ngrok)
+_showFile = False
+_showTime = True
 
 # Setup format
-nameWidth = 20
-nameFormat = '-' + str(nameWidth) + 's'
-fileWidth = 80
-fileFormat = '-' + str(fileWidth) + 's'
+_nameWidth = 20
+_nameFormat = '-' + str(_nameWidth) + 's'
+_fileWidth = 80
+_fileFormat = '-' + str(_fileWidth) + 's'
 
 # Level (TODO: Make derived from a dev or prod environment?)
-loggingLevel = logging.CRITICAL   # DEBUG
+_loggingLevel = logging.INFO   # DEBUG
 
+_localLogFormat = '%(message)s'
+_localFormatter = logging.Formatter(_localLogFormat)
+
+# Format for re-create remote log string (local data won't be included into the output)
 formatStr = ' '.join(
     list(
         filter(
@@ -66,10 +68,10 @@ formatStr = ' '.join(
                 # Combine log format string from items...
                 #  '%(pathname)', # .../api/index.py (full pathname)
                 #  '%(lineno)', # 30
-                '%(ip)s' if showIp else None,
-                '%(file)' + fileFormat if showFile else None,  # pathname:lineno
-                '%(asctime)s' if showTime else None,  # 2024-11-24 05:41:29,110
-                '%(name)' + nameFormat,  # api/index
+                '%(file)' + _fileFormat if _showFile else None,  # pathname:lineno
+                '%(ip)s' if _showIp else None,
+                '%(asctime)s' if _showTime else None,  # 2024-11-24 05:41:29,110
+                '%(name)' + _nameFormat,  # api/index
                 '%(levelname)-8s',  # INFO
                 '%(message)s',  # Start: 2024.11.24, 01:18
             ],
@@ -77,13 +79,12 @@ formatStr = ' '.join(
     )
 )
 
-
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 logging.basicConfig(
-    level=loggingLevel,
-    format='%(message)s',
+    level=_loggingLevel,
+    format=_localLogFormat,
     #  datefmt="",
-    filename=LOGS_FILE,
+    filename=loggerConfig.LOGGING_SERRVER_LOG_FILE,
     filemode='a',
 )
 
@@ -95,7 +96,7 @@ def suppress_stderr():
     """
     with open(os.devnull, 'w') as devnull:
         old_stderr = sys.stderr
-        if not showRequestsLog:
+        if not _showRequestsLog:
             sys.stderr = devnull
         try:
             yield
@@ -135,19 +136,19 @@ class RequestHandler(BaseHTTPRequestHandler):
         # Parse json...
         try:
             jsonStr = self.rfile.read(contentLength).decode('utf-8')
-            jsonStr = sanityJson(jsonStr)
             data = json.loads(jsonStr)
             # Prepare data...
             data['pathname'] = data.get('pathname', '').replace('\\', '/')
-            data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
+            if data.get('pathname') and data.get('lineno'):
+                data['file'] = data.get('pathname', '') + ':' + str(data.get('lineno', ''))
             data['ip'] = ip
             #  Sample: api/index            INFO     Start: 2024.11.24, 01:18
             logStr = formatStr % data
-            print(logStr)
-            logging.info(logStr)
+            #  print(logStr)
+            logger.info(logStr)
             timeStr = getTimeStamp(True)
             response = 'OK ' + timeStr
-            print('Result: ' + response)
+            # print('Result: ' + response)
             self.wfile.write(response.encode('utf-8'))
         except Exception as err:
             errStr = 'Error parsing log data: ' + repr(err)
@@ -156,7 +157,37 @@ class RequestHandler(BaseHTTPRequestHandler):
             raise Exception(errStr)
 
 
-def run(ServerClass=HTTPServer, HandlerClass=RequestHandler, port=LOGS_SERVER_PORT):
+def initLocalLogger(id: str | None = None):
+    logger = logging.getLogger(id)
+    # Default handler (console)...
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setLevel(_loggingLevel)
+    consoleHandler.formatter = _localFormatter
+    logger.addHandler(consoleHandler)
+    # Local file handler...
+    if _useLocalLogFile:
+        cwd = pathlib.Path(os.getcwd()).as_posix()
+        localLogFileHandler = ConcurrentRotatingFileHandler(
+            # @see:
+            # - https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
+            # - [logging - Rotating file handler gives error in python logw](https://stackoverflow.com/questions/68253737/rotating-file-handler-gives-error-in-python-log/77394567#77394567)
+            filename=posixpath.join(cwd, loggerConfig.LOGGING_SERRVER_LOG_FILE),
+            mode='a',
+            encoding='utf-8',
+            maxBytes=100000,
+            backupCount=5,
+            #  delay=True,
+            #  errors=True,
+        )  # max log file size 100 MB
+        localLogFileHandler.setFormatter(_localFormatter)
+        localLogFileHandler.setLevel(_loggingLevel)
+        localLogFileHandler.formatter = _localFormatter
+        localLogFileHandler.level = _loggingLevel
+        logger.addHandler(localLogFileHandler)
+    return logger
+
+
+def run(ServerClass=HTTPServer, HandlerClass=RequestHandler, port=loggerConfig.LOGS_SERVER_PORT):
     serverAddress = ('', port)
     httpd = ServerClass(serverAddress, HandlerClass)
     try:
@@ -170,9 +201,20 @@ def run(ServerClass=HTTPServer, HandlerClass=RequestHandler, port=LOGS_SERVER_PO
     httpd.server_close()
 
 
+# Remove default handlers...
+logging.getLogger().handlers.clear()
+
+logger = initLocalLogger('logging-server')
+logger.info('OK')
+
 if __name__ == '__main__':
-    print('Server is running on %s:%s (with file: %s)...' % (LOGS_SERVER_HOST, LOGS_SERVER_PORT, LOGS_FILE))
+    print(
+        'Server is running on %s:%s (with file: %s)...'
+        % (loggerConfig.LOGS_SERVER_HOST, loggerConfig.LOGS_SERVER_PORT, loggerConfig.LOGGING_SERRVER_LOG_FILE)
+    )
     try:
+        # Initialize local logger...
+        # Start...
         run()
     except Exception as err:
         print('ERROR:', repr(err))

@@ -1,9 +1,12 @@
+from typing import Any, TypedDict, Optional
 from core.utils.variableAndKeyString import variableAndKeyString
 
 space = ' - '
 
 
-def debugObj(obj: dict[str, str | None], keys: list[str]):
+def debugObj(obj: dict[str, Any], keys: list[str] | None = None):
+    if not keys:
+        keys = list(filter(lambda key: not key.startswith('__'), obj.keys()))
     res = '\n'.join(
         list(
             filter(

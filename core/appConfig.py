@@ -3,7 +3,6 @@
 import os
 from dotenv import dotenv_values
 
-#  import json
 
 changed = """
 @changed 2024.11.24, 10:51
@@ -13,15 +12,16 @@ changed = """
 
 
 appConfig = {
-    **dotenv_values('.env'),
+    **dotenv_values('.env.server'),
     **dotenv_values('.env.local'),
     **dotenv_values('.env.secure'),
-    **os.environ,  # override loaded values with environment variables
+    # NOTE: DEBUG: Testing remote logging configurations
+    **dotenv_values('.env.logging-ngrok'),
+    #  **dotenv_values('.env.logging-local.SAMPLE'),
+    # Override loaded values with environment variables
+    **os.environ,
     **{'changed': changed},
 }
-
-#  debugAppConfig = json.dumps(appConfig, indent=2)
-#  print('Config: %s' % debugAppConfig)
 
 # Module exports...
 __all__ = [
