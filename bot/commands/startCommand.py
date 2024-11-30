@@ -4,7 +4,7 @@ import telebot  # pytelegrambotapi
 
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig
+from core.appConfig import appConfig, PROJECT_INFO
 from bot.botApp import botApp
 from core.utils import debugObj
 
@@ -36,6 +36,7 @@ def startCommand(chat: telebot.types.Chat):
         [
             'Hi, %s!' % name,
             'Welcome to the TubeCaster bot!',
+            'The bot version is: %s.' % PROJECT_INFO,
             'Use /cast to cast the youtube video to an audio. Type /help to find all commands.',
         ]
     )

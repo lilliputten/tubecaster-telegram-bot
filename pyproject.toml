@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.0.7"
+version = "0.0.8"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
@@ -15,8 +15,8 @@ python = "^3.10"
 flask = "^3.1.0"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
-pyTelegramBotAPI = "^4.24.0"
-yt-dlp = "^2024.11.18"
+pyTelegramBotAPI = "^4.24.0" # The telebot package to control telegram bots
+yt-dlp = "^2024.11.18" # The video/audio dowload library
 concurrent-log-handler = "^0.9.25"
 
 [tool.poetry.group.dev.dependencies]
