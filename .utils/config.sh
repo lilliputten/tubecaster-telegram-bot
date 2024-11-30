@@ -1,7 +1,7 @@
 #!/bin/sh
 # vim: ft=sh
 # @desc Config variables (common version -- stored in repository)
-# @changed 2024.11.20, 05:22
+# @changed 2024.12.01, 02:46
 
 IS_WINDOWS=`echo "${OS}" | grep -i windows`
 IS_CYGWIN=`uname | grep -i "CYGWIN"`
@@ -32,5 +32,5 @@ fi
 # Timezone for timestamps (GMT, Europe/Moscow, Asia/Bangkok, Asia/Tashkent, etc)
 TIMEZONE="Europe/Moscow"
 
-PROJECT_INFO_FILE="flaskApp/static/project-info.txt"
+PROJECT_INFO_FILE="static/project-info.txt"
 
