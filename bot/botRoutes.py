@@ -10,7 +10,7 @@ import telebot
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig
+from core.appConfig import appConfig, PROJECT_INFO
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
@@ -41,9 +41,10 @@ def logBotStarted():
     """
     Debug: Show application start info.
     """
-    content = '\n\n'.join(
+    content = '\n'.join(
         [
             'logBotStarted: botRoutes started',
+            'Application: %s' % PROJECT_INFO,
         ]
     )
     _logger.info(content)
@@ -73,6 +74,7 @@ def testRoute():
         #  'accessRoute': list(accessRoute),
         'headers': debugObj(dict(request.headers)),
         'environ': debugObj(dict(request.environ)),
+        'PROJECT_INFO': PROJECT_INFO,
         #  'requestDict': debugObj(request.__dict__),
     }
     obj = {
@@ -130,7 +132,8 @@ def rootRoute():
         )
         content = '\n\n'.join(
             [
-                'Root route',
+                #  'Root route',
+                'Application: %s' % PROJECT_INFO,
                 #  debugStr,
             ]
         )
@@ -189,6 +192,7 @@ def startRoute():
     content = '\n\n'.join(
         [
             'Webhook has been already initialized' if result else 'Webhook initalisation failed',
+            'Application: %s' % PROJECT_INFO,
             #  debugStr,
         ]
     )
