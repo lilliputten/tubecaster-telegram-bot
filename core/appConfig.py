@@ -46,6 +46,9 @@ appConfig = {
 
 LOCAL = bool(appConfig.get('LOCAL'))
 
+TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
+TELEGRAM_OWNER_ID = str(appConfig.get('TELEGRAM_OWNER_ID', ''))
+
 # Module exports...
 __all__ = [
     'appConfig',
