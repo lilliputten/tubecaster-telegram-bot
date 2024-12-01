@@ -48,7 +48,8 @@ _audioFileExt = ''   # '.mp3'
 
 _logTraceback = False
 
-_isYoutubeLink = re.compile(r'^https://\w*\.youtube.com/')
+# @see https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486
+_youtubeLinkPrefix = re.compile(r'^https://(\w*\.)?(youtube\.com|youtu\.be)/')
 
 
 def getIdFromName(name: str):
@@ -60,7 +61,7 @@ def getIdFromName(name: str):
 
 def getFileIdFromUrl(url: str, username: str):
     filename = url
-    filename = re.sub(r'^.*youtube.com/', '', filename)
+    filename = re.sub(_youtubeLinkPrefix, '', filename)
     filename = getIdFromName(filename)
     filename = re.sub(r'^watch-v-', '', filename)
     if username:
@@ -248,7 +249,7 @@ def downloadInfo(url: str, chat: telebot.types.Chat, message: telebot.types.Mess
     chatId = chat.id
     username = str(chat.username)
 
-    if not _isYoutubeLink.match(url):
+    if not _youtubeLinkPrefix.match(url):
         raise Exception('The url should be a valid youtube link. But we got: %s' % url)
 
     # Start...
