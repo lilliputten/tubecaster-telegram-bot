@@ -7,6 +7,7 @@ from flask import Response
 from flask import request
 import telebot
 
+from core.logger import loggerConfig
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
@@ -64,45 +65,50 @@ def getRemoteAddr():
 @botRoutes.route('/test')
 def testRoute():
     timeStr = getTimeStamp(True)
-    # TODO: Dig into the vpn configuration to get the reason of absence of the real ip (looked for those `X-Forwarded` etc)
-    #  remoteAddr = request.remote_addr # request.access_route # getAccessRoute()
-    extraParams = {
-        'timeStr': timeStr,
-        'startTimeStr': startTimeStr,
-        #  'remoteAddr': remoteAddr,
-        #  'accessRoute': list(accessRoute),
-        'headers': debugObj(dict(request.headers)),
-        'environ': debugObj(dict(request.environ)),
-        #  'requestDict': debugObj(request.__dict__),
-    }
-    obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **extraParams,
-    }
-    keysList = _debugKeysList + list(extraParams.keys())
-    titleStr = 'testRoute: Test @ %s' % timeStr
-    logContent = '\n'.join(
-        [
-            titleStr,
-            debugObj(obj, keysList),
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            titleStr,
-            debugObj(obj, keysList),
-        ]
-    )
-    _logger.info(logContent)
-    return Response(content, headers={'Content-type': 'text/plain'})
-
-
-def initWebhook():
-    _logger.info('startRoute: Starting to register webhook:' + botConfig.WEBHOOK_URL)
-    botApp.remove_webhook()
-    time.sleep(1)
-    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
+    try:
+        extraParams = {
+            'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
+            #  'headers': debugObj(dict(request.headers)),
+            #  'environ': debugObj(dict(request.environ)),
+            #  'requestDict': debugObj(request.__dict__),
+            'LOGS_SERVER_HOST': appConfig.get('LOGS_SERVER_HOST'),
+            'LOGS_SERVER_URL': loggerConfig.LOGS_SERVER_URL,
+            'LOGS_SERVER_PORT': appConfig.get('LOGS_SERVER_PORT'),
+        }
+        obj = {
+            **appConfig,
+            **dictFromModule(botConfig),
+            **extraParams,
+        }
+        keysList = _debugKeysList + list(extraParams.keys())
+        debugStr = debugObj(obj, keysList)
+        titleStr = 'testRoute: Test @ %s' % timeStr
+        logContent = '\n'.join(
+            [
+                titleStr,
+                debugStr,
+            ]
+        )
+        content = '\n\n'.join(
+            [
+                titleStr,
+                debugStr,
+            ]
+        )
+        _logger.info(logContent)
+        #  raise Exception('Debugging error') # DEBUG
+        return Response(content, headers={'Content-type': 'text/plain'})
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'testRoute: Error processing test route: ' + sError
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info('testRoute: Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
 
 
 @botRoutes.route('/')
@@ -113,18 +119,26 @@ def rootRoute():
     """
     timeStr = getTimeStamp(True)
     try:
+        extraParams = {
+            'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
+            #  'headers': debugObj(dict(request.headers)),
+            #  'environ': debugObj(dict(request.environ)),
+            #  'requestDict': debugObj(request.__dict__),
+            'LOGS_SERVER_HOST': appConfig.get('LOGS_SERVER_HOST'),
+            'LOGS_SERVER_URL': appConfig.get('LOGS_SERVER_URL'),
+            'LOGS_SERVER_PORT': appConfig.get('LOGS_SERVER_PORT'),
+        }
         obj = {
             **appConfig,
             **dictFromModule(botConfig),
-            **{
-                'timeStr': timeStr,
-                'startTimeStr': startTimeStr,
-            },
+            **extraParams,
         }
-        debugStr = debugObj(obj, _debugKeysList)
+        keysList = _debugKeysList + list(extraParams.keys())
+        debugStr = debugObj(obj, keysList)
         logContent = '\n'.join(
             [
-                'rootRoute: Empty test route',
+                'rootRoute: Empty root route',
                 debugStr,
             ]
         )
@@ -135,18 +149,24 @@ def rootRoute():
             ]
         )
         _logger.info(logContent)
-        #  raise Exception('Debugging error') # DEBUG
         return Response(content, headers={'Content-type': 'text/plain'})
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errMsg = 'rootRoute: Error processing route: ' + sError
+        errMsg = 'rootRoute: Error processing root route: ' + sError
         if _logTraceback:
             errMsg += sTraceback
         else:
             _logger.info('rootRoute: Traceback for the following error:' + sTraceback)
         _logger.error(errMsg)
         return Response(errMsg, headers={'Content-type': 'text/plain'})
+
+
+def initWebhook():
+    _logger.info('startRoute: Starting to register webhook:' + botConfig.WEBHOOK_URL)
+    botApp.remove_webhook()
+    time.sleep(1)
+    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
 @botRoutes.route('/start')
