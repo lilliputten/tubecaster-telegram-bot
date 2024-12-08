@@ -7,9 +7,7 @@ from flaskApp.flaskApp import flaskApp
 
 from bot.botRoutes import botRoutes
 
-# LOCAL = appConfig.get('LOCAL')
 WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
-# PROJECT_INFO = appConfig.get('PROJECT_INFO')
 
 logger = getLogger('api/index')
 
