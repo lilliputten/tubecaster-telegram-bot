@@ -7,12 +7,10 @@ import traceback
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig
+from core.appConfig import appConfig, TELEGRAM_OWNER_ID
 
 from bot.botApp import botApp
 from core.utils import debugObj
-
-from .. import botConfig
 
 
 _logger = getLogger('bot/commands/testCommand')
@@ -30,7 +28,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         fromData: dict = json.get('from', {})
         languageCode = fromData.get('language_code')
         #  userId = fromData.get('id')
-        if not botConfig.TELEGRAM_OWNER_ID or botConfig.TELEGRAM_OWNER_ID != chatId:
+        if not TELEGRAM_OWNER_ID or TELEGRAM_OWNER_ID != chatId:
             botApp.reply_to(message, 'Sorry you are not allowed to use this command.')
             return
         obj = {
@@ -46,7 +44,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
         }
-        debugStr = debugObj(obj)   # , _debugKeysList)
+        debugStr = debugObj(obj)  # , _debugKeysList)
         logContent = '\n'.join(
             [
                 'testCommand: %s' % text,

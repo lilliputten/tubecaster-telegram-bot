@@ -3,11 +3,9 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.appConfig import appConfig
+from core.appConfig import appConfig, TELEGRAM_TOKEN
 from core.logger import getLogger
 
-
-TELEGRAM_TOKEN = appConfig.get('TELEGRAM_TOKEN')
 
 logger = getLogger('bot/botApp')
 

@@ -2,7 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.appConfig import appConfig, LOCAL, PROJECT_INFO, PROJECT_PATH
+from core.appConfig import appConfig, LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
 
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
@@ -19,15 +19,15 @@ commonInfoData = {
     'PROJECT_INFO': PROJECT_INFO,
     'PROJECT_PATH': PROJECT_PATH,
     'WEBHOOK_URL': botConfig.WEBHOOK_URL,
-    'TELEGRAM_TOKEN': appConfig.get('TELEGRAM_TOKEN'),
+    'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
 }
 
 
 def notifyOwner(text: str, logInfo: str | None = None):
     if logInfo:
         logger.info(logInfo)
-    if botConfig.TELEGRAM_OWNER_ID:
-        botApp.send_message(botConfig.TELEGRAM_OWNER_ID, text)
+    if TELEGRAM_OWNER_ID:
+        botApp.send_message(TELEGRAM_OWNER_ID, text)
 
 
 def sendCommandInfo(message: telebot.types.Message):

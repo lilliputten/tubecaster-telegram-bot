@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 
-from core.appConfig import appConfig, LOCAL, PROJECT_INFO
+from core.appConfig import appConfig, LOCAL, PROJECT_INFO, TELEGRAM_TOKEN
 from core.logger import getLogger
 from flaskApp.flaskApp import flaskApp
 
@@ -21,5 +21,5 @@ __all__ = ['app']
 
 
 if __name__ == '__main__':
-    token = appConfig.get('TELEGRAM_TOKEN')
+    token = TELEGRAM_TOKEN
     logger.debug('Token: %s' % token)

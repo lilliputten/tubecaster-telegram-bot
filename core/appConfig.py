@@ -46,8 +46,16 @@ appConfig = {
 
 LOCAL = bool(appConfig.get('LOCAL'))
 
+# Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
 TELEGRAM_OWNER_ID = str(appConfig.get('TELEGRAM_OWNER_ID', ''))
+
+# Should be provided by vercel environment for production
+VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
+IS_VERCEL = True if VERCEL_URL else False
+
+# Temp path: Use local 'temp' or vercel specific '/tmp' folders for temporary files
+TEMP_PATH = posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if LOCAL or not IS_VERCEL else '/tmp'
 
 # Module exports...
 __all__ = [

@@ -2,17 +2,7 @@
 
 import posixpath
 
-from core.appConfig import appConfig, STATIC_PATH
-
-# Telegram token from env or vercel settings
-TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
-
-# Bot owner id
-TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))
-
-# Should be provided by vercel environment for production
-VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
-IS_VERCEL = True if VERCEL_URL else False
+from core.appConfig import appConfig, STATIC_PATH, VERCEL_URL
 
 # Should be vds remote host name an ngrok relay link (for the local mode)
 WEBHOOK_HOST = str(appConfig.get('WEBHOOK_HOST', '127.0.0.1'))

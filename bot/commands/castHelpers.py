@@ -16,7 +16,7 @@ import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig
+from core.appConfig import appConfig, TEMP_PATH
 from bot.botApp import botApp
 
 from core.utils import debugObj
@@ -27,7 +27,7 @@ from .. import botConfig
 # Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
 # Eg: /info https://www.youtube.com/watch?v=EngW7tLk6R8
 
-demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Short video, 00:05
+demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'   # Short video, 00:05
 #  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU' # Video with a russian title, 02:47
 #  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg' # Video with a russian title, 00:18
 #  # Last video with a playlist
@@ -36,13 +36,6 @@ demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Short video, 00:05
 _YTDL = yt_dlp
 
 _logger = getLogger('bot/commands/castHelpers')
-
-_LOCAL = appConfig.get('LOCAL')
-
-# Use local 'temp' or vercel specific '/tmp' folders for temporary files
-_tempPath = (
-    posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if _LOCAL or not botConfig.IS_VERCEL else '/tmp'
-)
 
 _audioFileExt = ''   # '.mp3'
 
@@ -89,7 +82,7 @@ def getYtdlBaseOptions():
     options: OptionsType = {
         # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
         'verbose': True,
-        'cachedir': _tempPath,
+        'cachedir': TEMP_PATH,
         'verbose': True,
         'noplaylist': True,
         'keepvideo': False,
@@ -130,7 +123,7 @@ def prepareLinkInfo(url: str, username: str):
         options = getYtdlBaseOptions()
 
         folderName = getTimeStamp('id') + '-' + username
-        destFolder = options['_destFolder'] = posixpath.join(_tempPath, folderName)
+        destFolder = options['_destFolder'] = posixpath.join(TEMP_PATH, folderName)
         # Ensure temp folder is exists
         pathlib.Path(destFolder).mkdir(parents=True, exist_ok=True)
 
