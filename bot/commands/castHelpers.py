@@ -27,9 +27,9 @@ from .. import botConfig
 # Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
 # Eg: /info https://www.youtube.com/watch?v=EngW7tLk6R8
 
-demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'   # Short vide, 00:05
-#  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU'   # Video with a russian title, 02:47
-#  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg'   # Video with a russian title, 00:18
+demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Short video, 00:05
+#  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU' # Video with a russian title, 02:47
+#  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg' # Video with a russian title, 00:18
 #  # Last video with a playlist
 #  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg&list=PLuDoUpt1iJ4XHDwHJm7xjFLiYJXTf4ouv&index=3'
 
