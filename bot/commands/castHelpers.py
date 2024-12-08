@@ -21,8 +21,6 @@ from bot.botApp import botApp
 
 from core.utils import debugObj
 
-from .. import botConfig
-
 
 # Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
 # Eg: /info https://www.youtube.com/watch?v=EngW7tLk6R8
