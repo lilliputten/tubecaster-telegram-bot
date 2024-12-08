@@ -22,12 +22,14 @@ from bot.botApp import botApp
 from core.utils import debugObj
 
 
-# Eg: /cast https://www.youtube.com/watch?v=EngW7tLk6R8
-# Eg: /info https://www.youtube.com/watch?v=EngW7tLk6R8
+# Eg:
+# https://www.youtube.com/watch?v=EngW7tLk6R8
+# /cast https://www.youtube.com/watch?v=EngW7tLk6R8
+# /info https://www.youtube.com/watch?v=EngW7tLk6R8
 
 demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'   # Short video, 00:05
-#  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU' # Video with a russian title, 02:47
-#  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg' # Video with a russian title, 00:18
+#  demoVideo = 'https://www.youtube.com/watch?v=UdaQRvVTIqU'   # Video with a russian title, 02:47
+#  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg'   # Video with a russian title, 00:18
 #  # Last video with a playlist
 #  demoVideo = 'https://www.youtube.com/watch?v=eBHLST0pLXg&list=PLuDoUpt1iJ4XHDwHJm7xjFLiYJXTf4ouv&index=3'
 
@@ -125,6 +127,18 @@ def prepareLinkInfo(url: str, username: str):
         # Ensure temp folder is exists
         pathlib.Path(destFolder).mkdir(parents=True, exist_ok=True)
 
+        # Use cookies (if provided):
+        YT_COOKIE = appConfig.get('YT_COOKIE')
+        if YT_COOKIE:
+            _logger.info('prepareAudioFile: Found YT_COOKIE: %s' % '***')
+            YT_COOKIE = YT_COOKIE
+            cookieFile = posixpath.join(destFolder, 'cookie')  # destFile + '.cookie'
+            options['cookiefile'] = cookieFile
+            # Writing cookie data to a file, if it's absent...
+            _logger.info('prepareAudioFile: Writing cookieFile: %s' % cookieFile)
+            with open(cookieFile, 'w') as fh:
+                fh.write(YT_COOKIE.strip())
+
         # DEBUG: Show options...
         _logger.info('prepareAudioFile: Fetching info with options:\n%s' % debugObj(dict(options)))
 
@@ -143,18 +157,6 @@ def prepareLinkInfo(url: str, username: str):
         # Set destination file name
         options['outtmpl'] = destFile
         options['_destFile'] = destFile
-
-        # Use cookies (if provided):
-        YT_COOKIE = appConfig.get('YT_COOKIE')
-        if YT_COOKIE:
-            _logger.info('prepareAudioFile: Found YT_COOKIE: %s' % '***')
-            YT_COOKIE = YT_COOKIE
-            cookieFile = destFile + '.cookie'
-            options['cookiefile'] = cookieFile
-            # Writing cookie data to a file, if it's absent...
-            _logger.info('prepareAudioFile: Writing cookieFile: %s' % cookieFile)
-            with open(cookieFile, 'w') as fh:
-                fh.write(YT_COOKIE.strip())
 
         return options, videoInfo
     except Exception as err:

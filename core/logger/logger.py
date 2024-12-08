@@ -7,6 +7,7 @@ import logging.handlers
 import pathlib
 import posixpath
 
+from core.appConfig import appConfig, IS_VERCEL
 from core.logger import loggerConfig
 from core.logger.CustomHttpHandler import CustomHttpHandler, customHttpHandlerFormatter
 from concurrent_log_handler import ConcurrentRotatingFileHandler
@@ -15,15 +16,6 @@ from . import loggerConfig
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
-
-# Create a custom http logger handler
-httpHandler = CustomHttpHandler(
-    url=loggerConfig.LOGS_SERVER_URL,
-    #  token=LOGS_SERVER_TOKEN,
-    #  silent=False,
-)
-httpHandler.setLevel(loggerConfig.loggingLevel)
-httpHandler.setFormatter(customHttpHandlerFormatter)
 
 # Remove default handlers...
 logging.getLogger().handlers.clear()
@@ -44,7 +36,7 @@ def getLogger(id: str | None = None):
     consoleHandler.setLevel(loggerConfig.loggingLevel)
     consoleHandler.formatter = _defaultFormatter
     # Add local file logger
-    if loggerConfig.LOCAL_LOG_FILE:
+    if loggerConfig.LOCAL_LOG_FILE and not IS_VERCEL:
         cwd = pathlib.Path(os.getcwd()).as_posix()
         localLogFileHandler = ConcurrentRotatingFileHandler(
             # @see:
@@ -71,9 +63,17 @@ def getLogger(id: str | None = None):
         syslogHandler.setLevel(loggerConfig.loggingLevel)
         syslogHandler.formatter = _defaultFormatter
         logger.addHandler(syslogHandler)
-    # if useDebugLogs:
+    #  if useDebugLogs: # DEBUG
     #     addDebugLog('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
+    # Create a custom http logger handler
     if loggerConfig.USE_LOGS_SERVER:
+        httpHandler = CustomHttpHandler(
+            url=loggerConfig.LOGS_SERVER_URL,
+            #  token=LOGS_SERVER_TOKEN,
+            #  silent=False,
+        )
+        httpHandler.setLevel(loggerConfig.loggingLevel)
+        httpHandler.setFormatter(customHttpHandlerFormatter)
         logger.addHandler(httpHandler)
     logger.setLevel(loggerConfig.loggingLevel)
     return logger

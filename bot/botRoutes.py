@@ -7,6 +7,7 @@ from flask import Response
 from flask import request
 import telebot
 
+from core.logger import loggerConfig
 from core.helpers.errors import errorToString
 from core.helpers.timeStamp import getTimeStamp
 from core.logger import getLogger
@@ -51,6 +52,9 @@ def logBotStarted():
 
 
 def getRemoteAddr():
+    """
+    NOTE: It's not possible to get the remote address on the VDS server under VLESS proxy (TODO?)
+    """
     # request.remote_addr
     if 'X-Forwarded-For' in request.headers:
         proxy_data = request.headers['X-Forwarded-For']
@@ -61,43 +65,66 @@ def getRemoteAddr():
     else:
         return request.environ['HTTP_X_FORWARDED_FOR']
 
+def truncStr(str: str, maxLen: int):
+    if len(str) >= maxLen - 3:
+        str = str[:maxLen - 3] + '...'
+    return str
 
 @botRoutes.route('/test')
 def testRoute():
+    """
+    Get the deep debugging info
+    """
     timeStr = getTimeStamp(True)
-    # TODO: Dig into the vpn configuration to get the reason of absence of the real ip (looked for those `X-Forwarded` etc)
-    #  remoteAddr = request.remote_addr # request.access_route # getAccessRoute()
-    extraParams = {
-        'timeStr': timeStr,
-        'startTimeStr': startTimeStr,
-        #  'remoteAddr': remoteAddr,
-        #  'accessRoute': list(accessRoute),
-        'headers': debugObj(dict(request.headers)),
-        'environ': debugObj(dict(request.environ)),
-        'PROJECT_INFO': PROJECT_INFO,
-        #  'requestDict': debugObj(request.__dict__),
-    }
-    obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **extraParams,
-    }
-    keysList = _debugKeysList + list(extraParams.keys())
-    titleStr = 'testRoute: Test @ %s' % timeStr
-    logContent = '\n'.join(
-        [
-            titleStr,
-            debugObj(obj, keysList),
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            titleStr,
-            debugObj(obj, keysList),
-        ]
-    )
-    _logger.info(logContent)
-    return Response(content, headers={'Content-type': 'text/plain'})
+    try:
+        extraParams = {
+            'timeStr': timeStr,
+            'startTimeStr': startTimeStr,
+            #  'headers': debugObj(dict(request.headers)),
+            #  'environ': debugObj(dict(request.environ)),
+            'PROJECT_INFO': PROJECT_INFO,
+            #  'requestDict': debugObj(request.__dict__),
+            'LOGS_SERVER_HOST': appConfig.get('LOGS_SERVER_HOST'),
+            'LOGS_SERVER_URL': loggerConfig.LOGS_SERVER_URL,
+            'LOGS_SERVER_PORT': appConfig.get('LOGS_SERVER_PORT'),
+            'YT_COOKIE': truncStr(appConfig.get('YT_COOKIE', 'NONE'), 50),
+        }
+        obj = {
+            **appConfig,
+            **dictFromModule(botConfig),
+            **extraParams,
+        }
+        keysList = _debugKeysList + list(extraParams.keys())
+        titleStr = 'testRoute: Test @ %s' % timeStr
+        debugStr = debugObj(obj, keysList)
+        logContent = '\n'.join(
+            [
+                titleStr,
+                debugStr,
+            ]
+        )
+        content = '\n\n'.join(
+            [
+                titleStr,
+                debugStr,
+            ]
+        )
+        _logger.info(logContent)
+        #  raise Exception('Debugging error') # DEBUG
+        return Response(content, headers={'Content-type': 'text/plain'})
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'testRoute: Error processing test route: ' + sError
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info('testRoute: Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
+
+
+# Real code start...
 
 
 def initWebhook():
@@ -143,7 +170,7 @@ def rootRoute():
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
-        errMsg = 'rootRoute: Error processing route: ' + sError
+        errMsg = 'rootRoute: Error processing root route: ' + sError
         if _logTraceback:
             errMsg += sTraceback
         else:

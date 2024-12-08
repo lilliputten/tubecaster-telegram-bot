@@ -16,9 +16,9 @@ LOGGING_SERRVER_LOG_FILE = str(appConfig.get('LOGGING_SERRVER_LOG_FILE', 'loggin
 SYSLOG_HOST = str(appConfig.get('SYSLOG_HOST', '127.0.0.1'))
 SYSLOG_PORT = int(appConfig.get('SYSLOG_PORT', '514'))
 
-LOGS_SERVER_PREFIX = str(appConfig.get('LOGS_SERVER_PREFIX', 'http://'))
-LOGS_SERVER_HOST = str(appConfig.get('LOGS_SERVER_HOST', '127.0.0.1'))
-LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '5000'))
+LOGS_SERVER_PREFIX = str(appConfig.get('LOGS_SERVER_PREFIX', 'http://'))  # 'https://' for remote logging
+LOGS_SERVER_HOST = str(appConfig.get('LOGS_SERVER_HOST', '127.0.0.1'))  # <NGROK-ADDR> for remote logging
+LOGS_SERVER_PORT = int(appConfig.get('LOGS_SERVER_PORT', '5000'))  # '443' for remote logging
 LOGS_SERVER_RETRIES = int(appConfig.get('LOGS_SERVER_RETRIES', '0'))
 #  LOGS_SERVER_TOKEN = str(appConfig.get('LOGS_SERVER_TOKEN', '') # Could be used to provide basic authentification)
 

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: ft=python:
-# @module Wsgi root
-# @desc Wsgi server start script
+# @module WSGI Entrypoint
+# @desc WSGI server start script
 # @since 2024.11.27, 00:00
-# @changed 2024.11.29, 00:34
+# @changed 2024.12.09, 02:01
+
+# NOTE: Don't use the name of 'index.wsgi' for this file due to effects with vercel server (it returns it as a plain response on any request)
 
 import sys  # noqa
 import os  # noqa
@@ -33,4 +35,3 @@ __all__ = ['application']
 
 if __name__ == '__main__':
     application.run()
-
