@@ -74,4 +74,4 @@ zia*
 .vercel
 .handler-saves
 
-test*.mp3
+/tests/out
