@@ -112,12 +112,28 @@ def getYtdlBaseOptions():
     return options
 
 
+def addCookieToOptions(options: OptionsType):
+    destFolder = str(options.get('_destFolder', ''))
+
+    # Use cookies (if provided):
+    YT_COOKIE = appConfig.get('YT_COOKIE')
+    if YT_COOKIE:
+        _logger.info('prepareLinkInfo: Found YT_COOKIE: %s' % '***')
+        YT_COOKIE = YT_COOKIE
+        cookieFile = posixpath.join(destFolder, 'cookie')  # destFile + '.cookie'
+        options['cookiefile'] = cookieFile
+        # Writing cookie data to a file, if it's absent...
+        _logger.info('prepareLinkInfo: Writing cookieFile: %s' % cookieFile)
+        with open(cookieFile, 'w') as fh:
+            fh.write(YT_COOKIE.strip())
+
+
 def prepareLinkInfo(url: str, username: str):
     """
     Returns local temporary saved audio file name.
     """
     try:
-        _logger.info('prepareAudioFile: Trying to get an info for the video url: %s' % url)
+        _logger.info('prepareLinkInfo: Trying to get an info for the video url: %s' % url)
 
         # Prepare options...
         options = getYtdlBaseOptions()
@@ -127,20 +143,9 @@ def prepareLinkInfo(url: str, username: str):
         # Ensure temp folder is exists
         pathlib.Path(destFolder).mkdir(parents=True, exist_ok=True)
 
-        # Use cookies (if provided):
-        YT_COOKIE = appConfig.get('YT_COOKIE')
-        if YT_COOKIE:
-            _logger.info('prepareAudioFile: Found YT_COOKIE: %s' % '***')
-            YT_COOKIE = YT_COOKIE
-            cookieFile = posixpath.join(destFolder, 'cookie')  # destFile + '.cookie'
-            options['cookiefile'] = cookieFile
-            # Writing cookie data to a file, if it's absent...
-            _logger.info('prepareAudioFile: Writing cookieFile: %s' % cookieFile)
-            with open(cookieFile, 'w') as fh:
-                fh.write(YT_COOKIE.strip())
-
         # DEBUG: Show options...
-        _logger.info('prepareAudioFile: Fetching info with options:\n%s' % debugObj(dict(options)))
+        # /info https://www.youtube.com/watch?v=EngW7tLk6R8
+        _logger.info('prepareLinkInfo: Fetching info with options:\n%s' % debugObj(dict(options)))
 
         # Extract video info
         videoInfo = _YTDL.YoutubeDL(options).extract_info(url=url, download=False)
@@ -148,11 +153,11 @@ def prepareLinkInfo(url: str, username: str):
             raise Exception('No video info has been returned')
 
         # Create file url:
-        title = videoInfo['title']
+        title = videoInfo.get('title')
         fileId = getIdFromName(title) if title else getFileIdFromUrl(url, username)
         filename = fileId + _audioFileExt
         destFile = posixpath.join(destFolder, filename)
-        _logger.info('prepareAudioFile: Computed destFile file name: %s' % destFile)
+        _logger.info('prepareLinkInfo: Computed destFile file name: %s' % destFile)
 
         # Set destination file name
         options['outtmpl'] = destFile
@@ -176,10 +181,13 @@ def downloadAudioFile(options: OptionsType, videoInfo):
     Returns local temporary saved audio file name.
     """
     try:
-        webpageUrl = videoInfo['webpage_url']
+        webpageUrl = videoInfo.get('webpage_url')
         _logger.info('downloadAudioFile: Trying to fetch a video via the url: %s' % webpageUrl)
 
         destFile = options['_destFile']
+
+        # NOTE 2024.12.10, 07:30: This code produces an error: Requested format is not available. Use --list-formats for a list of available formats
+        #  addCookieToOptions(options)
 
         # Extend options for download:
         options = {
@@ -286,41 +294,41 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
     try:
         # Use for test: /info https://www.youtube.com/watch?v=EngW7tLk6R8
         options, videoInfo = downloadInfo(url, chat, message)
-        filesize = videoInfo['filesize']
-        filesizeApprox = videoInfo['filesize_approx']
+        filesize = videoInfo.get('filesize')
+        filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
         debugData = {
-            'Link': videoInfo['webpage_url'],
-            'Title': videoInfo['title'],
-            #  'Description': videoInfo['description'],
-            'Channel': videoInfo['channel'],  # '进出口服务（AHUANG）'
-            'Channel link': videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+            'Link': videoInfo.get('webpage_url'),
+            'Title': videoInfo.get('title'),
+            #  'Description': videoInfo.get('description'),
+            'Channel': videoInfo.get('channel'),  # '进出口服务（AHUANG）'
+            'Channel link': videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
         }
         infoData = {
-            #  'Link': videoInfo['webpage_url'],
-            #  'Title': videoInfo['title'],
-            #  'Description': videoInfo['description'],
-            'Duration': timedelta(seconds=int(videoInfo['duration'])) if videoInfo['duration'] else None,
-            'Upload date': prepareYoutubeDate(videoInfo['upload_date']),  # '20160511'
-            'Release year': videoInfo['release_year'],  # None
-            'Tags': ', '.join(videoInfo['tags']) if videoInfo['tags'] else None,  # [...]
-            'Categories': ', '.join(videoInfo['categories']) if videoInfo['categories'] else None,  # [...]
-            'Comments count': videoInfo['comment_count'],
-            'Views count': videoInfo['view_count'],
+            #  'Link': videoInfo.get('webpage_url'),
+            #  'Title': videoInfo.get('title'),
+            #  'Description': videoInfo.get('description'),
+            'Duration': timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
+            'Upload date': prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
+            'Release year': videoInfo.get('release_year'),  # None
+            'Tags': ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
+            'Categories': ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
+            'Comments count': videoInfo.get('comment_count'),
+            'Views count': videoInfo.get('view_count'),
             'File size': sizeFmt,
-            'Audio channels': videoInfo['audio_channels'],  # 2
-            #  'Channel': videoInfo['channel'],  # '进出口服务（AHUANG）'
-            #  'Channel link': videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
-            'Format note': videoInfo['format_note'],  # '360p'
-            'Format': videoInfo['format'],  # '18 - 640x360 (360p)'
-            'Width': videoInfo['width'],  # 640
-            'Height': videoInfo['height'],  # 360
-            'Aspect ratio': videoInfo['aspect_ratio'],  # 1.78
-            'FPS': videoInfo['fps'],  # 25
-            'Resolution': videoInfo['resolution'],  # '640x360'
-            'Language': videoInfo['language'],  # 'ru' ???
-            'Vcodec': videoInfo['vcodec'],  # 'avc1.42001E'
-            'Acodec': videoInfo['acodec'],  # 'mp4a.40.2'
+            'Audio channels': videoInfo.get('audio_channels'),  # 2
+            #  'Channel': videoInfo.get('channel'),  # '进出口服务（AHUANG）'
+            #  'Channel link': videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+            'Format note': videoInfo.get('format_note'),  # '360p'
+            'Format': videoInfo.get('format'),  # '18 - 640x360 (360p)'
+            'Width': videoInfo.get('width'),  # 640
+            'Height': videoInfo.get('height'),  # 360
+            'Aspect ratio': videoInfo.get('aspect_ratio'),  # 1.78
+            'FPS': videoInfo.get('fps'),  # 25
+            'Resolution': videoInfo.get('resolution'),  # '640x360'
+            'Language': videoInfo.get('language'),  # 'ru' ???
+            'Video ccodec': videoInfo.get('vcodec'),  # 'avc1.42001E'
+            'Audio codec': videoInfo.get('acodec'),  # 'mp4a.40.2'
         }
         debugStr = debugObj(debugData)
         infoStr = debugObj(infoData)
@@ -330,12 +338,12 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
                     None,
                     [
                         'Ok, your video details is:',
-                        'Title: %s' % videoInfo['title'],
-                        'Link: %s' % videoInfo['webpage_url'],
-                        'Channel: %s' % videoInfo['channel'],  # '进出口服务（AHUANG）'
+                        'Title: %s' % videoInfo.get('title'),
+                        'Link: %s' % videoInfo.get('webpage_url'),
+                        'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
                         'Channel link: %s'
-                        % videoInfo['channel_url'],  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
-                        'Description:\n\n%s' % str(videoInfo['description']) if videoInfo['description'] else None,
+                        % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+                        #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
                         'Other parameters:',
                         infoStr,
                         #  debugData,
@@ -350,7 +358,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Error fetching audio: ' + errText
+        errMsg = 'Error fetching audio info: ' + errText
         if _logTraceback:
             errMsg += sTraceback
         else:
@@ -370,10 +378,24 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
     try:
         options, videoInfo = downloadInfo(url, chat, message)
 
-        #  title = videoInfo['title']
-        filesize = videoInfo['filesize']
-        filesizeApprox = videoInfo['filesize_approx']
+        #  title = videoInfo.get('title')
+        filesize = videoInfo.get('filesize')
+        filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
+
+        details = ', '.join(
+            list(
+                filter(
+                    None,
+                    [
+                        sizeFmt,
+                        str(timedelta(seconds=int(videoInfo['duration']))) if videoInfo.get('duration') else None,
+                        videoInfo.get('resolution'),  # '640x360'
+                        str(videoInfo.get('fps')) + ' fps' if videoInfo.get('fps') else None,
+                    ],
+                )
+            )
+        )
 
         #  infoMsg = f'Going to start downloading the video "{title}" of size ({sizeFmt})...'
         infoMsg = ''.join(
@@ -382,7 +404,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                     None,
                     [
                         'Ok, fetching the audio from the video',
-                        f' ({sizeFmt})' if sizeFmt else '',
+                        f' ({details})' if details else '',
                         '...',
                     ],
                 )
@@ -436,14 +458,14 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
             botApp.send_audio(
                 chat.id,
                 audio=audio,
-                caption=videoInfo['title'],
-                duration=videoInfo['duration'],
-                thumb=videoInfo['thumbnail'],
+                caption=videoInfo.get('title'),
+                duration=videoInfo.get('duration'),
+                thumb=videoInfo.get('thumbnail'),
             )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Error fetching audio: ' + errText
+        errMsg = 'Error fetching audio file: ' + errText
         if _logTraceback:
             errMsg += sTraceback
         else:
