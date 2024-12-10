@@ -1,15 +1,5 @@
 # -*- coding:utf-8 -*-
 
-"""
-A test for audio files splitting, using librosa
-
-It uses soundfile, audioread and ffmpeg.
-
-Ffmpeg library hould be installed manually in the system, see https://www.ffmpeg.org/download.html).
-
-See stack overflow topic [Good choice might be librosa...](https://stackoverflow.com/a/77545091/28090454) for the source of the initial idea.
-"""
-
 import pathlib
 import posixpath
 import math
@@ -17,14 +7,15 @@ import os
 import sys
 import traceback
 
-#  from core.helpers.errors import errorToString
-
 import librosa
 import soundfile as sf
 
+from core.helpers.audio import getDesiredPiecesCount
+
 
 maxDuration = 3
-maxFileSize = 20000
+# Max audio file size for tg bot, in bytes
+maxAudioFileSize = 20000
 
 
 def splitMp3(inFileName: str, outFilePrefix: str, piecesCount: int):
@@ -60,10 +51,10 @@ def splitMp3(inFileName: str, outFilePrefix: str, piecesCount: int):
         print(errMsg)
 
 
-def getDesiredPiecesCount(fileSize: int, maxFileSize: int):
-    if fileSize <= maxFileSize:
-        return 1
-    return math.ceil(fileSize / maxFileSize)
+#  def getDesiredPiecesCount(fileSize: int, maxAudioFileSize: int):
+#      if fileSize <= maxAudioFileSize:
+#          return 1
+#      return math.ceil(fileSize / maxAudioFileSize)
 
 
 if __name__ == '__main__':
@@ -86,9 +77,9 @@ if __name__ == '__main__':
 
     fileSize = os.path.getsize(inFileName)
     print('[testSplit-02]: Input file size:', fileSize)
-    print('[testSplit-02]: Max file size:', maxFileSize)
+    print('[testSplit-02]: Max file size:', maxAudioFileSize)
 
-    piecesCount = getDesiredPiecesCount(fileSize, maxFileSize)
+    piecesCount = getDesiredPiecesCount(fileSize, maxAudioFileSize)
     print('[testSplit-02]: Pieces count:', piecesCount)
 
     # Go splitting

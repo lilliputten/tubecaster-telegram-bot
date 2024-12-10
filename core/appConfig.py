@@ -48,7 +48,7 @@ LOCAL = bool(appConfig.get('LOCAL'))
 
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
-TELEGRAM_OWNER_ID = str(appConfig.get('TELEGRAM_OWNER_ID', ''))
+TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))
 
 # Should be provided by vercel environment for production
 VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
@@ -57,10 +57,12 @@ IS_VERCEL = True if VERCEL_URL else False
 # Temp path: Use local 'temp' or vercel specific '/tmp' folders for temporary files
 TEMP_PATH = posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if LOCAL or not IS_VERCEL else '/tmp'
 
-# Module exports...
-__all__ = [
-    'appConfig',
-]
+# Audio...
+
+# Max audio file size for tg bot, in bytes
+# @see https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
+MAX_AUDIO_FILE_SIZE = 50000000
+
 
 if __name__ == '__main__':
     test = appConfig.get('TEST')
