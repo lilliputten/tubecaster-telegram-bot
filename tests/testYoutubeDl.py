@@ -9,7 +9,7 @@ import traceback
 import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
 
 
-_YTDL = yt_dlp
+YTDL = yt_dlp
 
 
 def getFileIdFromName(name: str):
@@ -23,7 +23,7 @@ def run():
     url = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
     try:
         #  url = input("please enter youtube video url:")
-        video_info = _YTDL.YoutubeDL().extract_info(url=url, download=False)
+        video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
         if not video_info:
             raise Exception('No video info has been returned')
         title = video_info['title']
@@ -39,7 +39,7 @@ def run():
             'outtmpl': filepath,
         }
 
-        with _YTDL.YoutubeDL(options) as ydl:
+        with YTDL.YoutubeDL(options) as ydl:
             ydl.download([webpage_url])
 
         print('run: Download complete')

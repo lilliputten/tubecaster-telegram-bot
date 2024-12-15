@@ -9,7 +9,7 @@ import telebot
 
 from core.logger import loggerConfig
 from core.helpers.errors import errorToString
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig, PROJECT_INFO
 from core.utils import debugObj
@@ -26,7 +26,7 @@ startTimeStr = getTimeStamp(True)
 
 _logger = getLogger('bot/botRoutes')
 
-_logTraceback = False
+logTraceback = False
 
 
 # Trace keys in logger and reponses
@@ -118,7 +118,7 @@ def testRoute():
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'testRoute: Error processing test route: ' + sError
-        if _logTraceback:
+        if logTraceback:
             errMsg += sTraceback
         else:
             _logger.info('testRoute: Traceback for the following error:' + sTraceback)
@@ -173,7 +173,7 @@ def rootRoute():
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'rootRoute: Error processing root route: ' + sError
-        if _logTraceback:
+        if logTraceback:
             errMsg += sTraceback
         else:
             _logger.info('rootRoute: Traceback for the following error:' + sTraceback)
@@ -196,7 +196,7 @@ def startRoute():
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'startRoute: Error registering webhook: ' + sError
-        if _logTraceback:
+        if logTraceback:
             errMsg += sTraceback
         else:
             _logger.info('startRoute: Traceback for the following error:' + sTraceback)
@@ -289,7 +289,7 @@ def webhookRoute():
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
             errMsg = 'webhookRoute: Error processing webhook update: ' + sError
-            if _logTraceback:
+            if logTraceback:
                 errMsg += sTraceback
             else:
                 _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)

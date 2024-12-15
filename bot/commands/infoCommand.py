@@ -1,18 +1,16 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pytelegrambotapi
+import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig
-
 from bot.botApp import botApp
 from core.utils import debugObj
 
-
-from .castHelpers import sendInfoToChat, replyOrSend
-
+from bot.cast import replyOrSend
+from bot.cast import sendInfoToChat
 
 _logger = getLogger('bot/commands/infoCommand')
 

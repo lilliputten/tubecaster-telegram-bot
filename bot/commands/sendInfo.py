@@ -4,7 +4,7 @@ import telebot  # pyTelegramBotAPI
 
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
 
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from bot.botApp import botApp
 from core.utils import debugObj

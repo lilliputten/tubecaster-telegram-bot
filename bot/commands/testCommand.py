@@ -5,7 +5,7 @@ import traceback
 
 #  from core.helpers.errors import errorToString
 from core.helpers.errors import errorToString
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig, TELEGRAM_OWNER_ID
 

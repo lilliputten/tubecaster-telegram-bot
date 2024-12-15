@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pytelegrambotapi
+import telebot  # pyTelegramBotAPI
 
 #  from core.logger import getLogger
 from bot.botApp import botApp

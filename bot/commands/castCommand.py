@@ -7,7 +7,7 @@ from core.logger import getLogger
 from bot.botApp import botApp
 from core.utils import debugObj
 
-from .castHelpers import downloadAndSendAudioToChat, replyOrSend
+from bot.cast import downloadAndSendAudioToChat, replyOrSend
 
 
 _logger = getLogger('bot/commands/castCommand')

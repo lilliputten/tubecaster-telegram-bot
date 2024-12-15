@@ -22,7 +22,7 @@ librosa = "^0.10.2.post1" # NOTE: ffmpeg required, see: https://www.ffmpeg.org/d
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
-pyright = "^1.1.389"
+pyright = "^1.1"
 poetry-plugin-export = "^1.8.0"
 
 [build-system]

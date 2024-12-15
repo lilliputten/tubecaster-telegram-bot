@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pytelegrambotapi
+import telebot  # pyTelegramBotAPI
 
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig, PROJECT_INFO
 from bot.botApp import botApp
