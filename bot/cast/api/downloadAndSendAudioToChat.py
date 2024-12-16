@@ -8,14 +8,15 @@ import os
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.logger import getLogger
-from bot.botApp import botApp
 
-from .YtdlOptionsType import YtdlOptionsType
-from .castConfig import logTraceback
-from .cleanFiles import cleanFiles
-from .downloadAudioFile import downloadAudioFile
-from .downloadInfo import downloadInfo
-from .replyOrSend import replyOrSend
+from bot import botApp
+from bot.helpers import replyOrSend
+
+from ..types.YtdlOptionsType import YtdlOptionsType
+from ..config.castConfig import logTraceback
+from ..helpers.cleanFiles import cleanFiles
+from ..helpers.downloadAudioFile import downloadAudioFile
+from ..helpers.downloadInfo import downloadInfo
 
 _logger = getLogger('bot/commands/downloadAndSendAudioToChat')
 
@@ -58,7 +59,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                 )
             )
         )
-        replyOrSend(infoMsg, chat, message)
+        replyOrSend(botApp, infoMsg, chat.id, message)
 
         # Load audio from url...
         audioFile = downloadAudioFile(options, videoInfo)
@@ -79,7 +80,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                 )
             )
         )
-        replyOrSend(infoMsg, chat, message)
+        replyOrSend(botApp, infoMsg, chat.id, message)
         with open(audioFile, 'rb') as audio:
             # send_audio params:
             #  chat_id: int | str,
@@ -119,7 +120,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
         else:
             _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
         _logger.error('downloadAndSendAudioToChat: ' + errMsg)
-        replyOrSend(errMsg, chat, message)
+        replyOrSend(botApp, errMsg, chat.id, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

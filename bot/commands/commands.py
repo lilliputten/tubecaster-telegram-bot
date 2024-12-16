@@ -3,12 +3,10 @@
 import telebot  # pyTelegramBotAPI
 
 from core.logger import getLogger
-from bot.botApp import botApp
 
-#  from .. import botConfig
+from bot import botApp
 
 from .sendInfo import sendCommandInfo, sendQueryInfo
-
 from .infoCommand import infoCommand
 from .castCommand import castCommand
 from .castTestCommand import castTestCommand

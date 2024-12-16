@@ -9,12 +9,14 @@ from core.helpers.errors import errorToString
 from core.logger import getLogger
 from core.utils import debugObj
 
-from .castConfig import logTraceback
-from .cleanFiles import cleanFiles
-from .downloadInfo import downloadInfo
-from .prepareYoutubeDate import prepareYoutubeDate
-from .replyOrSend import replyOrSend
-from .YtdlOptionsType import YtdlOptionsType
+from bot import botApp
+from bot.helpers import replyOrSend
+
+from ..config.castConfig import logTraceback
+from ..helpers.cleanFiles import cleanFiles
+from ..helpers.downloadInfo import downloadInfo
+from ..utils.prepareYoutubeDate import prepareYoutubeDate
+from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/sendInfoToChat')
 
@@ -84,7 +86,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
         )
         logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
         _logger.info(logContent)
-        replyOrSend(replyMsg, chat, message)
+        replyOrSend(botApp, replyMsg, chat.id, message)
         cleanFiles(options)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
@@ -95,7 +97,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
         else:
             _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
         _logger.error('sendInfoToChat: ' + errMsg)
-        replyOrSend(errMsg, chat, message)
+        replyOrSend(botApp, errMsg, chat.id, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

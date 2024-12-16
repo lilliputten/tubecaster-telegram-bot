@@ -3,11 +3,11 @@
 import telebot  # pyTelegramBotAPI
 
 from core.logger import getLogger
-from bot.botApp import botApp
 from core.appConfig import TELEGRAM_OWNER_ID
 
+from bot import botApp
 from bot.cast import downloadAndSendAudioToChat
-from bot.cast.castConfig import demoVideo
+from bot.cast.config import demoVideo
 
 
 _logger = getLogger('bot/commands/castTestCommand')

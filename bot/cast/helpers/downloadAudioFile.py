@@ -6,8 +6,8 @@ from core.helpers.errors import errorToString
 from core.logger import getLogger
 from core.utils import debugObj
 
-from .castConfig import YTDL, logTraceback
-from .YtdlOptionsType import YtdlOptionsType
+from ..config.castConfig import YTDL, logTraceback
+from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/sendInfoToChat')
 

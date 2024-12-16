@@ -7,8 +7,10 @@ from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.utils import debugObj
 
-from .prepareLinkInfo import prepareLinkInfo
-from .replyOrSend import replyOrSend
+from bot import botApp
+from bot.helpers import replyOrSend
+
+from ..helpers.prepareLinkInfo import prepareLinkInfo
 
 _logger = getLogger('bot/cast/downloadInfo')
 
@@ -41,6 +43,6 @@ def downloadInfo(url: str, chat: telebot.types.Chat, message: telebot.types.Mess
         ]
     )
     _logger.info(logContent)
-    replyOrSend(replyMsg, chat, message)
+    replyOrSend(botApp, replyMsg, chat.id, message)
 
     return prepareLinkInfo(url, username)

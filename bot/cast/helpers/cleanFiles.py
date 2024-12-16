@@ -3,7 +3,7 @@
 import os
 import pathlib
 
-from .YtdlOptionsType import YtdlOptionsType
+from ..types.YtdlOptionsType import YtdlOptionsType
 
 
 def cleanFiles(options: YtdlOptionsType):

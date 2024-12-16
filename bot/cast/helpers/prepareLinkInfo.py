@@ -11,8 +11,8 @@ from core.logger import getLogger
 from core.appConfig import TEMP_PATH
 from core.utils import debugObj
 
-from .castConfig import YTDL, audioFileExt, logTraceback
-from .getYtdlBaseOptions import getYtdlBaseOptions
+from ..config.castConfig import YTDL, audioFileExt, logTraceback
+from ..helpers.getYtdlBaseOptions import getYtdlBaseOptions
 
 _logger = getLogger('bot/cast/prepareLinkInfo')
 

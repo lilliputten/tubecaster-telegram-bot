@@ -1,10 +1,8 @@
-from .replyOrSend import replyOrSend
-from .sendInfoToChat import sendInfoToChat
-from .downloadAndSendAudioToChat import downloadAndSendAudioToChat
-from . import castConfig
+from .api.sendInfoToChat import sendInfoToChat
+from .api.downloadAndSendAudioToChat import downloadAndSendAudioToChat
+from .config import castConfig
 
 __all__ = [
-    'replyOrSend',
     'sendInfoToChat',
     'downloadAndSendAudioToChat',
     'castConfig',

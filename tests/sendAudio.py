@@ -10,7 +10,8 @@ import posixpath
 import pathlib
 
 from core.appConfig import appConfig, CWD_PATH, TEMP_PATH, TELEGRAM_OWNER_ID
-from bot.botApp import botApp
+
+from bot import botApp
 
 
 TVideoInfo = dict[str, Any]

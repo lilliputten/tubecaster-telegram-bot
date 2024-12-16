@@ -3,7 +3,7 @@
 from core.appConfig import appConfig, TEMP_PATH
 from core.logger import getLogger
 
-from .YtdlOptionsType import YtdlOptionsType
+from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/getYtdlBaseOptions')
 

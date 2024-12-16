@@ -6,7 +6,8 @@ from core.appConfig import appConfig, LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRA
 
 from core.helpers.time import getTimeStamp
 from core.logger import getLogger
-from bot.botApp import botApp
+
+from bot import botApp
 from core.utils import debugObj
 
 from .. import botConfig

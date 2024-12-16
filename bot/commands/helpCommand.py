@@ -2,8 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 
-#  from core.logger import getLogger
-from bot.botApp import botApp
+from bot import botApp
 
 from .. import botConfig
 

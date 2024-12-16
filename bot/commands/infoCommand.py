@@ -6,10 +6,10 @@ from functools import partial
 from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig
-from bot.botApp import botApp
 from core.utils import debugObj
 
-from bot.cast import replyOrSend
+from bot import botApp
+from bot.helpers import replyOrSend
 from bot.cast import sendInfoToChat
 
 _logger = getLogger('bot/commands/infoCommand')
@@ -45,7 +45,7 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     argsCount = len(args) - 1
     if argsCount < 1:
         replyMsg = 'Ok, now send the video address:'
-        replyOrSend(replyMsg, chat, message)
+        replyOrSend(botApp, replyMsg, chat.id, message)
         botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
         return
     elif argsCount > 1:

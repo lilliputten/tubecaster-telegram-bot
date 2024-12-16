@@ -15,7 +15,7 @@ from core.appConfig import appConfig, PROJECT_INFO
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
-from bot.botApp import botApp
+from bot import botApp
 
 from .commands import registerCommands
 from . import botConfig
