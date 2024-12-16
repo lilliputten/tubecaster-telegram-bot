@@ -6,13 +6,14 @@ from core.helpers.errors import errorToString
 from core.logger import getLogger
 from core.utils import debugObj
 
+from ..types import TVideoInfo
 from ..config.castConfig import YTDL, logTraceback
 from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/sendInfoToChat')
 
 
-def downloadAudioFile(options: YtdlOptionsType, videoInfo):
+def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
     """
     Returns local temporary saved audio file name.
     """

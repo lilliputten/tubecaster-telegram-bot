@@ -9,12 +9,10 @@ import os
 import posixpath
 import pathlib
 
+from bot.cast.types import TVideoInfo
 from core.appConfig import appConfig, CWD_PATH, TEMP_PATH, TELEGRAM_OWNER_ID
 
 from bot import botApp
-
-
-TVideoInfo = dict[str, Any]
 
 
 def sendAudio(audioPath: str, chatId: int | str, videoInfo: TVideoInfo):
@@ -41,10 +39,12 @@ def sendAudio(audioPath: str, chatId: int | str, videoInfo: TVideoInfo):
         #  business_connection_id: str | None = None,
         #  message_effect_id: str | None = None,
         #  allow_paid_broadcast: bool | None = None
+        caption = videoInfo.get('title')
         botApp.send_audio(
             chatId,
             audio=audio,
-            caption=videoInfo.get('title'),
+            caption=caption,
+            performer=videoInfo.get('channel'),
             duration=videoInfo.get('duration'),
             thumb=videoInfo.get('thumbnail'),
         )

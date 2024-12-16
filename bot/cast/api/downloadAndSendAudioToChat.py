@@ -107,10 +107,12 @@ def downloadAndSendAudioToChat(
             #  business_connection_id: str | None = None,
             #  message_effect_id: str | None = None,
             #  allow_paid_broadcast: bool | None = None
+            caption = videoInfo.get('title')
             botApp.send_audio(
                 chatId,
                 audio=audio,
-                caption=videoInfo.get('title'),
+                caption=caption,
+                performer=videoInfo.get('channel'),
                 duration=videoInfo.get('duration'),
                 thumb=videoInfo.get('thumbnail'),
             )
