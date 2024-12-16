@@ -5,8 +5,6 @@ import yt_dlp  # @see https://github.com/yt-dlp/yt-dlp
 
 YTDL = yt_dlp
 
-audioFileExt = ''  # '.mp3'
-
 logTraceback = False
 
 # Eg:
@@ -23,7 +21,6 @@ demoVideo = 'https://www.youtube.com/watch?v=EngW7tLk6R8'  # Short video, 00:05
 
 __all__ = [
     'YTDL',
-    'audioFileExt',
     'logTraceback',
     'demoVideo',
 ]

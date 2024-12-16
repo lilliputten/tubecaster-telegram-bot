@@ -8,10 +8,10 @@ from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import TEMP_PATH
+from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
 from core.utils import debugObj
 
-from ..config.castConfig import YTDL, audioFileExt, logTraceback
+from ..config.castConfig import YTDL, logTraceback
 from ..helpers.getYtdlBaseOptions import getYtdlBaseOptions
 
 _logger = getLogger('bot/cast/prepareLinkInfo')
@@ -44,7 +44,7 @@ def prepareLinkInfo(url: str, username: str):
         # Create file url:
         title = videoInfo.get('title')
         fileId = getIdFromName(title) if title else getFileIdFromUrl(url, username)
-        filename = fileId + audioFileExt
+        filename = fileId + AUDIO_FILE_EXT
         destFile = posixpath.join(destFolder, filename)
         _logger.info('prepareLinkInfo: Computed destFile file name: %s' % destFile)
 
