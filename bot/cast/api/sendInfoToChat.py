@@ -21,12 +21,12 @@ from ..types.YtdlOptionsType import YtdlOptionsType
 _logger = getLogger('bot/cast/sendInfoToChat')
 
 
-def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
+def sendInfoToChat(url: str, chatId: str | int, username: str, message: telebot.types.Message | None = None):
     options: YtdlOptionsType | None = None
 
     try:
         # Use for test: /info https://www.youtube.com/watch?v=EngW7tLk6R8
-        options, videoInfo = downloadInfo(url, chat, message)
+        options, videoInfo = downloadInfo(url, chatId, username, message)
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
@@ -86,7 +86,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
         )
         logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
         _logger.info(logContent)
-        replyOrSend(botApp, replyMsg, chat.id, message)
+        replyOrSend(botApp, replyMsg, chatId, message)
         cleanFiles(options)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
@@ -97,7 +97,7 @@ def sendInfoToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Me
         else:
             _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
         _logger.error('sendInfoToChat: ' + errMsg)
-        replyOrSend(botApp, errMsg, chat.id, message)
+        replyOrSend(botApp, errMsg, chatId, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

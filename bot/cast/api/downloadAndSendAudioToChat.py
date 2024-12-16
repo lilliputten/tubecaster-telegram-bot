@@ -21,13 +21,14 @@ from ..helpers.downloadInfo import downloadInfo
 _logger = getLogger('bot/commands/downloadAndSendAudioToChat')
 
 
-def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
+def downloadAndSendAudioToChat(
+    url: str, chatId: str | int, username: str, message: telebot.types.Message | None = None
+):
     options: YtdlOptionsType | None = None
 
     try:
-        options, videoInfo = downloadInfo(url, chat, message)
+        options, videoInfo = downloadInfo(url, chatId, username, message)
 
-        #  title = videoInfo.get('title')
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
@@ -59,7 +60,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                 )
             )
         )
-        replyOrSend(botApp, infoMsg, chat.id, message)
+        replyOrSend(botApp, infoMsg, chatId, message)
 
         # Load audio from url...
         audioFile = downloadAudioFile(options, videoInfo)
@@ -67,7 +68,9 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
             raise Exception('Audio file name has not been defined')
         audioSize = os.path.getsize(audioFile)
         audioSizeFmt = sizeofFmt(audioSize)
-        _logger.info(f'castCommand: Audio file {audioFile} (with size: {audioSizeFmt}) has been downloaded')
+        _logger.info(
+            f'downloadAndSendAudioToChat: Audio file {audioFile} (with size: {audioSizeFmt}) has been downloaded'
+        )
         infoMsg = ''.join(
             list(
                 filter(
@@ -80,7 +83,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
                 )
             )
         )
-        replyOrSend(botApp, infoMsg, chat.id, message)
+        replyOrSend(botApp, infoMsg, chatId, message)
         with open(audioFile, 'rb') as audio:
             # send_audio params:
             #  chat_id: int | str,
@@ -105,7 +108,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
             #  message_effect_id: str | None = None,
             #  allow_paid_broadcast: bool | None = None
             botApp.send_audio(
-                chat.id,
+                chatId,
                 audio=audio,
                 caption=videoInfo.get('title'),
                 duration=videoInfo.get('duration'),
@@ -120,7 +123,7 @@ def downloadAndSendAudioToChat(url: str, chat: telebot.types.Chat, message: tele
         else:
             _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
         _logger.error('downloadAndSendAudioToChat: ' + errMsg)
-        replyOrSend(botApp, errMsg, chat.id, message)
+        replyOrSend(botApp, errMsg, chatId, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

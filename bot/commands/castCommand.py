@@ -35,10 +35,12 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         ]
     )
     _logger.info(logContent)
-    downloadAndSendAudioToChat(url, chat, message)
+    downloadAndSendAudioToChat(url, chatId, username, message)
 
 
 def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+    chatId = chat.id
+    username = str(chat.username)
     text = message.text if message and message.text else ''
     args = text.strip().split()
     argsCount = len(args) - 1
@@ -51,4 +53,4 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         botApp.reply_to(message, 'Too many arguments (expected only video address).')
         return
     url = args[1]
-    downloadAndSendAudioToChat(url, chat, message)
+    downloadAndSendAudioToChat(url, chatId, username, message)

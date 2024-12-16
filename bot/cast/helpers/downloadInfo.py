@@ -15,10 +15,7 @@ from ..helpers.prepareLinkInfo import prepareLinkInfo
 _logger = getLogger('bot/cast/downloadInfo')
 
 
-def downloadInfo(url: str, chat: telebot.types.Chat, message: telebot.types.Message | None = None):
-    chatId = chat.id
-    username = str(chat.username)
-
+def downloadInfo(url: str, chatId: str | int | None, username: str, message: telebot.types.Message | None = None):
     if not youtubeLinkPrefix.match(url):
         raise Exception('The url should be a valid youtube link. But we got: %s' % url)
 
@@ -38,11 +35,12 @@ def downloadInfo(url: str, chat: telebot.types.Chat, message: telebot.types.Mess
     )
     replyMsg = '\n\n'.join(
         [
-            'Ok, fetching your video details...',
+            'Ok, fetching the video details...',
             #  debugData,
         ]
     )
     _logger.info(logContent)
-    replyOrSend(botApp, replyMsg, chat.id, message)
+    if chatId:
+        replyOrSend(botApp, replyMsg, chatId, message)
 
     return prepareLinkInfo(url, username)

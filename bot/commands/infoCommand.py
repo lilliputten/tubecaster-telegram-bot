@@ -3,9 +3,7 @@
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.helpers.time import getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig
 from core.utils import debugObj
 
 from bot import botApp
@@ -36,10 +34,11 @@ def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         ]
     )
     _logger.info(logContent)
-    sendInfoToChat(url, chat, message)
+    sendInfoToChat(url, chat.id, username, message)
 
 
 def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+    username = str(chat.username)
     text = message.text if message and message.text else ''
     args = text.strip().split()
     argsCount = len(args) - 1
@@ -52,4 +51,4 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         botApp.reply_to(message, 'Too many arguments (expected only video address).')
         return
     url = args[1]
-    sendInfoToChat(url, chat, message)
+    sendInfoToChat(url, chat.id, username, message)
