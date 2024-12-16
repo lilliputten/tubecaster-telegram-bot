@@ -12,6 +12,10 @@ import subprocess
 import json
 from typing import Callable
 
+PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
+print('Project path:', PROJECT_PATH)
+sys.path.insert(1, PROJECT_PATH)  # noqa  # pylint: disable=wrong-import-position
+
 from core.helpers.errors import errorToString
 from core.helpers.audio import getDesiredPiecesCount
 from core.ffmpeg import probe, split

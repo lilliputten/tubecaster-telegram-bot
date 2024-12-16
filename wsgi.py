@@ -3,17 +3,18 @@
 # @module WSGI Entrypoint
 # @desc WSGI server start script
 # @since 2024.11.27, 00:00
-# @changed 2024.12.09, 02:01
+# @changed 2024.12.16, 11:23
 
 # NOTE: Don't use the name of 'index.wsgi' for this file due to effects with vercel server (it returns it as a plain response on any request)
 
+#  import pathlib
 import sys  # noqa
 import os  # noqa
 
-venv = '.venv-default'
 
 # Server only params (start locally with dev-mode flask command, or `pnpm run dev`)...
 venvRoot = '/var/www'
+venv = '.venv-default'
 venvActivateScript = 'bin/activate_this.py'
 
 # Activate venv...
@@ -24,8 +25,10 @@ with open(activateThis) as f:
     exec(code, dict(__file__=activateThis))
 
 # Inject application path...
-rootPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(1, rootPath)  # noqa  # pylint: disable=wrong-import-position
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+#  PROJECT_PATH = pathlib.Path(os.path.abspath(__file__)).as_posix()
+
+sys.path.insert(1, PROJECT_PATH)  # noqa  # pylint: disable=wrong-import-position
 
 
 # Start application...
