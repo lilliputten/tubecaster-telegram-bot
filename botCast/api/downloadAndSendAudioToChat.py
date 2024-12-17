@@ -1,10 +1,8 @@
 # -*- coding:utf-8 -*-
 
 import os
-from time import sleep
 import telebot  # pyTelegramBotAPI
 import traceback
-from functools import partial
 
 from core.appConfig import LOCAL
 from core.helpers.files import sizeofFmt
@@ -19,30 +17,28 @@ from botCore.constants import stickers, emojies
 from botCore.helpers import (
     replyOrSend,
     getVideoDetailsStr,
-    getDesiredPiecesCount,
 )
-from botCore.routines import splitAudio
 
 from ..config.castConfig import logTraceback
-from ..helpers._sendAudioPiece import sendAudioPiece
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
+from ..helpers._sendAudioToChat import sendAudioToChat
 
 _logger = getLogger(getModPath())
 
-_timerDelyay = 5
+_timerDelay = 5
 
 _maxAudioFileSize = 20000
+_splitGap = 0
 
 
 def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
     """
-    if not LOCAL:
-        _logger.info(f'updateChatStatus')
-        botApp.send_chat_action(chatId, action='upload_document')
+    _logger.info(f'updateChatStatus')
+    botApp.send_chat_action(chatId, action='upload_document')
 
 
 def downloadAndSendAudioToChat(
@@ -80,7 +76,7 @@ def downloadAndSendAudioToChat(
     updateChatStatus(chatId)
 
     # Start update timer
-    timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
+    timer = RepeatedTimer(_timerDelay, updateChatStatus, chatId)
 
     #  # Future thumb urlopen handler
     #  thumb = None
@@ -117,43 +113,14 @@ def downloadAndSendAudioToChat(
         _logger.info(
             f'downloadAndSendAudioToChat: Audio file {audioFileName} (with size: {audioSizeFmt}) has been downloaded'
         )
-        pieceCallback = partial(
-            sendAudioPiece,
-            chatId,
-            rootMessage,
-            videoInfo,
-            originalMessage,
+        sendAudioToChat(
+            chatId=chatId,
+            videoInfo=videoInfo,
+            rootMessage=rootMessage,
+            originalMessage=originalMessage,
+            audioFileName=audioFileName,
+            cleanUp=cleanUp,
         )
-        useSplit = True
-        if useSplit and audioSize >= _maxAudioFileSize:
-            # File is too large, send it by pieces...
-            piecesCount = getDesiredPiecesCount(audioSize, _maxAudioFileSize)
-            outFilePrefix = audioFileName + '-part'
-            infoMsg = (
-                emojies.waiting
-                + f' The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(_maxAudioFileSize)} and will be divided into {piecesCount} parts...'
-            )
-            botApp.edit_message_text(
-                chat_id=chatId,
-                text=infoMsg,
-                message_id=rootMessage.id,
-            )
-            _logger.info('downloadAndSendAudioToChat: %s' % infoMsg)
-            splitAudio(
-                audioFileName=audioFileName,
-                outFilePrefix=outFilePrefix,
-                piecesCount=piecesCount,
-                pieceCallback=pieceCallback,
-                #  delimiter=delimiter,
-                gap=0,
-                removeFiles=cleanUp,
-            )
-        else:
-            # Send whole file...
-            pieceCallback(
-                audioFileName=audioFileName,
-            )
-        botApp.delete_message(chatId, rootMessage.id)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

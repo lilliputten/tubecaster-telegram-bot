@@ -1,60 +1,35 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pyTelegramBotAPI
-from typing import NewType, TypedDict, Optional, Any, Dict, AnyStr
-from datetime import timedelta
-import traceback
-import re
-import os
 import posixpath
-import pathlib
 
-from botCore.types import TVideoInfo
-from core.appConfig import appConfig, CWD_PATH, TEMP_PATH, TELEGRAM_OWNER_ID
+from core.appConfig import PROJECT_PATH, TELEGRAM_OWNER_ID
 
-from botApp import botApp
+# from botCast.config.castConfig import demoVideo
+
+# from botCast.api import downloadAndSendAudioToChat
+from botCast.helpers._sendAudioToChat import sendAudioToChat
+
+from tests.testVideoInfo import videoInfo
+
+#  audioFile = 'temp/2024-12-17-15-53-52-test/Sample Videos Dummy Videos For Demo Use.mp4'
+audioFile = 'tests/test-audios/test-short.mp3'
+audioFileName = posixpath.join(PROJECT_PATH, audioFile)
 
 
-def sendAudio(audioPath: str, chatId: int | str, videoInfo: TVideoInfo):
-    with open(audioPath, 'rb') as audio:
-        # send_audio params:
-        #  chat_id: int | str,
-        #  audio: Any | str,
-        #  caption: str | None = None,
-        #  duration: int | None = None,
-        #  performer: str | None = None,
-        #  title: str | None = None,
-        #  reply_to_message_id: int | None = None,
-        #  reply_markup: REPLY_MARKUP_TYPES | None = None,
-        #  parse_mode: str | None = None,
-        #  disable_notification: bool | None = None,
-        #  timeout: int | None = None,
-        #  thumbnail: Any | str | None = None,
-        #  caption_entities: List[MessageEntity] | None = None,
-        #  allow_sending_without_reply: bool | None = None,
-        #  protect_content: bool | None = None,
-        #  message_thread_id: int | None = None,
-        #  thumb: Any | str | None = None,
-        #  reply_parameters: ReplyParameters | None = None,
-        #  business_connection_id: str | None = None,
-        #  message_effect_id: str | None = None,
-        #  allow_paid_broadcast: bool | None = None
-        caption = videoInfo.get('title')
-        botApp.send_audio(
-            chatId,
-            audio=audio,
-            caption=caption,
-            performer=videoInfo.get('channel'),
-            duration=videoInfo.get('duration'),
-            thumb=videoInfo.get('thumbnail'),
-        )
+def sendInfoToChatTest():
+    #  downloadAndSendAudioToChat(demoVideo, TELEGRAM_OWNER_ID, 'test')
+    sendAudioToChat(
+        chatId=TELEGRAM_OWNER_ID,
+        rootMessage=None,
+        videoInfo=videoInfo,
+        originalMessage=None,
+        audioFileName=audioFileName,
+        cleanUp=False,
+    )
 
 
 if __name__ == '__main__':
-    audioFile = 'tests/test-audios/test-short.mp3'
-    audioPath = posixpath.join(CWD_PATH, audioFile)
-    videoInfo: TVideoInfo = {
-        'title': 'Test audio',
-    }
-    print('Sending audio', audioPath)
-    sendAudio(audioPath, chatId=TELEGRAM_OWNER_ID, videoInfo=videoInfo)
+    try:
+        sendInfoToChatTest()
+    except Exception as err:
+        print('ERROR:', repr(err))

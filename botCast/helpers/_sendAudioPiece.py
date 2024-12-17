@@ -23,8 +23,8 @@ _logger = getLogger(getModPath())   # 'botCast/helpers/_sendAudioPiece')
 
 def sendAudioPiece(
     chatId: str | int,
-    rootMessage: telebot.types.Message,
     videoInfo: TVideoInfo,
+    rootMessage: telebot.types.Message | None = None,
     originalMessage: telebot.types.Message | None = None,
     audioFileName: str = '',
     pieceNo: int | None = None,
@@ -45,11 +45,12 @@ def sendAudioPiece(
         )
     )
     _logger.info(infoContent)
-    botApp.edit_message_text(
-        chat_id=chatId,
-        message_id=rootMessage.id,
-        text=infoContent,
-    )
+    if rootMessage:
+        botApp.edit_message_text(
+            chat_id=chatId,
+            message_id=rootMessage.id,
+            text=infoContent,
+        )
     audioSizeFmt = getFormattedFileSize(audioFileName)
     infoContent = ''.join(
         filter(
@@ -65,13 +66,13 @@ def sendAudioPiece(
         )
     )
     _logger.info(infoContent)
-    botApp.edit_message_text(
-        chat_id=chatId,
-        message_id=rootMessage.id,
-        text=infoContent,
-    )
+    if rootMessage:
+        botApp.edit_message_text(
+            chat_id=chatId,
+            message_id=rootMessage.id,
+            text=infoContent,
+        )
     with open(audioFileName, 'rb') as audio:
-        # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
         title = videoInfo.get('title')
         captionContent = createVideoCaptionStr(
             videoInfo=videoInfo,
@@ -88,6 +89,7 @@ def sendAudioPiece(
             # TODO: To load a thumbnail only once, in the parent wrapper?
         try:
             botApp.send_audio(
+                # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
                 chatId,
                 audio=audio,
                 caption=captionContent,
