@@ -92,28 +92,24 @@ def downloadAndSendAudioToChat(
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
 
         videoDetails = ', '.join(
-            list(
-                filter(
-                    None,
-                    [
-                        sizeFmt,
-                        str(timedelta(seconds=int(videoInfo['duration']))) if videoInfo.get('duration') else None,
-                        videoInfo.get('resolution'),  # '640x360'
-                        str(videoInfo.get('fps')) + ' fps' if videoInfo.get('fps') else None,
-                    ],
-                )
+            filter(
+                None,
+                [
+                    sizeFmt,
+                    str(timedelta(seconds=int(videoInfo['duration']))) if videoInfo.get('duration') else None,
+                    videoInfo.get('resolution'),  # '640x360'
+                    str(videoInfo.get('fps')) + ' fps' if videoInfo.get('fps') else None,
+                ],
             )
         )
         infoContent = ''.join(
-            list(
-                filter(
-                    None,
-                    [
-                        emojies.waiting + ' Ok, extracting an audio from the video',
-                        f' ({videoDetails})' if videoDetails else '',
-                        '...',
-                    ],
-                )
+            filter(
+                None,
+                [
+                    emojies.waiting + ' Ok, extracting an audio from the video',
+                    f' ({videoDetails})' if videoDetails else '',
+                    '...',
+                ],
             )
         )
         botApp.edit_message_text(
@@ -132,17 +128,15 @@ def downloadAndSendAudioToChat(
             f'downloadAndSendAudioToChat: Audio file {audioFile} (with size: {audioSizeFmt}) has been downloaded'
         )
         infoContent = ''.join(
-            list(
-                filter(
-                    None,
-                    [
-                        emojies.waiting + ' Ok, sending the audio',
-                        f' ({audioSizeFmt})' if audioSizeFmt else '',
-                        ', extracted from the video',
-                        f' ({videoDetails})' if videoDetails else '',
-                        '...',
-                    ],
-                )
+            filter(
+                None,
+                [
+                    emojies.waiting + ' Ok, sending the audio',
+                    f' ({audioSizeFmt})' if audioSizeFmt else '',
+                    ', extracted from the video',
+                    f' ({videoDetails})' if videoDetails else '',
+                    '...',
+                ],
             )
         )
         #  replyOrSend(botApp, infoContent, chatId, originalMessage)
@@ -155,54 +149,48 @@ def downloadAndSendAudioToChat(
             # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
             title = videoInfo.get('title')
             captionTitle = ' '.join(
-                list(
-                    filter(
-                        None,
-                        [
-                            emojies.success,
-                            'The audio',
-                            f'({audioSizeFmt})' if audioSizeFmt else '',
-                            'has been extracted from the video',
-                            f'({videoDetails})' if videoDetails else '',
-                        ],
-                    )
+                filter(
+                    None,
+                    [
+                        emojies.success,
+                        'The audio',
+                        f'({audioSizeFmt})' if audioSizeFmt else '',
+                        'has been extracted from the video',
+                        f'({videoDetails})' if videoDetails else '',
+                    ],
                 )
             )
             infoContent = '\n'.join(
-                list(
-                    filter(
-                        None,
-                        [
-                            # fmt: off
-                            'Title: %s' % videoInfo.get('title'),
-                            'Link: %s' % videoInfo.get('webpage_url'),
-                            'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
-                            'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
-                            'Audio size: %s' % audioSizeFmt,
-                            'Video size: %s' % sizeFmt,
-                            'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
-                            'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
-                            #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
-                            #  'Comments count: %s' % videoInfo.get('comment_count'),
-                            'Views count: %s' % videoInfo.get('view_count'),
-                            #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
-                            'Language: %s' % videoInfo.get('language'),  # 'ru' ???
-                            # fmt: on
-                        ],
-                    )
+                filter(
+                    None,
+                    [
+                        # fmt: off
+                        'Title: %s' % videoInfo.get('title'),
+                        'Link: %s' % videoInfo.get('webpage_url'),
+                        'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
+                        'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
+                        'Audio size: %s' % audioSizeFmt,
+                        'Video size: %s' % sizeFmt,
+                        'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
+                        'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
+                        #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
+                        #  'Comments count: %s' % videoInfo.get('comment_count'),
+                        'Views count: %s' % videoInfo.get('view_count'),
+                        #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
+                        'Language: %s' % videoInfo.get('language'),
+                        # fmt: on
+                    ],
                 )
             )
             tagsContent = getVideoTags(videoInfo)
             captionContent = '\n\n'.join(
-                list(
-                    filter(
-                        None,
-                        [
-                            captionTitle,
-                            infoContent,
-                            tagsContent,
-                        ],
-                    )
+                filter(
+                    None,
+                    [
+                        captionTitle,
+                        infoContent,
+                        tagsContent,
+                    ],
                 )
             )
             thumbnail = videoInfo.get('thumbnail')
