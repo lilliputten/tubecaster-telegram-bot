@@ -6,6 +6,7 @@ import traceback
 from functools import partial
 
 from core.appConfig import LOCAL
+from core.appConfig import MAX_AUDIO_FILE_SIZE
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.helpers.runtime import getModPath
@@ -22,10 +23,8 @@ from botCore.routines import splitAudio
 from ..config.castConfig import logTraceback
 from ..helpers._sendAudioPiece import sendAudioPiece
 
-_logger = getLogger(getModPath())
 
-_maxAudioFileSize = 20000
-_splitGap = 0
+_logger = getLogger(getModPath())
 
 
 def sendAudioToChat(
@@ -34,7 +33,9 @@ def sendAudioToChat(
     rootMessage: telebot.types.Message | None = None,
     originalMessage: telebot.types.Message | None = None,
     audioFileName: str = '',
-    cleanUp: bool = not LOCAL,
+    cleanUp: bool = True,
+    maxAudioFileSize: int = MAX_AUDIO_FILE_SIZE,
+    splitGap: int = 1,
 ):
     try:
         audioSize = os.path.getsize(audioFileName)
@@ -47,13 +48,13 @@ def sendAudioToChat(
             originalMessage,
         )
         useSplit = True
-        if useSplit and audioSize >= _maxAudioFileSize:
+        if useSplit and audioSize >= maxAudioFileSize:
             # File is too large, send it by pieces...
-            piecesCount = getDesiredPiecesCount(audioSize, _maxAudioFileSize)
+            piecesCount = getDesiredPiecesCount(audioSize, maxAudioFileSize)
             outFilePrefix = audioFileName + '-part'
             infoMsg = (
                 emojies.waiting
-                + f' The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(_maxAudioFileSize)} and will be divided into {piecesCount} parts...'
+                + f' The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(maxAudioFileSize)} and will be divided into {piecesCount} parts...'
             )
             if rootMessage:
                 botApp.edit_message_text(
@@ -68,7 +69,7 @@ def sendAudioToChat(
                 piecesCount=piecesCount,
                 pieceCallback=pieceCallback,
                 #  delimiter=delimiter,
-                gap=_splitGap,
+                gap=splitGap,
                 removeFiles=cleanUp,
             )
         else:

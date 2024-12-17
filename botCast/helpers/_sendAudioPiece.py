@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 
+from datetime import timedelta
 import telebot  # pyTelegramBotAPI
+from telebot.types import ReplyParameters
+import math
 from urllib.request import urlopen
 
-from telebot.types import ReplyParameters
-
+from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
 from core.helpers.runtime import getModPath
 from core.logger import getLogger
@@ -30,6 +32,13 @@ def sendAudioPiece(
     pieceNo: int | None = None,
     piecesCount: int | None = None,
 ):
+    # Get audio duration (via ffmpeg probe)...
+    probeData = probe(audioFileName)
+    format = probeData.get('format', {})
+    durationPrecise = float(format.get('duration', '0'))   # 1.811156
+    duration = round(durationPrecise)
+    durationFmt = str(timedelta(seconds=duration))
+    # Video details...
     videoDetails = getVideoDetailsStr(videoInfo)
     pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
     infoContent = ''.join(
@@ -58,7 +67,7 @@ def sendAudioPiece(
             [
                 emojies.waiting + ' Sending the audio',
                 pieceInfo,
-                f' ({audioSizeFmt})' if audioSizeFmt else '',
+                f' ({durationFmt}, {audioSizeFmt})' if audioSizeFmt else '',
                 ', extracted from the video',
                 f' ({videoDetails})' if videoDetails else '',
                 '...',
@@ -95,7 +104,7 @@ def sendAudioPiece(
                 caption=captionContent,
                 title=title,
                 performer=videoInfo.get('channel'),
-                duration=videoInfo.get('duration'),
+                duration=duration,  # videoInfo.get('duration'),
                 thumbnail=thumb,
                 reply_parameters=(
                     ReplyParameters(chat_id=chatId, message_id=originalMessage.id) if originalMessage else None

@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 
+from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
 
 from ..types import TVideoInfo
@@ -19,6 +20,12 @@ def createVideoCaptionStr(
     piecesCount: int | None = None,
 ):
     pieceInfo = f'{pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
+    # Get audio duration (via ffmpeg probe)...
+    probeData = probe(audioFileName)
+    format = probeData.get('format', {})
+    durationPrecise = float(format.get('duration', '0'))   # 1.811156
+    duration = round(durationPrecise)
+    durationFmt = str(timedelta(seconds=duration))
     # Audio file size...
     audioSizeFmt = getFormattedFileSize(audioFileName)
     # Video file size...
@@ -33,13 +40,15 @@ def createVideoCaptionStr(
             ],
         )
     )
+    if pieceInfo:
+        captionStr += ', part ' + pieceInfo
     detailsContent = ' '.join(
         filter(
             None,
             [
                 'The audio',
-                pieceInfo,
-                f'({audioSizeFmt})' if audioSizeFmt else '',
+                #  pieceInfo,
+                f'({durationFmt}, {audioSizeFmt})' if audioSizeFmt else '',
                 'has been extracted from the video',
                 f'({videoDetails})' if videoDetails else '',
                 #  videoInfo.get('webpage_url'),
@@ -78,7 +87,7 @@ def createVideoCaptionStr(
                 captionStr,
                 detailsContent,
                 videoInfo.get('webpage_url'),
-                infoContent,
+                #  infoContent,
                 tagsContent,
             ],
         )

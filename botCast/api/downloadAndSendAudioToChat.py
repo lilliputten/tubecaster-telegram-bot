@@ -46,7 +46,7 @@ def downloadAndSendAudioToChat(
     chatId: str | int,
     username: str,
     originalMessage: telebot.types.Message | None = None,
-    cleanUp: bool = not LOCAL,
+    cleanUp: bool = True,
 ):
     """
     Send info for passed video url.

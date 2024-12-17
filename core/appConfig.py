@@ -66,7 +66,7 @@ TEMP_PATH = posixpath.join(CWD_PATH, 'temp') if LOCAL or not IS_VERCEL else '/tm
 
 # Max audio file size for tg bot, in bytes
 # @see https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
-MAX_AUDIO_FILE_SIZE = 50000000
+MAX_AUDIO_FILE_SIZE = int(appConfig.get('MAX_AUDIO_FILE_SIZE', '50000000'))
 
 
 if __name__ == '__main__':

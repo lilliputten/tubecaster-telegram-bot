@@ -4,9 +4,6 @@ import posixpath
 
 from core.appConfig import PROJECT_PATH, TELEGRAM_OWNER_ID
 
-# from botCast.config.castConfig import demoVideo
-
-# from botCast.api import downloadAndSendAudioToChat
 from botCast.helpers._sendAudioToChat import sendAudioToChat
 
 from tests.testVideoInfo import videoInfo
@@ -17,7 +14,6 @@ audioFileName = posixpath.join(PROJECT_PATH, audioFile)
 
 
 def sendInfoToChatTest():
-    #  downloadAndSendAudioToChat(demoVideo, TELEGRAM_OWNER_ID, 'test')
     sendAudioToChat(
         chatId=TELEGRAM_OWNER_ID,
         rootMessage=None,
@@ -25,6 +21,7 @@ def sendInfoToChatTest():
         originalMessage=None,
         audioFileName=audioFileName,
         cleanUp=False,
+        maxAudioFileSize=10000,
     )
 
 
