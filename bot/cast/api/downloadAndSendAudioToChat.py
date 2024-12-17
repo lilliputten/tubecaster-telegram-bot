@@ -21,13 +21,17 @@ from ..helpers.downloadInfo import downloadInfo
 _logger = getLogger('bot/commands/downloadAndSendAudioToChat')
 
 
+#  def sendAudioPieceToChat()
+
+
 def downloadAndSendAudioToChat(
     url: str, chatId: str | int, username: str, message: telebot.types.Message | None = None
 ):
     options: YtdlOptionsType | None = None
 
     try:
-        options, videoInfo = downloadInfo(url, chatId, username, message)
+        rootMessage = replyOrSend(botApp, 'Ok, fetching the video details...', chatId, message)
+        options, videoInfo = downloadInfo(url, chatId, username)
 
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')

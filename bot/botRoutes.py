@@ -5,13 +5,13 @@ import traceback
 from flask import Blueprint
 from flask import Response
 from flask import request
-import telebot
+import telebot  # pyTelegramBotAPI
 
 from core.logger import loggerConfig
 from core.helpers.errors import errorToString
-from core.helpers.time import getTimeStamp
+from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getLogger
-from core.appConfig import appConfig, PROJECT_INFO
+from core.appConfig import appConfig, PROJECT_INFO, LOCAL
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
@@ -19,10 +19,11 @@ from bot import botApp
 
 from .commands import registerCommands
 from . import botConfig
+from .botConfig import WEBHOOK_URL
 
 botRoutes = Blueprint('botRoutes', __name__)
 
-startTimeStr = getTimeStamp(True)
+startTimeStr = getTimeStamp()
 
 _logger = getLogger('bot/botRoutes')
 
@@ -77,7 +78,7 @@ def testRoute():
     """
     Get the deep debugging info
     """
-    timeStr = getTimeStamp(True)
+    timeStr = getTimeStamp()
     try:
         extraParams = {
             'timeStr': timeStr,
@@ -142,7 +143,7 @@ def rootRoute():
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
     """
-    timeStr = getTimeStamp(True)
+    timeStr = getTimeStamp()
     try:
         obj = {
             **appConfig,
@@ -187,7 +188,7 @@ def startRoute():
     Root page:
     Start telegram bot with the current webhook (deployed to vercel or local exposed with ngrok)
     """
-    timeStr = getTimeStamp(True)
+    timeStr = getTimeStamp()
 
     result: bool
     try:
@@ -244,7 +245,7 @@ def webhookRoute():
     """
     Process the telegram bot webhook.
     """
-    timeStr = getTimeStamp(True)
+    timeStr = getTimeStamp()
     requestStream = request.stream.read().decode('utf-8')
     update = telebot.types.Update.de_json(requestStream)
     #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
@@ -265,19 +266,42 @@ def webhookRoute():
     #  removed_chat_boost = None
     #  shipping_query = None
     #  update_id = 574259009
+    updateId = update.update_id if update else None
+    message = update.message if update else None
+    messageText = message.text if message else None
+    messageId = message.id if message else None
+    #  messageJson = message.json if message else None
+    messageContentType = message.content_type if message else None
+    messageChat = message.chat if message else None
+    messageDate = formatTime(None, message.date) if message else None
+    messageFromUser = message.from_user if message else None
+    fromUserId = messageFromUser.id if messageFromUser else None
+    fromUserUsername = messageFromUser.username if messageFromUser else None
+    chatId = messageChat.id if messageChat else None
     obj = {
-        **appConfig,
-        **dictFromModule(botConfig),
-        **{
-            'startTimeStr': startTimeStr,
-            'timeStr': timeStr,
-            'update': type(update),
-        },
+        'startTimeStr': startTimeStr,
+        'timeStr': timeStr,
+        'WEBHOOK_URL': WEBHOOK_URL,
+        'LOCAL': LOCAL,
+        'update': repr(update),
+        'message': repr(message),
+        #  'messageJson': repr(messageJson),
+        'messageChat': repr(messageChat),
+        'messageFromUser': repr(messageFromUser),
+        'updateId': updateId,
+        'messageText': messageText,
+        'messageId': messageId,
+        'messageContentType': messageContentType,
+        'messageDate': messageDate,
+        'fromUserId': fromUserId,
+        'fromUserUsername': fromUserUsername,
+        'chatId': chatId,
     }
+    debugData = debugObj(obj)
     logContent = '\n'.join(
         [
             'webhookRoute',
-            debugObj(obj, _debugKeysList),
+            debugData,
         ]
     )
     _logger.info(logContent)

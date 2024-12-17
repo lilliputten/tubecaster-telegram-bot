@@ -5,6 +5,8 @@ from datetime import timedelta
 import traceback
 import os
 
+# from bot.helpers.replyOrSend import replyOrSend
+from bot.helpers.replyOrSend import replyOrSend
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.logger import getLogger
@@ -26,12 +28,15 @@ from bot.cast.helpers.downloadInfo import downloadInfo
 
 _logger = getLogger('tests/downloadAudio.test')
 
+_doCleanFiles = False
+
 
 def downloadAudioTest(url: str, chatId: str | int | None, username: str, message: telebot.types.Message | None = None):
     options: YtdlOptionsType | None = None
 
     try:
-        options, videoInfo = downloadInfo(url, chatId, username, message)
+        rootMessage = replyOrSend(botApp, 'Ok, fetching the video details...', chatId, message) if chatId else None
+        options, videoInfo = downloadInfo(url, chatId, username)
 
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')
@@ -127,12 +132,13 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
         else:
             _logger.info('downloadAudioTest: Traceback for the following error:' + sTraceback)
         _logger.error('downloadAudioTest: ' + errMsg)
-        #  replyOrSend(botApp, errMsg, chatId, message)
+        # if chatId:
+        #     replyOrSend(botApp, errMsg, chatId, message)
         #  raise Exception(errMsg)
-    #  finally:
-    #      # Remove temporary files and folders
-    #      if options:
-    #          cleanFiles(options)
+    finally:
+        # Remove temporary files and folders
+        if options and _doCleanFiles:
+            cleanFiles(options)
 
 
 if __name__ == '__main__':

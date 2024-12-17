@@ -5,9 +5,10 @@ import telebot  # pyTelegramBotAPI
 from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import appConfig, PROJECT_INFO
+from core.utils import debugObj
 
 from bot import botApp
-from core.utils import debugObj
+from bot.helpers.createCommonButtonsMarkup import createCommonButtonsMarkup
 
 from .. import botConfig
 
@@ -21,7 +22,7 @@ def startCommand(chat: telebot.types.Chat):
     first_name = chat.first_name
     name = first_name if first_name else username
     obj = {
-        'timeStr': getTimeStamp(True),
+        'timeStr': getTimeStamp(),
         'chatId': chatId,
         'username': username,
         'first_name': first_name,
@@ -43,10 +44,7 @@ def startCommand(chat: telebot.types.Chat):
     )
     logger.info(logContent)
     # Show menu
-    markup = telebot.types.InlineKeyboardMarkup(row_width=2)
-    castItem = telebot.types.InlineKeyboardButton('Cast video', callback_data='startCast')
-    helpItem = telebot.types.InlineKeyboardButton('Show help', callback_data='startHelp')
-    markup.add(castItem, helpItem)
+    markup = createCommonButtonsMarkup()
     # Send content and menu with a banner
     with open(botConfig.visualImagePath, 'rb') as fh:
         botApp.send_photo(chatId, photo=fh, caption=content, reply_markup=markup)

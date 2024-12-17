@@ -9,7 +9,11 @@ from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split
 
-TPieceCallback = Callable[[str, int, int], None]
+# The parameters to pass to a callback are:
+# - filename (str),
+# - piece number (int | None),
+# - total pieces count (int | None).
+TPieceCallback = Callable[[str, int | None, int | None], None]
 
 logTraceback = False
 
@@ -19,8 +23,9 @@ _logger = getLogger('bot/botRoutes')
 def splitAudio(
     inFileName: str,
     outFilePrefix: str,
-    piecesCount: int,
+    piecesCount: int = 1,
     pieceCallback: TPieceCallback | None = None,
+    delimiter: str = '-',
     gap: int = 0,
     removeFiles: bool = True,
 ):
@@ -30,10 +35,11 @@ def splitAudio(
     Parameters:
 
     - inFileName: Input audio path.
-    - outFilePrefix: Output file prefix. Will be extended by `-{no}{.ext}`.
+    - outFilePrefix: Output file prefix. Will be extended by `{delimiter}{no}{.ext}`.
+    - delimiter: A delimiter between file prefix and number parts in output file name (default value is '-').
     - piecesCount: Desired pieces count.
     - pieceCallback: Callback to process each piece, when file has already been
-      written. Next parameteres will be passed: filename, piece count, tital pieces number.
+      written. The following parameteres will be passed: filename, piece number, total pieces count.
     - gap: Add an overlapping gap (in seconds) at the place of pieces junction. 0 to no gaps.
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
     """
@@ -68,7 +74,7 @@ def splitAudio(
             end = (n + 1) * pieceDurationSec
             if gap and n < piecesCount - 1:
                 end += gap
-            outputFileName = f'{outFilePrefix}-{no}{AUDIO_FILE_EXT}'
+            outputFileName = f'{outFilePrefix}{delimiter}{no}{AUDIO_FILE_EXT}'
             _logger.info(f'splitAudio: Creating piece {no}/{piecesCount} ({start}-{end}) -> {outputFileName})')
             split(inFileName, outputFileName, start=start, end=end)
             if pieceCallback:

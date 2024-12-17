@@ -33,7 +33,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             return
         obj = {
             'text': text,
-            'timeStr': getTimeStamp(True),
+            'timeStr': getTimeStamp(),
             'chatId': chatId,
             #  'userId': userId,
             'username': username,

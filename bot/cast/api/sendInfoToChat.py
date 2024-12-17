@@ -1,15 +1,18 @@
 # -*- coding:utf-8 -*-
 
+from time import sleep
 import telebot  # pyTelegramBotAPI
 from datetime import timedelta
 import traceback
 
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
+from core.helpers.time import RepeatedTimer
 from core.logger import getLogger
 from core.utils import debugObj
 
 from bot import botApp
+from bot.constants import stickers, emojies
 from bot.helpers import replyOrSend
 
 from ..config.castConfig import logTraceback
@@ -18,15 +21,51 @@ from ..helpers.downloadInfo import downloadInfo
 from ..utils.prepareYoutubeDate import prepareYoutubeDate
 from ..types.YtdlOptionsType import YtdlOptionsType
 
+
 _logger = getLogger('bot/cast/sendInfoToChat')
 
+_timerDelyay = 3
 
-def sendInfoToChat(url: str, chatId: str | int, username: str, message: telebot.types.Message | None = None):
+
+def updateChatStatus(chatId: str | int):
+    """
+    Periodically update chat status.
+    """
+    print('updateChatStatus')
+    botApp.send_chat_action(chatId, action='upload_document')
+
+
+def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None):
+    """
+    Send info for passed video url.
+
+    Parameters:
+
+    - url: str - Video url.
+    - chatId: str | int - Chat id (optional).
+    - username: str - Chat username.
+    - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
+
+    Use this small video for test:
+
+    /info https://www.youtube.com/watch?v=EngW7tLk6R8
+    """
     options: YtdlOptionsType | None = None
 
+    # Send initial sticker (will be removed) and message (will be updated)
+    rootSticker = botApp.send_sticker(chatId, sticker=stickers.typingMrCat)
+    rootMessage = replyOrSend(botApp, emojies.waiting + ' Ok, fetching the video details...', chatId, originalMessage)
+
+    # Initally update chat status
+    updateChatStatus(chatId)
+
+    # Start update timer
+    timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
+
+    sleep(5)
+
     try:
-        # Use for test: /info https://www.youtube.com/watch?v=EngW7tLk6R8
-        options, videoInfo = downloadInfo(url, chatId, username, message)
+        options, videoInfo = downloadInfo(url, chatId, username)
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
@@ -60,17 +99,17 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, message: telebot.
             'FPS': videoInfo.get('fps'),  # 25
             'Resolution': videoInfo.get('resolution'),  # '640x360'
             'Language': videoInfo.get('language'),  # 'ru' ???
-            'Video ccodec': videoInfo.get('vcodec'),  # 'avc1.42001E'
+            'Video codec': videoInfo.get('vcodec'),  # 'avc1.42001E'
             'Audio codec': videoInfo.get('acodec'),  # 'mp4a.40.2'
         }
         debugStr = debugObj(debugData)
         infoStr = debugObj(infoData)
-        replyMsg = '\n\n'.join(
+        infoContent = '\n\n'.join(
             list(
                 filter(
                     None,
                     [
-                        'Ok, your video details is:',
+                        emojies.success + ' Ok, the video details is:',
                         'Title: %s' % videoInfo.get('title'),
                         'Link: %s' % videoInfo.get('webpage_url'),
                         'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
@@ -86,8 +125,14 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, message: telebot.
         )
         logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
         _logger.info(logContent)
-        replyOrSend(botApp, replyMsg, chatId, message)
-        cleanFiles(options)
+        #  replyOrSend(botApp, infoContent, chatId, originalMessage)
+        botApp.edit_message_text(
+            chat_id=chatId,
+            text=infoContent,
+            message_id=rootMessage.id,
+        )
+        if options:
+            cleanFiles(options)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -97,9 +142,16 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, message: telebot.
         else:
             _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
         _logger.error('sendInfoToChat: ' + errMsg)
-        replyOrSend(botApp, errMsg, chatId, message)
+        #  replyOrSend(botApp, errMsg, chatId, originalMessage)
+        botApp.edit_message_text(
+            chat_id=chatId,
+            text=emojies.error + ' ' + errMsg,
+            message_id=rootMessage.id,
+        )
         #  raise Exception(errMsg)
     finally:
+        timer.stop()
+        botApp.delete_message(chatId, rootSticker.id)
         # Remove temporary files and folders
         if options:
             cleanFiles(options)

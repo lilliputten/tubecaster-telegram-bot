@@ -4,6 +4,7 @@ import traceback
 import posixpath
 import pathlib
 
+from bot.cast.types import TVideoInfo
 from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
@@ -37,7 +38,7 @@ def prepareLinkInfo(url: str, username: str):
         _logger.info('prepareLinkInfo: Fetching info with options:\n%s' % debugObj(dict(options)))
 
         # Extract video info
-        videoInfo = YTDL.YoutubeDL(options).extract_info(url=url, download=False)
+        videoInfo: TVideoInfo | None = YTDL.YoutubeDL(options).extract_info(url=url, download=False)
         if not videoInfo:
             raise Exception('No video info has been returned')
 

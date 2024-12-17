@@ -17,8 +17,8 @@ from core.helpers.audio import getDesiredPiecesCount, splitAudio
 maxAudioFileSize = 20000
 
 
-def pieceCallback(filename: str, pieceNo: int, piecesCount: int):
-    print('Callback:', filename, '-', pieceNo, '/', piecesCount)
+def pieceCallback(filename: str, pieceNo: int | None, piecesCount: int | None):
+    print('Callback:', filename, '-', str(pieceNo), '/', str(piecesCount))
     time.sleep(3)
 
 

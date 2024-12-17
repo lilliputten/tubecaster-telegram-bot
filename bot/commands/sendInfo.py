@@ -2,9 +2,9 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.appConfig import appConfig, LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
+from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
 
-from core.helpers.time import getTimeStamp
+from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getLogger
 
 from bot import botApp
@@ -27,12 +27,24 @@ commonInfoData = {
 def notifyOwner(text: str, logInfo: str | None = None):
     if logInfo:
         logger.info(logInfo)
-    if TELEGRAM_OWNER_ID:
+    if TELEGRAM_OWNER_ID and not LOCAL:
         botApp.send_message(TELEGRAM_OWNER_ID, text)
 
 
 def sendCommandInfo(message: telebot.types.Message):
     chat = message.chat
+
+    text = message.text
+    sticker = message.sticker
+    stickerFileId = sticker.file_id if sticker else None
+    stickerEmoji = sticker.emoji if sticker else None
+    stickerSetName = sticker.set_name if sticker else None
+    messageId = message.id
+    contentType = message.content_type
+    messageDate = formatTime(None, message.date)
+    user = message.from_user
+    userId = user.id if user else None
+    #  username = user.username if user else None
     chatId = chat.id
     text = message.text
     username = chat.username
@@ -40,21 +52,41 @@ def sendCommandInfo(message: telebot.types.Message):
     fromData: dict = json.get('from', {})
     languageCode = fromData.get('language_code')
     #  userId = fromData.get('id')
+    commandHash = ' '.join(
+        list(
+            filter(
+                None,
+                [
+                    contentType,
+                    text,
+                ],
+            )
+        )
+    )
     obj = {
+        'commandHash': commandHash,
+        'contentType': contentType,
+        'messageId': messageId,
         'text': text,
-        'timeStr': getTimeStamp(True),
+        'sticker': repr(sticker),
+        'stickerFileId': stickerFileId,
+        'stickerSetName': stickerSetName,
+        'stickerEmoji': stickerEmoji,
+        'timeStr': getTimeStamp(),
         'chatId': chatId,
-        #  'userId': userId,
+        'userId': userId,
+        #  'user': user,
         'username': username,
         #  'first_name': first_name,
         #  'last_name': last_name,
         'languageCode': languageCode,
+        'messageDate': messageDate,
         **commonInfoData,
     }
     debugStr = debugObj(obj)
     logContent = '\n'.join(
         [
-            'command: %s' % text,
+            'command: %s' % commandHash,
             debugStr,
         ]
     )

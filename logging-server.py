@@ -146,7 +146,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logStr = formatStr % data
             #  print(logStr)
             logger.info(logStr)
-            timeStr = getTimeStamp(True)
+            timeStr = getTimeStamp()
             response = 'OK ' + timeStr
             # print('Result: ' + response)
             self.wfile.write(response.encode('utf-8'))
