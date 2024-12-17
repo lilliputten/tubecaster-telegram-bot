@@ -240,7 +240,7 @@ def stopRoute():
     Remove recent webhook from the telegram bot.
     """
     botApp.remove_webhook()
-    botApp.stop_bot()
+    #  botApp.stop_bot()
     _logger.info('stopRoute')
     return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 

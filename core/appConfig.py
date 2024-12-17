@@ -48,6 +48,9 @@ LOCAL = bool(appConfig.get('LOCAL'))
 
 AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
 
+# Timezone (set `TZ_HOURS` to hours value to adjust date representation to corresponding timezone)
+TZ_HOURS = appConfig.get('TZ_HOURS_OFFSET')
+
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
 TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))

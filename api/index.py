@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO
+from core.helpers.time import formatTime
 from core.logger import getLogger
 from flaskApp.flaskApp import flaskApp
 from botRoutes.botRoutes import botRoutes
@@ -11,7 +12,9 @@ WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
 
 logger = getLogger('api/index')
 
-logger.info('App started, PROJECT_INFO=%s, LOCAL=%s, WERKZEUG_RUN_MAIN=%s' % (PROJECT_INFO, LOCAL, WERKZEUG_RUN_MAIN))
+timeStr = formatTime()
+
+logger.info('App started, PROJECT_INFO=%s, LOCAL=%s, WERKZEUG_RUN_MAIN=%s, time=%s' % (PROJECT_INFO, LOCAL, WERKZEUG_RUN_MAIN, timeStr))
 
 flaskApp.register_blueprint(botRoutes, url_prefix='/')
 
