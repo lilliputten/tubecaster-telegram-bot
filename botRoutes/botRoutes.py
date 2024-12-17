@@ -134,11 +134,7 @@ def initWebhook():
     _logger.info('startRoute: Starting to register webhook:' + botConfig.WEBHOOK_URL)
     botApp.remove_webhook()
     time.sleep(1)
-    # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.set_webhook
-    return botApp.set_webhook(
-        url=botConfig.WEBHOOK_URL,
-        timeout=600,  # Increase timout to allow long video downloads
-    )
+    return botApp.set_webhook(url=botConfig.WEBHOOK_URL)
 
 
 @botRoutes.route('/')
@@ -240,7 +236,6 @@ def stopRoute():
     Remove recent webhook from the telegram bot.
     """
     botApp.remove_webhook()
-    botApp.stop_bot()
     _logger.info('stopRoute')
     return Response('The webhook has been deleted', headers={'Content-type': 'text/plain'})
 
