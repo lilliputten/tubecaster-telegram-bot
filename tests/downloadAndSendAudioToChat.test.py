@@ -2,9 +2,9 @@
 
 from core.appConfig import TELEGRAM_OWNER_ID
 
-from bot.cast.config.castConfig import demoVideo
+from botCast.config.castConfig import demoVideo
 
-from bot.cast.api import downloadAndSendAudioToChat
+from botCast.api import downloadAndSendAudioToChat
 
 
 def sendInfoToChatTest():

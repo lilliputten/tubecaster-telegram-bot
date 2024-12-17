@@ -12,16 +12,16 @@ from core.logger import getLogger
 
 from core.appConfig import TELEGRAM_OWNER_ID
 
-from bot.cast.config.castConfig import demoVideo
+from botCast.config.castConfig import demoVideo
 
 from botApp import botApp
 
 from botCore.types import YtdlOptionsType
 
-from bot.cast.config.castConfig import logTraceback
-from bot.cast.helpers.cleanFiles import cleanFiles
-from bot.cast.helpers.downloadAudioFile import downloadAudioFile
-from bot.cast.helpers.downloadInfo import downloadInfo
+from botCast.config.castConfig import logTraceback
+from botCast.helpers.cleanFiles import cleanFiles
+from botCast.helpers.downloadAudioFile import downloadAudioFile
+from botCast.helpers.downloadInfo import downloadInfo
 
 _logger = getLogger('tests/downloadAudio.test')
 

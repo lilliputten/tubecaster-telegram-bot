@@ -8,7 +8,7 @@ from core.utils import debugObj
 from ..helpers.prepareLinkInfo import prepareLinkInfo
 
 
-_logger = getLogger('bot/cast/downloadInfo')
+_logger = getLogger('botCast/downloadInfo')
 
 
 def downloadInfo(

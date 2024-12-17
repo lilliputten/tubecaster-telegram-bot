@@ -7,7 +7,7 @@ from core.appConfig import appConfig
 
 from botCore.types import YtdlOptionsType
 
-_logger = getLogger('bot/cast/addCookieToOptions')
+_logger = getLogger('botCast/addCookieToOptions')
 
 
 def addCookieToOptions(options: YtdlOptionsType):

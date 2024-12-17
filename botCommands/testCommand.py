@@ -13,7 +13,7 @@ from botApp import botApp
 from core.utils import debugObj
 
 
-_logger = getLogger('bot/commands/testCommand')
+_logger = getLogger('botCommands/testCommand')
 
 
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):

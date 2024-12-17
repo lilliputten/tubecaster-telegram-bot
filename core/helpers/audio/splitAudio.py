@@ -17,7 +17,7 @@ TPieceCallback = Callable[[str, int | None, int | None], None]
 
 logTraceback = False
 
-_logger = getLogger('bot/botRoutes')
+_logger = getLogger('core/helpers/splitAudio')
 
 
 def splitAudio(

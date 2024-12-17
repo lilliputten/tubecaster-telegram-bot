@@ -24,7 +24,7 @@ from ..helpers.downloadInfo import downloadInfo
 from ..utils.prepareYoutubeDate import prepareYoutubeDate
 
 
-_logger = getLogger('bot/cast/sendInfoToChat')
+_logger = getLogger('botCast/sendInfoToChat')
 
 _timerDelyay = 5
 

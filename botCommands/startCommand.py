@@ -10,10 +10,10 @@ from core.utils import debugObj
 from botApp import botApp
 from botCore.helpers import createCommonButtonsMarkup
 
-from .. import botConfig
+from botCore import botConfig
 
 
-logger = getLogger('bot/commands/startCommand')
+logger = getLogger('botCommands/startCommand')
 
 
 def startCommand(chat: telebot.types.Chat):

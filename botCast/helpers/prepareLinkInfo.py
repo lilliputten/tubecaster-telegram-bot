@@ -16,7 +16,7 @@ from botCore.types import TVideoInfo
 from ..config.castConfig import YTDL, logTraceback
 from ..helpers.getYtdlBaseOptions import getYtdlBaseOptions
 
-_logger = getLogger('bot/cast/prepareLinkInfo')
+_logger = getLogger('botCast/prepareLinkInfo')
 
 
 def prepareLinkInfo(url: str, username: str):

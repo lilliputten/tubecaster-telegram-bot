@@ -1,13 +1,12 @@
 # -*- coding:utf-8 -*-
 
-
 import telebot  # pyTelegramBotAPI
 
-from core.appConfig import appConfig, TELEGRAM_TOKEN
+from core.appConfig import TELEGRAM_TOKEN
 from core.logger import getLogger
 
 
-logger = getLogger('bot/botApp')
+logger = getLogger('botApp')
 
 if not TELEGRAM_TOKEN:
     # NOTE: For the VDS environment this message will appear in a log file under the `/var/www/.uwsgi-apps/logs` folder

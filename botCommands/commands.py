@@ -26,7 +26,7 @@ from .startCommand import startCommand
 from .testCommand import testCommand
 
 
-_logger = getLogger('bot/commands')
+_logger = getLogger('botCommands/commands')
 
 _logTraceback = False
 

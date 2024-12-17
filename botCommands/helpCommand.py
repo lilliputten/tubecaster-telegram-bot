@@ -4,12 +4,12 @@ import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
 
-from .. import botConfig
+from botCore import botConfig
 
 from .commandsInfo import commandsInfo
 
 
-#  _logger = getLogger('bot/commands/helpCommand')
+#  _logger = getLogger('botCommands/helpCommand')
 
 
 def helpCommand(chat: telebot.types.Chat):

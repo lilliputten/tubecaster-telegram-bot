@@ -10,7 +10,7 @@ from botCore.types import TVideoInfo, YtdlOptionsType
 
 from ..config.castConfig import YTDL, logTraceback
 
-_logger = getLogger('bot/cast/sendInfoToChat')
+_logger = getLogger('botCast/sendInfoToChat')
 
 
 def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):

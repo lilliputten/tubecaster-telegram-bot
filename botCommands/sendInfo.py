@@ -10,10 +10,10 @@ from core.logger import getLogger
 from botApp import botApp
 from core.utils import debugObj
 
-from .. import botConfig
+from botCore import botConfig
 
 
-logger = getLogger('bot/commands')
+logger = getLogger('botCommands/sendInfo')
 
 commonInfoData = {
     'LOCAL': LOCAL,

@@ -4,7 +4,6 @@ import telebot  # pyTelegramBotAPI
 from datetime import timedelta
 import traceback
 import os
-import re
 from urllib.request import urlopen
 
 from telebot.types import ReplyParameters
@@ -27,7 +26,7 @@ from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
 
-_logger = getLogger('bot/commands/downloadAndSendAudioToChat')
+_logger = getLogger('botCast/downloadAndSendAudioToChat')
 
 _timerDelyay = 5
 
@@ -174,14 +173,13 @@ def downloadAndSendAudioToChat(
                     filter(
                         None,
                         [
+                            # fmt: off
                             'Title: %s' % videoInfo.get('title'),
                             'Link: %s' % videoInfo.get('webpage_url'),
                             'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
-                            'Duration: %s' % timedelta(seconds=int(videoInfo['duration']))
-                            if videoInfo.get('duration')
-                            else None,
-                            'Audio size %s' % audioSizeFmt,
-                            'Video size %s' % sizeFmt,
+                            'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
+                            'Audio size: %s' % audioSizeFmt,
+                            'Video size: %s' % sizeFmt,
                             'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
                             'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
                             #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
@@ -189,6 +187,7 @@ def downloadAndSendAudioToChat(
                             'Views count: %s' % videoInfo.get('view_count'),
                             #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
                             'Language: %s' % videoInfo.get('language'),  # 'ru' ???
+                            # fmt: on
                         ],
                     )
                 )

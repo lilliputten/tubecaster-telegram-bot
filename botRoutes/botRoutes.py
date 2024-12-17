@@ -17,15 +17,15 @@ from core.utils.generic import dictFromModule
 
 from botApp import botApp
 
-from .commands import registerCommands
-from . import botConfig
-from .botConfig import WEBHOOK_URL
+from botCore import botConfig
+from botCore.botConfig import WEBHOOK_URL
+
 
 botRoutes = Blueprint('botRoutes', __name__)
 
 startTimeStr = getTimeStamp()
 
-_logger = getLogger('bot/botRoutes')
+_logger = getLogger('botRoutes')
 
 logTraceback = False
 
@@ -325,10 +325,6 @@ def webhookRoute():
 
 # DEBUG
 logBotStarted()
-
-
-# Start commands
-registerCommands()
 
 
 # Module exports...

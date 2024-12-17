@@ -5,7 +5,7 @@ from core.logger import getLogger
 
 from botCore.types import YtdlOptionsType
 
-_logger = getLogger('bot/cast/getYtdlBaseOptions')
+_logger = getLogger('botCast/getYtdlBaseOptions')
 
 
 def getYtdlBaseOptions():
