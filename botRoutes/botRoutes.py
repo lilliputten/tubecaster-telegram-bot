@@ -137,7 +137,7 @@ def initWebhook():
     # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.set_webhook
     return botApp.set_webhook(
         url=botConfig.WEBHOOK_URL,
-        timeout=600,  # Increase timout to allow long video downloads
+        #  timeout=600,  # Increase timeout to allow long video downloads
     )
 
 
