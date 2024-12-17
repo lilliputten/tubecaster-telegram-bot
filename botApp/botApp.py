@@ -16,10 +16,7 @@ if not TELEGRAM_TOKEN:
 
 # @see: https://pypi.org/project/pyTelegramBotAPI/
 # @see: https://pytba.readthedocs.io/en/latest/
-botApp = telebot.TeleBot(
-    token=TELEGRAM_TOKEN,
-    threaded=not LOCAL,
-)
+botApp = telebot.TeleBot(token=TELEGRAM_TOKEN, threaded=False)
 
 # @see https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py
 botApp.enable_save_next_step_handlers(delay=2)
