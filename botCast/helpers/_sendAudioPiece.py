@@ -41,25 +41,26 @@ def sendAudioPiece(
     # Video details...
     videoDetails = getVideoDetailsStr(videoInfo)
     pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
-    infoContent = ''.join(
-        filter(
-            None,
-            [
-                emojies.waiting + ' Extracting an audio',
-                pieceInfo,
-                ' from the video',
-                f' ({videoDetails})' if videoDetails else '',
-                '...',
-            ],
-        )
-    )
-    _logger.info(infoContent)
-    if rootMessage:
-        botApp.edit_message_text(
-            chat_id=chatId,
-            message_id=rootMessage.id,
-            text=infoContent,
-        )
+    #  # It's a copy of the message from `downloadAndSendAudioToChat`
+    #  infoContent = ''.join(
+    #      filter(
+    #          None,
+    #          [
+    #              emojies.waiting + ' Extracting an audio',
+    #              pieceInfo,
+    #              ' from the video',
+    #              f' ({videoDetails})' if videoDetails else '',
+    #              '...',
+    #          ],
+    #      )
+    #  )
+    #  _logger.info(infoContent)
+    #  if rootMessage:
+    #      botApp.edit_message_text(
+    #          chat_id=chatId,
+    #          message_id=rootMessage.id,
+    #          text=infoContent,
+    #      )
     audioSizeFmt = getFormattedFileSize(audioFileName)
     infoContent = ''.join(
         filter(

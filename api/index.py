@@ -14,7 +14,10 @@ logger = getLogger('api/index')
 
 timeStr = formatTime()
 
-logger.info('App started, PROJECT_INFO=%s, LOCAL=%s, WERKZEUG_RUN_MAIN=%s, time=%s' % (PROJECT_INFO, LOCAL, WERKZEUG_RUN_MAIN, timeStr))
+logger.info(
+    'App started, PROJECT_INFO=%s, LOCAL=%s, WERKZEUG_RUN_MAIN=%s, time=%s'
+    % (PROJECT_INFO, LOCAL, WERKZEUG_RUN_MAIN, timeStr)
+)
 
 flaskApp.register_blueprint(botRoutes, url_prefix='/')
 

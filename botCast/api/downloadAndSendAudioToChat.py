@@ -92,7 +92,7 @@ def downloadAndSendAudioToChat(
             filter(
                 None,
                 [
-                    emojies.waiting + ' Extracting an audio from the video',
+                    emojies.waiting + ' Downloading an audio from the video',
                     f' ({videoDetails})' if videoDetails else '',
                     '...',
                 ],
@@ -124,7 +124,7 @@ def downloadAndSendAudioToChat(
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = emojies.error + ' Error downloading an audio file: ' + errText
+        errMsg = emojies.error + ' Error download and send an audio: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:

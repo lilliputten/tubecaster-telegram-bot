@@ -81,7 +81,7 @@ def sendAudioToChat(
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = emojies.error + ' Error downloading an audio file: ' + errText
+        errMsg = emojies.error + ' Error sending an audio file to the chat: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:
