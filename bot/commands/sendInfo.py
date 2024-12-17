@@ -7,7 +7,7 @@ from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TE
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getLogger
 
-from bot import botApp
+from botApp import botApp
 from core.utils import debugObj
 
 from .. import botConfig

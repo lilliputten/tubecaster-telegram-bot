@@ -5,7 +5,7 @@ import telebot  # pyTelegramBotAPI
 from core.logger import getLogger
 from core.appConfig import TELEGRAM_OWNER_ID
 
-from bot import botApp
+from botApp import botApp
 from bot.cast import downloadAndSendAudioToChat
 from bot.cast.config import demoVideo
 

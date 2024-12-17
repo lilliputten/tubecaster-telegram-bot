@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 
-from time import sleep
 import telebot  # pyTelegramBotAPI
 from datetime import timedelta
 import traceback
+import re
 
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
@@ -11,15 +11,17 @@ from core.helpers.time import RepeatedTimer
 from core.logger import getLogger
 from core.utils import debugObj
 
-from bot import botApp
-from bot.constants import stickers, emojies
-from bot.helpers import replyOrSend
+from botApp import botApp
+from botCore.constants import stickers, emojies
+from botCore.helpers import getVideoTags
+from botCore.helpers import replyOrSend
+
+from botCore.types import YtdlOptionsType
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadInfo import downloadInfo
 from ..utils.prepareYoutubeDate import prepareYoutubeDate
-from ..types.YtdlOptionsType import YtdlOptionsType
 
 
 _logger = getLogger('bot/cast/sendInfoToChat')
@@ -31,8 +33,7 @@ def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
     """
-    print('updateChatStatus')
-    botApp.send_chat_action(chatId, action='upload_document')
+    botApp.send_chat_action(chatId, action='typing')
 
 
 def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None):
@@ -46,11 +47,14 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
 
-    Use this small video for test:
+    For tests, use the command:
 
     /info https://www.youtube.com/watch?v=EngW7tLk6R8
+
+    Or the test module:
+
+    tests/sendInfoToChat.test.py
     """
-    options: YtdlOptionsType | None = None
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.typingMrCat)
@@ -61,6 +65,8 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
 
     # Start update timer
     timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
+
+    options: YtdlOptionsType | None = None
 
     try:
         options, videoInfo = downloadInfo(url, chatId, username)
@@ -102,6 +108,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         }
         debugStr = debugObj(debugData)
         infoStr = debugObj(infoData)
+        tagsContent = getVideoTags(videoInfo)
         infoContent = '\n\n'.join(
             list(
                 filter(
@@ -110,13 +117,13 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
                         emojies.success + ' Video details:',
                         'Title: %s' % videoInfo.get('title'),
                         'Link: %s' % videoInfo.get('webpage_url'),
-                        'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
+                        'Channel: %s' % videoInfo.get('channel'),
                         'Channel link: %s'
                         % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
                         #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
                         'Other parameters:',
                         infoStr,
-                        #  debugData,
+                        tagsContent,
                     ],
                 )
             )
@@ -134,7 +141,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Error fetching audio info: ' + errText
+        errMsg = emojies.error + ' Error fetching an video info: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:
@@ -143,7 +150,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         #  replyOrSend(botApp, errMsg, chatId, originalMessage)
         botApp.edit_message_text(
             chat_id=chatId,
-            text=emojies.error + ' ' + errMsg,
+            text=errMsg,
             message_id=rootMessage.id,
         )
         #  raise Exception(errMsg)

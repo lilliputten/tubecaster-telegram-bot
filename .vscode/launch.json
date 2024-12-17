@@ -58,7 +58,7 @@
         "-t",
         ".", // Root project path
         "-s",
-        "src", // Search in path
+        ".", // Search in path
         "-p",
         "*_test.py", // Search pattern
       ],
@@ -99,6 +99,13 @@
       "program": "${file}",
       "console": "integratedTerminal"
     },
+    {
+      "name": "Python: Specific File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "tests/sendInfoToChat.test.py",
+      "console": "integratedTerminal"
+    },    
     {
       "name": "Python: Module",
       "type": "debugpy",

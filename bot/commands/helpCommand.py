@@ -2,7 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 
-from bot import botApp
+from botApp import botApp
 
 from .. import botConfig
 

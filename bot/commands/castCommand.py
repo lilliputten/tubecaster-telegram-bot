@@ -6,8 +6,8 @@ import telebot  # pyTelegramBotAPI
 from core.logger import getLogger
 from core.utils import debugObj
 
-from bot import botApp
-from bot.helpers import replyOrSend
+from botApp import botApp
+from botCore.helpers import replyOrSend
 from bot.cast import downloadAndSendAudioToChat
 
 

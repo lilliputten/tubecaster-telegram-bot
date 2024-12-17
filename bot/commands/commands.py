@@ -12,10 +12,10 @@ import traceback
 from core.logger import getLogger
 from core.helpers.errors import errorToString
 
-from bot import botApp
-from bot.constants import stickers, emojies
-from bot.helpers.replyOrSend import replyOrSend
-from bot.helpers.createCommonButtonsMarkup import createCommonButtonsMarkup
+from botApp import botApp
+from botCore.constants import stickers, emojies
+from botCore.helpers import replyOrSend
+from botCore.helpers import createCommonButtonsMarkup
 
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .infoCommand import infoCommand

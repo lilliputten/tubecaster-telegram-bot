@@ -6,9 +6,9 @@ from core.helpers.errors import errorToString
 from core.logger import getLogger
 from core.utils import debugObj
 
-from ..types import TVideoInfo
+from botCore.types import TVideoInfo, YtdlOptionsType
+
 from ..config.castConfig import YTDL, logTraceback
-from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/sendInfoToChat')
 

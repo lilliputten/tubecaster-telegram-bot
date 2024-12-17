@@ -5,8 +5,7 @@ from datetime import timedelta
 import traceback
 import os
 
-# from bot.helpers.replyOrSend import replyOrSend
-from bot.helpers.replyOrSend import replyOrSend
+from botCore.helpers import replyOrSend
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.logger import getLogger
@@ -15,12 +14,10 @@ from core.appConfig import TELEGRAM_OWNER_ID
 
 from bot.cast.config.castConfig import demoVideo
 
+from botApp import botApp
 
-from bot import botApp
+from botCore.types import YtdlOptionsType
 
-#  from bot.helpers import replyOrSend
-
-from bot.cast.types.YtdlOptionsType import YtdlOptionsType
 from bot.cast.config.castConfig import logTraceback
 from bot.cast.helpers.cleanFiles import cleanFiles
 from bot.cast.helpers.downloadAudioFile import downloadAudioFile

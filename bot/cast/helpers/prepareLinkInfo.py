@@ -4,13 +4,14 @@ import traceback
 import posixpath
 import pathlib
 
-from bot.cast.types import TVideoInfo
 from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
 from core.logger import getLogger
 from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
 from core.utils import debugObj
+
+from botCore.types import TVideoInfo
 
 from ..config.castConfig import YTDL, logTraceback
 from ..helpers.getYtdlBaseOptions import getYtdlBaseOptions

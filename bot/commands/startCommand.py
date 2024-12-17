@@ -7,8 +7,8 @@ from core.logger import getLogger
 from core.appConfig import appConfig, PROJECT_INFO
 from core.utils import debugObj
 
-from bot import botApp
-from bot.helpers.createCommonButtonsMarkup import createCommonButtonsMarkup
+from botApp import botApp
+from botCore.helpers import createCommonButtonsMarkup
 
 from .. import botConfig
 
