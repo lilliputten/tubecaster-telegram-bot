@@ -54,13 +54,13 @@
       "module": "unittest",
       "args": [
         "discover", // Find all test modules
+        "-v", // Verbose
         "-f", // Stop on first fail
-        "-t",
-        ".", // Root project path
-        "-s",
-        ".", // Search in path
-        "-p",
-        "*_test.py", // Search pattern
+        // "-t", ".", // Root project path
+        // "-s", ".", // Search in path
+        "-p", "*_test.py", // Search pattern
+        "-k", // Specify test match string below...
+        "test_getVideoTags_shouldProcessChannelName"        
       ],
     },
     {
@@ -71,8 +71,8 @@
       "args": [
         "-f", // It'll stop on first fail
         "botCore/helpers/_getVideoTags_test.py",
-        // "-k", // Specify test match string below...
-        // "test_getGameRecordRatioTag_dateAffect"
+        "-k", // Specify test match string below...
+        "test_getVideoTags_shouldProcessOtherTags"
       ],
     },
     {

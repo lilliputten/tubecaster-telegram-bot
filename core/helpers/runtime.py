@@ -3,6 +3,7 @@
 import traceback
 import re
 
+
 def getTrace(appendStr=None):
     # NOTE: Required to pass extracted traceback
     traces = traceback.extract_stack(None, 2)
@@ -21,4 +22,3 @@ def getTrace(appendStr=None):
     filteredList = list(filter(None, strList))
     traceResult = '/'.join(filteredList)
     return traceResult
-
