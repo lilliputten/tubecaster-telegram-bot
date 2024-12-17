@@ -99,7 +99,7 @@
       "name": "Python: Specific File",
       "type": "debugpy",
       "request": "launch",
-      "program": "tests/sendInfoToChat.test.py",
+      "program": "tests/downloadAndSendAudioToChat.test.py",
       "console": "integratedTerminal"
     },    
     {

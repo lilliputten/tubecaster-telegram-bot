@@ -1,6 +1,6 @@
 import re
 
-from botCore.types import TVideoInfo
+from ..types import TVideoInfo
 
 
 def createTagItem(s: str | None):

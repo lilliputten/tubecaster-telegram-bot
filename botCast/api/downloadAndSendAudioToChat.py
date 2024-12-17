@@ -1,27 +1,26 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
-from datetime import timedelta
 import traceback
-import os
 from urllib.request import urlopen
 
 from telebot.types import ReplyParameters
 
-from core.helpers.files import sizeofFmt
+from core.helpers.files import getFormattedFileSize
 from core.helpers.errors import errorToString
 from core.helpers.time import RepeatedTimer
 from core.logger import getLogger
 
 from botApp import botApp
+from botCore.helpers import (
+    replyOrSend,
+    getVideoDetailsStr,
+    createVideoCaptionStr,
+)
+from botCore.types import YtdlOptionsType, TVideoInfo
 from botCore.constants import stickers, emojies
-from botCore.helpers import getVideoTags
-from botCore.helpers import replyOrSend
-
-from botCore.types import YtdlOptionsType
 
 from ..config.castConfig import logTraceback
-from ..utils.prepareYoutubeDate import prepareYoutubeDate
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
@@ -37,8 +36,89 @@ def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
     """
-    print('updateChatStatus')
+    _logger.info(f'updateChatStatus')
     botApp.send_chat_action(chatId, action='upload_document')
+
+
+def sendAudioPiece(
+    audioFileName: str,
+    chatId: str | int,
+    rootMessage: telebot.types.Message,
+    videoInfo: TVideoInfo,
+    originalMessage: telebot.types.Message | None = None,
+    pieceNo: int | None = None,
+    piecesCount: int | None = None,
+):
+    videoDetails = getVideoDetailsStr(videoInfo)
+    pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
+    infoContent = ''.join(
+        filter(
+            None,
+            [
+                emojies.waiting + ' Extracting an audio',
+                pieceInfo,
+                'from the video',
+                f' ({videoDetails})' if videoDetails else '',
+                '...',
+            ],
+        )
+    )
+    botApp.edit_message_text(
+        chat_id=chatId,
+        text=infoContent,
+        message_id=rootMessage.id,
+    )
+    audioSizeFmt = getFormattedFileSize(audioFileName)
+    infoContent = ''.join(
+        filter(
+            None,
+            [
+                emojies.waiting + ' Sending the audio',
+                pieceInfo,
+                f' ({audioSizeFmt})' if audioSizeFmt else '',
+                ', extracted from the video',
+                f' ({videoDetails})' if videoDetails else '',
+                '...',
+            ],
+        )
+    )
+    botApp.edit_message_text(
+        chat_id=chatId,
+        text=infoContent,
+        message_id=rootMessage.id,
+    )
+    with open(audioFileName, 'rb') as audio:
+        # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
+        title = videoInfo.get('title')
+        captionContent = createVideoCaptionStr(
+            videoInfo=videoInfo,
+            audioFileName=audioFileName,
+            pieceNo=pieceNo,
+            piecesCount=piecesCount,
+        )
+        thumbnail = videoInfo.get('thumbnail')
+        # Future thumb urlopen handler
+        thumb = None
+        if thumbnail:
+            # It'll be closed in the 'finally' section below
+            thumb = urlopen(thumbnail)
+        try:
+            botApp.send_audio(
+                chatId,
+                audio=audio,
+                caption=captionContent,
+                title=title,
+                performer=videoInfo.get('channel'),
+                duration=videoInfo.get('duration'),
+                thumbnail=thumb,
+                reply_parameters=(
+                    ReplyParameters(chat_id=chatId, message_id=originalMessage.id) if originalMessage else None
+                ),
+            )
+            botApp.delete_message(chatId, rootMessage.id)
+        finally:
+            if thumb:
+                thumb.close()
 
 
 def downloadAndSendAudioToChat(
@@ -70,7 +150,7 @@ def downloadAndSendAudioToChat(
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.walkingMrCat)
-    rootMessage = replyOrSend(botApp, emojies.waiting + ' Ok, fetching the video details...', chatId, originalMessage)
+    rootMessage = replyOrSend(botApp, emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
 
     # Initally update chat status
     updateChatStatus(chatId)
@@ -78,8 +158,8 @@ def downloadAndSendAudioToChat(
     # Start update timer
     timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
 
-    # Future thumb urlopen handler
-    thumb = None
+    #  # Future thumb urlopen handler
+    #  thumb = None
 
     # Future options, will be downloaded later
     options: YtdlOptionsType | None = None
@@ -87,26 +167,12 @@ def downloadAndSendAudioToChat(
     try:
         options, videoInfo = downloadInfo(url, chatId, username)
 
-        filesize = videoInfo.get('filesize')
-        filesizeApprox = videoInfo.get('filesize_approx')
-        sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
-
-        videoDetails = ', '.join(
-            filter(
-                None,
-                [
-                    sizeFmt,
-                    str(timedelta(seconds=int(videoInfo['duration']))) if videoInfo.get('duration') else None,
-                    videoInfo.get('resolution'),  # '640x360'
-                    str(videoInfo.get('fps')) + ' fps' if videoInfo.get('fps') else None,
-                ],
-            )
-        )
+        videoDetails = getVideoDetailsStr(videoInfo)
         infoContent = ''.join(
             filter(
                 None,
                 [
-                    emojies.waiting + ' Ok, extracting an audio from the video',
+                    emojies.waiting + ' Extracting an audio from the video',
                     f' ({videoDetails})' if videoDetails else '',
                     '...',
                 ],
@@ -119,97 +185,22 @@ def downloadAndSendAudioToChat(
         )
 
         # Load audio from url...
-        audioFile = downloadAudioFile(options, videoInfo)
-        if not audioFile:
+        audioFileName = downloadAudioFile(options, videoInfo)
+        if not audioFileName:
             raise Exception('Audio file name has not been defined')
-        audioSize = os.path.getsize(audioFile)
-        audioSizeFmt = sizeofFmt(audioSize)
+        audioSizeFmt = getFormattedFileSize(audioFileName)
         _logger.info(
-            f'downloadAndSendAudioToChat: Audio file {audioFile} (with size: {audioSizeFmt}) has been downloaded'
+            f'downloadAndSendAudioToChat: Audio file {audioFileName} (with size: {audioSizeFmt}) has been downloaded'
         )
-        infoContent = ''.join(
-            filter(
-                None,
-                [
-                    emojies.waiting + ' Ok, sending the audio',
-                    f' ({audioSizeFmt})' if audioSizeFmt else '',
-                    ', extracted from the video',
-                    f' ({videoDetails})' if videoDetails else '',
-                    '...',
-                ],
-            )
+        sendAudioPiece(
+            audioFileName=audioFileName,
+            chatId=chatId,
+            rootMessage=rootMessage,
+            videoInfo=videoInfo,
+            originalMessage=originalMessage,
+            pieceNo=0,
+            piecesCount=3,
         )
-        #  replyOrSend(botApp, infoContent, chatId, originalMessage)
-        botApp.edit_message_text(
-            chat_id=chatId,
-            text=infoContent,
-            message_id=rootMessage.id,
-        )
-        with open(audioFile, 'rb') as audio:
-            # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
-            title = videoInfo.get('title')
-            captionTitle = ' '.join(
-                filter(
-                    None,
-                    [
-                        emojies.success,
-                        'The audio',
-                        f'({audioSizeFmt})' if audioSizeFmt else '',
-                        'has been extracted from the video',
-                        f'({videoDetails})' if videoDetails else '',
-                    ],
-                )
-            )
-            infoContent = '\n'.join(
-                filter(
-                    None,
-                    [
-                        # fmt: off
-                        'Title: %s' % videoInfo.get('title'),
-                        'Link: %s' % videoInfo.get('webpage_url'),
-                        'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
-                        'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
-                        'Audio size: %s' % audioSizeFmt,
-                        'Video size: %s' % sizeFmt,
-                        'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
-                        'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
-                        #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
-                        #  'Comments count: %s' % videoInfo.get('comment_count'),
-                        'Views count: %s' % videoInfo.get('view_count'),
-                        #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
-                        'Language: %s' % videoInfo.get('language'),
-                        # fmt: on
-                    ],
-                )
-            )
-            tagsContent = getVideoTags(videoInfo)
-            captionContent = '\n\n'.join(
-                filter(
-                    None,
-                    [
-                        captionTitle,
-                        infoContent,
-                        tagsContent,
-                    ],
-                )
-            )
-            thumbnail = videoInfo.get('thumbnail')
-            if thumbnail:
-                # It'll be closed in the 'finally' section below
-                thumb = urlopen(thumbnail)
-            botApp.send_audio(
-                chatId,
-                audio=audio,
-                caption=captionContent,
-                title=title,
-                performer=videoInfo.get('channel'),
-                duration=videoInfo.get('duration'),
-                thumbnail=thumb,  # videoInfo.get('thumbnail'),
-                reply_parameters=ReplyParameters(chat_id=chatId, message_id=originalMessage.id)
-                if originalMessage
-                else None,
-            )
-            botApp.delete_message(chatId, rootMessage.id)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -228,8 +219,8 @@ def downloadAndSendAudioToChat(
         #  raise Exception(errMsg)
     finally:
         timer.stop()
-        if thumb:
-            thumb.close()
+        #  if thumb:
+        #      thumb.close()
         botApp.delete_message(chatId, rootSticker.id)
         # Remove temporary files and folders
         if options and cleanUp:

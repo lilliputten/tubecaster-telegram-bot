@@ -1,4 +1,5 @@
 import re
+import os
 
 # @see https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486
 youtubeLinkPrefix = re.compile(r'^https://(\w*\.)?(youtube\.com|youtu\.be)/')
@@ -31,3 +32,8 @@ def sizeofFmt(num, suffix='B'):
             return f'{num:3.1f}{unit}{suffix}'
         num /= 1024.0
     return f'{num:.1f}Yi{suffix}'
+
+
+def getFormattedFileSize(fileName: str | None):
+    audioSize = os.path.getsize(fileName) if fileName else None
+    return sizeofFmt(audioSize)

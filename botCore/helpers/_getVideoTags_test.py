@@ -8,7 +8,7 @@
 
 import unittest
 
-from botCore.types import TVideoInfo
+from ..types import TVideoInfo
 
 from ._getVideoTags import getVideoTags
 

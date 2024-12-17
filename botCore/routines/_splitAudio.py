@@ -10,18 +10,18 @@ from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split
 
 # The parameters to pass to a callback are:
-# - filename (str),
-# - piece number (int | None),
-# - total pieces count (int | None).
+# - audioFileName: str - Source audio file name (is already on the disk);
+# - pieceNo: (int | None) - piece number;
+# - piecesCount: int | None - Total pieces count;
 TPieceCallback = Callable[[str, int | None, int | None], None]
 
 logTraceback = False
 
-_logger = getLogger('core/helpers/splitAudio')
+_logger = getLogger('botCore/routines/splitAudio')
 
 
 def splitAudio(
-    inFileName: str,
+    audioFileName: str,
     outFilePrefix: str,
     piecesCount: int = 1,
     pieceCallback: TPieceCallback | None = None,
@@ -34,7 +34,7 @@ def splitAudio(
 
     Parameters:
 
-    - inFileName: Input audio path.
+    - audioFileName: Input audio path.
     - outFilePrefix: Output file prefix. Will be extended by `{delimiter}{no}{.ext}`.
     - delimiter: A delimiter between file prefix and number parts in output file name (default value is '-').
     - piecesCount: Desired pieces count.
@@ -44,9 +44,9 @@ def splitAudio(
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
     """
     try:
-        _logger.info(f'splitAudio: Start creating pieces for file: {inFileName}')
+        _logger.info(f'splitAudio: Start creating pieces for file: {audioFileName}')
 
-        probeData = probe(inFileName)
+        probeData = probe(audioFileName)
 
         format = probeData.get('format', {})
         duration = float(format.get('duration', '0'))
@@ -76,7 +76,7 @@ def splitAudio(
                 end += gap
             outputFileName = f'{outFilePrefix}{delimiter}{no}{AUDIO_FILE_EXT}'
             _logger.info(f'splitAudio: Creating piece {no}/{piecesCount} ({start}-{end}) -> {outputFileName})')
-            split(inFileName, outputFileName, start=start, end=end)
+            split(audioFileName, outputFileName, start=start, end=end)
             if pieceCallback:
                 pieceCallback(outputFileName, n, piecesCount)
             if removeFiles:
