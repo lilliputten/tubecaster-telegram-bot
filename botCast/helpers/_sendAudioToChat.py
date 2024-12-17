@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 
-import os
 import telebot  # pyTelegramBotAPI
+import os
 import traceback
 from functools import partial
 
-from core.appConfig import LOCAL
 from core.appConfig import MAX_AUDIO_FILE_SIZE
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString

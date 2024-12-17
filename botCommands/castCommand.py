@@ -7,6 +7,7 @@ from core.logger import getLogger
 from core.utils import debugObj
 
 from botApp import botApp
+from botCore.constants import emojies
 from botCore.helpers import replyOrSend
 from botCast import downloadAndSendAudioToChat
 
@@ -45,7 +46,7 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     args = text.strip().split()
     argsCount = len(args) - 1
     if argsCount < 1:
-        replyMsg = 'Ok, now send the video address:'
+        replyMsg = emojies.success + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
         botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
         return

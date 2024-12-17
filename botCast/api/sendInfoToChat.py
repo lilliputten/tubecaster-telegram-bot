@@ -55,7 +55,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.typingMrCat)
-    rootMessage = replyOrSend(botApp, emojies.waiting + ' Ok, fetching the video details...', chatId, originalMessage)
+    rootMessage = replyOrSend(botApp, emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
 
     # Initally update chat status
     updateChatStatus(chatId)

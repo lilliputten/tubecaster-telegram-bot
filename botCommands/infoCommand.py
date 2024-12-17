@@ -8,6 +8,7 @@ from core.utils import debugObj
 
 from botApp import botApp
 from botCore.helpers import replyOrSend
+from botCore.constants import emojies
 from botCast import sendInfoToChat
 
 _logger = getLogger('botCommands/infoCommand')
@@ -43,7 +44,7 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     args = text.strip().split()
     argsCount = len(args) - 1
     if argsCount < 1:
-        replyMsg = 'Ok, now send the video address:'
+        replyMsg = emojies.success + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
         botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
         return

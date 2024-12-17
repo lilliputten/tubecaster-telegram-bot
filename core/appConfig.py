@@ -51,6 +51,7 @@ AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
 TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))
+LOGGING_CHANNEL_ID = str(appConfig.get('LOGGING_CHANNEL_ID', ''))
 
 # Should be provided by vercel environment for production
 VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))

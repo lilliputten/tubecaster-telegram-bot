@@ -32,7 +32,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
     options: YtdlOptionsType | None = None
 
     try:
-        rootMessage = replyOrSend(botApp, 'Ok, fetching the video details...', chatId, message) if chatId else None
+        rootMessage = replyOrSend(botApp, 'Fetching the video details...', chatId, message) if chatId else None
         options, videoInfo = downloadInfo(url, chatId, username)
 
         filesize = videoInfo.get('filesize')
@@ -59,7 +59,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
                 filter(
                     None,
                     [
-                        'Ok, fetching the audio from the video',
+                        'Extracting an audio from the video',
                         f' ({details})' if details else '',
                         '...',
                     ],

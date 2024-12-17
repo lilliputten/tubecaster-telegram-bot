@@ -47,7 +47,7 @@ def sendAudioPiece(
             [
                 emojies.waiting + ' Extracting an audio',
                 pieceInfo,
-                'from the video',
+                ' from the video',
                 f' ({videoDetails})' if videoDetails else '',
                 '...',
             ],

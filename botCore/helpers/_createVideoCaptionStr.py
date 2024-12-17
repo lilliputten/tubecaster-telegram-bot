@@ -6,11 +6,13 @@ from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
 
 from ..types import TVideoInfo
+from ..constants import emojies
 
-from ._getFormattedVideoFileSize import getFormattedVideoFileSize
-from ._prepareYoutubeDate import prepareYoutubeDate
 from ._getVideoTags import getVideoTags
 from ._getVideoDetailsStr import getVideoDetailsStr
+
+#  from ._getFormattedVideoFileSize import getFormattedVideoFileSize
+#  from ._prepareYoutubeDate import prepareYoutubeDate
 
 
 def createVideoCaptionStr(
@@ -29,7 +31,7 @@ def createVideoCaptionStr(
     # Audio file size...
     audioSizeFmt = getFormattedFileSize(audioFileName)
     # Video file size...
-    videoSizeFmt = getFormattedVideoFileSize(videoInfo)
+    #  videoSizeFmt = getFormattedVideoFileSize(videoInfo)
     videoDetails = getVideoDetailsStr(videoInfo)
     captionStr = ' — '.join(
         filter(
@@ -42,6 +44,7 @@ def createVideoCaptionStr(
     )
     if pieceInfo:
         captionStr += ', part ' + pieceInfo
+    captionStr = emojies.success + ' ' + captionStr
     detailsContent = ' '.join(
         filter(
             None,
@@ -55,30 +58,31 @@ def createVideoCaptionStr(
             ],
         )
     )
-    infoContent = '\n'.join(
-        filter(
-            None,
-            [
-                # fmt: off
-                #  'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
-                #  'Title: %s' % videoInfo.get('title'),
-                #  'Video link: %s' % videoInfo.get('webpage_url'),
-                'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
-                'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
-                'Audio size: %s' % audioSizeFmt,
-                'Video size: %s' % videoSizeFmt,
-                'Resolution: %s' % videoInfo.get('resolution'),
-                'FPS: %s' % videoInfo.get('fps'),
-                'Language: %s' % videoInfo.get('language'),
-                #  'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
-                #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
-                #  'Comments count: %s' % videoInfo.get('comment_count'),
-                #  'Views count: %s' % videoInfo.get('view_count'),
-                #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
-                # fmt: on
-            ],
-        )
-    )
+    #  # NOTE: Temporarily disabled as too noisy
+    #  infoContent = '\n'.join(
+    #      filter(
+    #          None,
+    #          [
+    #              # fmt: off
+    #              #  'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
+    #              #  'Title: %s' % videoInfo.get('title'),
+    #              #  'Video link: %s' % videoInfo.get('webpage_url'),
+    #              'Duration: %s' % timedelta(seconds=int(videoInfo['duration'])) if videoInfo.get('duration') else None,
+    #              'Upload date: %s' % prepareYoutubeDate(videoInfo.get('upload_date')),  # '20160511'
+    #              'Audio size: %s' % audioSizeFmt,
+    #              'Video size: %s' % videoSizeFmt,
+    #              'Resolution: %s' % videoInfo.get('resolution'),
+    #              'FPS: %s' % videoInfo.get('fps'),
+    #              'Language: %s' % videoInfo.get('language'),
+    #              #  'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
+    #              #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
+    #              #  'Comments count: %s' % videoInfo.get('comment_count'),
+    #              #  'Views count: %s' % videoInfo.get('view_count'),
+    #              #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2
+    #              # fmt: on
+    #          ],
+    #      )
+    #  )
     tagsContent = getVideoTags(videoInfo)
     captionContent = '\n\n'.join(
         filter(
