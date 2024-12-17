@@ -4,11 +4,11 @@ from core.appConfig import TELEGRAM_OWNER_ID
 
 from bot.cast.config.castConfig import demoVideo
 
-from bot.cast.api import sendInfoToChat
+from bot.cast.api import downloadAndSendAudioToChat
 
 
 def sendInfoToChatTest():
-    sendInfoToChat(demoVideo, TELEGRAM_OWNER_ID, 'test')
+    downloadAndSendAudioToChat(demoVideo, TELEGRAM_OWNER_ID, 'test')
 
 
 if __name__ == '__main__':

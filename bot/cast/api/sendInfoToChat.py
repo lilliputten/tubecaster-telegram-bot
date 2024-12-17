@@ -24,7 +24,7 @@ from ..types.YtdlOptionsType import YtdlOptionsType
 
 _logger = getLogger('bot/cast/sendInfoToChat')
 
-_timerDelyay = 3
+_timerDelyay = 5
 
 
 def updateChatStatus(chatId: str | int):
@@ -61,8 +61,6 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
 
     # Start update timer
     timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
-
-    sleep(5)
 
     try:
         options, videoInfo = downloadInfo(url, chatId, username)
@@ -109,7 +107,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
                 filter(
                     None,
                     [
-                        emojies.success + ' Ok, the video details is:',
+                        emojies.success + ' Video details:',
                         'Title: %s' % videoInfo.get('title'),
                         'Link: %s' % videoInfo.get('webpage_url'),
                         'Channel: %s' % videoInfo.get('channel'),  # '进出口服务（AHUANG）'
