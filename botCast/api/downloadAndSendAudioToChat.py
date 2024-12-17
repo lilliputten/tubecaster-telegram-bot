@@ -1,124 +1,48 @@
 # -*- coding:utf-8 -*-
 
+import os
+from time import sleep
 import telebot  # pyTelegramBotAPI
 import traceback
-from urllib.request import urlopen
+from functools import partial
 
-from telebot.types import ReplyParameters
-
-from core.helpers.files import getFormattedFileSize
+from core.appConfig import LOCAL
+from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
+from core.helpers.runtime import getModPath
 from core.helpers.time import RepeatedTimer
 from core.logger import getLogger
 
 from botApp import botApp
+from botCore.types import YtdlOptionsType
+from botCore.constants import stickers, emojies
 from botCore.helpers import (
     replyOrSend,
     getVideoDetailsStr,
-    createVideoCaptionStr,
+    getDesiredPiecesCount,
 )
-from botCore.types import YtdlOptionsType, TVideoInfo
-from botCore.constants import stickers, emojies
+from botCore.routines import splitAudio
 
 from ..config.castConfig import logTraceback
+from ..helpers._sendAudioPiece import sendAudioPiece
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
 
-_logger = getLogger('botCast/downloadAndSendAudioToChat')
+_logger = getLogger(getModPath())
 
 _timerDelyay = 5
 
-#  def sendAudioPieceToChat()
+_maxAudioFileSize = 20000
 
 
 def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
     """
-    _logger.info(f'updateChatStatus')
-    botApp.send_chat_action(chatId, action='upload_document')
-
-
-def sendAudioPiece(
-    audioFileName: str,
-    chatId: str | int,
-    rootMessage: telebot.types.Message,
-    videoInfo: TVideoInfo,
-    originalMessage: telebot.types.Message | None = None,
-    pieceNo: int | None = None,
-    piecesCount: int | None = None,
-):
-    videoDetails = getVideoDetailsStr(videoInfo)
-    pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
-    infoContent = ''.join(
-        filter(
-            None,
-            [
-                emojies.waiting + ' Extracting an audio',
-                pieceInfo,
-                'from the video',
-                f' ({videoDetails})' if videoDetails else '',
-                '...',
-            ],
-        )
-    )
-    botApp.edit_message_text(
-        chat_id=chatId,
-        text=infoContent,
-        message_id=rootMessage.id,
-    )
-    audioSizeFmt = getFormattedFileSize(audioFileName)
-    infoContent = ''.join(
-        filter(
-            None,
-            [
-                emojies.waiting + ' Sending the audio',
-                pieceInfo,
-                f' ({audioSizeFmt})' if audioSizeFmt else '',
-                ', extracted from the video',
-                f' ({videoDetails})' if videoDetails else '',
-                '...',
-            ],
-        )
-    )
-    botApp.edit_message_text(
-        chat_id=chatId,
-        text=infoContent,
-        message_id=rootMessage.id,
-    )
-    with open(audioFileName, 'rb') as audio:
-        # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_audio
-        title = videoInfo.get('title')
-        captionContent = createVideoCaptionStr(
-            videoInfo=videoInfo,
-            audioFileName=audioFileName,
-            pieceNo=pieceNo,
-            piecesCount=piecesCount,
-        )
-        thumbnail = videoInfo.get('thumbnail')
-        # Future thumb urlopen handler
-        thumb = None
-        if thumbnail:
-            # It'll be closed in the 'finally' section below
-            thumb = urlopen(thumbnail)
-        try:
-            botApp.send_audio(
-                chatId,
-                audio=audio,
-                caption=captionContent,
-                title=title,
-                performer=videoInfo.get('channel'),
-                duration=videoInfo.get('duration'),
-                thumbnail=thumb,
-                reply_parameters=(
-                    ReplyParameters(chat_id=chatId, message_id=originalMessage.id) if originalMessage else None
-                ),
-            )
-            botApp.delete_message(chatId, rootMessage.id)
-        finally:
-            if thumb:
-                thumb.close()
+    if not LOCAL:
+        _logger.info(f'updateChatStatus')
+        botApp.send_chat_action(chatId, action='upload_document')
 
 
 def downloadAndSendAudioToChat(
@@ -126,7 +50,7 @@ def downloadAndSendAudioToChat(
     chatId: str | int,
     username: str,
     originalMessage: telebot.types.Message | None = None,
-    cleanUp: bool | None = True,
+    cleanUp: bool = not LOCAL,
 ):
     """
     Send info for passed video url.
@@ -137,7 +61,7 @@ def downloadAndSendAudioToChat(
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
-    - cleanUp: bool | None = False - Cleann all the temporarily and generated files at the end (true by default).
+    - cleanUp: bool | None = False - Clean all the temporarily and generated files at the end (true by default).
 
     For tests, use the command:
 
@@ -188,19 +112,48 @@ def downloadAndSendAudioToChat(
         audioFileName = downloadAudioFile(options, videoInfo)
         if not audioFileName:
             raise Exception('Audio file name has not been defined')
-        audioSizeFmt = getFormattedFileSize(audioFileName)
+        audioSize = os.path.getsize(audioFileName)
+        audioSizeFmt = sizeofFmt(audioSize)
         _logger.info(
             f'downloadAndSendAudioToChat: Audio file {audioFileName} (with size: {audioSizeFmt}) has been downloaded'
         )
-        sendAudioPiece(
-            audioFileName=audioFileName,
-            chatId=chatId,
-            rootMessage=rootMessage,
-            videoInfo=videoInfo,
-            originalMessage=originalMessage,
-            pieceNo=0,
-            piecesCount=3,
+        pieceCallback = partial(
+            sendAudioPiece,
+            chatId,
+            rootMessage,
+            videoInfo,
+            originalMessage,
         )
+        useSplit = True
+        if useSplit and audioSize >= _maxAudioFileSize:
+            # File is too large, send it by pieces...
+            piecesCount = getDesiredPiecesCount(audioSize, _maxAudioFileSize)
+            outFilePrefix = audioFileName + '-part'
+            infoMsg = (
+                emojies.waiting
+                + f' The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(_maxAudioFileSize)} and will be divided into {piecesCount} parts...'
+            )
+            botApp.edit_message_text(
+                chat_id=chatId,
+                text=infoMsg,
+                message_id=rootMessage.id,
+            )
+            _logger.info('downloadAndSendAudioToChat: %s' % infoMsg)
+            splitAudio(
+                audioFileName=audioFileName,
+                outFilePrefix=outFilePrefix,
+                piecesCount=piecesCount,
+                pieceCallback=pieceCallback,
+                #  delimiter=delimiter,
+                gap=0,
+                removeFiles=cleanUp,
+            )
+        else:
+            # Send whole file...
+            pieceCallback(
+                audioFileName=audioFileName,
+            )
+        botApp.delete_message(chatId, rootMessage.id)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -210,7 +163,6 @@ def downloadAndSendAudioToChat(
         else:
             _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
         _logger.error('downloadAndSendAudioToChat: ' + errMsg)
-        #  replyOrSend(botApp, errMsg, chatId, originalMessage)
         botApp.edit_message_text(
             chat_id=chatId,
             text=errMsg,

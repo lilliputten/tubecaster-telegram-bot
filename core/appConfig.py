@@ -46,7 +46,7 @@ appConfig = {
 
 LOCAL = bool(appConfig.get('LOCAL'))
 
-AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))
+AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
 
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))

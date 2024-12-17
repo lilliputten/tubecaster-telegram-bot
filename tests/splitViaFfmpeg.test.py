@@ -17,7 +17,7 @@ sys.path.insert(1, PROJECT_PATH)
 # from core.helpers.audio import getDesiredPiecesCount, splitAudio
 
 # Max audio file size for tg bot, in bytes
-maxAudioFileSize = 20000
+_maxAudioFileSize = 20000
 
 
 def pieceCallback(audioFileName: str, pieceNo: int | None, piecesCount: int | None):
@@ -47,9 +47,9 @@ if __name__ == '__main__':
 
     fileSize = os.path.getsize(audioFileName)
     print('Input file size:', fileSize)
-    print('Max file size:', maxAudioFileSize)
+    print('Max file size:', _maxAudioFileSize)
 
-    piecesCount = getDesiredPiecesCount(fileSize, maxAudioFileSize)
+    piecesCount = getDesiredPiecesCount(fileSize, _maxAudioFileSize)
     print('Pieces count:', piecesCount)
 
     # Go splitting
