@@ -1,0 +1,80 @@
+# -*- coding:utf-8 -*-
+
+import pathlib
+import posixpath
+import math
+import os
+import io
+import sys
+import traceback
+
+import librosa
+import soundfile
+
+from core.helpers.audio import getDesiredPiecesCount
+
+
+maxDuration = 3
+# Max audio file size for tg bot, in bytes
+maxAudioFileSize = 20000
+
+
+def splitMp3(inFileName: str, outFilePrefix: str, piecesCount: int):
+    try:
+        print('[splitAudioWithStreams:splitMp3]: Start: ' + inFileName)
+
+        availableFormats = soundfile.available_formats()
+        print('Available formats', repr(availableFormats))
+
+        # NOTE: It doesn't work for mp3 files
+        with soundfile.SoundFile(inFileName) as sf:
+
+            print('SoundFile', sf)
+
+            # @see https://librosa.org/doc/main/generated/librosa.stream.html#librosa.stream
+            stream = librosa.stream(sf, block_length=256, frame_length=4096, hop_length=1024)
+
+            print('Stream', stream)
+
+            for n, block in enumerate(stream):
+                print('XXX', n)
+
+            print('Done')
+
+    except Exception as err:
+        sError = repr(err)   # errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'splitAudioWithStreams:splitMp3: Error processing sound: ' + sError
+        print('splitAudioWithStreams:splitMp3: Traceback for the following error:' + sTraceback)
+        print(errMsg)
+
+
+if __name__ == '__main__':
+    # Project working folder
+    cwd = pathlib.Path(os.getcwd()).as_posix()
+
+    # Output folder
+    outFolder = posixpath.join(cwd, 'tests/out')
+    pathlib.Path(outFolder).mkdir(parents=True, exist_ok=True)
+    print('[splitAudioWithStreams]: Output folder:', outFolder)
+
+    # Output file prefix
+    outFilePrefix = posixpath.join(outFolder, 'test')
+
+    # Test audio file (from args or default one)
+    defaultAudio = 'tests/test-audios/test-short.mp3'
+    #  defaultAudio = 'tests/test-audios/test-short.aac'
+    #  defaultAudio = 'tests/test-audios/StarWars3.wav'
+    filename = sys.argv[1] if len(sys.argv) > 1 else defaultAudio
+    print('[splitAudioWithStreams]: Input file name:', filename)
+    inFileName = posixpath.join(cwd, filename)
+
+    fileSize = os.path.getsize(inFileName)
+    print('[splitAudioWithStreams]: Input file size:', fileSize)
+    print('[splitAudioWithStreams]: Max file size:', maxAudioFileSize)
+
+    piecesCount = getDesiredPiecesCount(fileSize, maxAudioFileSize)
+    print('[splitAudioWithStreams]: Pieces count:', piecesCount)
+
+    # Go splitting
+    splitMp3(inFileName, outFilePrefix, piecesCount)

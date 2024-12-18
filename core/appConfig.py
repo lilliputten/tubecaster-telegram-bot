@@ -7,7 +7,7 @@ import posixpath
 
 
 CHANGED = """
-@changed 2024.12.01, 01:28
+@changed 2024.12.17, 10:45
 """.strip().replace(
     '@changed ', ''
 )
@@ -46,22 +46,31 @@ appConfig = {
 
 LOCAL = bool(appConfig.get('LOCAL'))
 
+AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
+
+# Timezone (set `TZ_HOURS` to hours value to adjust date representation to corresponding timezone)
+TZ_HOURS = appConfig.get('TZ_HOURS_OFFSET')
+
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
 TELEGRAM_OWNER_ID = int(appConfig.get('TELEGRAM_OWNER_ID', '0'))
+LOGGING_CHANNEL_ID = str(appConfig.get('LOGGING_CHANNEL_ID', ''))
 
 # Should be provided by vercel environment for production
 VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
 IS_VERCEL = True if VERCEL_URL else False
 
+# Current root project path
+CWD_PATH = pathlib.Path(os.getcwd()).as_posix()
+
 # Temp path: Use local 'temp' or vercel specific '/tmp' folders for temporary files
-TEMP_PATH = posixpath.join(pathlib.Path(os.getcwd()).as_posix(), 'temp') if LOCAL or not IS_VERCEL else '/tmp'
+TEMP_PATH = posixpath.join(CWD_PATH, 'temp') if LOCAL or not IS_VERCEL else '/tmp'
 
 # Audio...
 
 # Max audio file size for tg bot, in bytes
 # @see https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
-MAX_AUDIO_FILE_SIZE = 50000000
+MAX_AUDIO_FILE_SIZE = int(appConfig.get('MAX_AUDIO_FILE_SIZE', '50000000'))
 
 
 if __name__ == '__main__':

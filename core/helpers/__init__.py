@@ -1,2 +1,2 @@
 from .errors import *
-from .timeStamp import *
+from .time import *

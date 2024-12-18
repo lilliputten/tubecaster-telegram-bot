@@ -1,0 +1,94 @@
+# -*- coding:utf-8 -*-
+
+import pathlib
+import posixpath
+import math
+import os
+import io
+import sys
+import traceback
+
+from pydub import AudioSegment
+
+import librosa
+import soundfile as sf
+
+from core.helpers.audio import getDesiredPiecesCount
+
+
+# Max audio file size for tg bot, in bytes
+maxAudioFileSize = 20000
+
+
+def splitMp3(inFileName: str, outFilePrefix: str, piecesCount: int):
+    try:
+        print('Start: ' + inFileName)
+
+        fh = open(inFileName, 'rb')
+        fhData = fh.read()
+        fhBuf = io.BytesIO(fhData)
+
+        #  audio = AudioSegment.from_file(inFileName) # , format = '3gp')
+        audio = AudioSegment.from_file(fh)   # , format = '3gp')
+        #  .from_mp3(inFileName)
+        print('Audio: ' + repr(audio))
+
+        durationSeconds = audio.duration_seconds
+        pieceDurationSec = durationSeconds / piecesCount
+        print('Duration: ' + repr(durationSeconds))
+        print('Piece duration: ' + repr(pieceDurationSec))
+
+        #  def split_audio(input_file, output_folder, duration):
+        #  total_length = len(audio)
+        #  num_parts = math.ceil(total_length / (duration * 1000))
+
+        for n in range(piecesCount):
+            no = n + 1
+            start = n * pieceDurationSec * 1000
+            end = (n + 1) * pieceDurationSec * 1000
+            split_audio = audio[start:end]
+            outputFile = f'{outFilePrefix}-{no}.mp3'
+            #  output_path = os.path.join(output_folder, f"part_{i+1}.mp3")
+            #  file = split_audio.export(outputFile, format="mp3")
+            file = split_audio.export(format='mp3')
+            print(f'Exported {outputFile}', repr(file))
+
+        print('Finished')
+
+    except Exception as err:
+        sError = repr(err)   # errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'splitMp3: Error processing sound: ' + sError
+        print('splitMp3: Traceback for the following error:' + sTraceback)
+        print(errMsg)
+
+
+if __name__ == '__main__':
+    # Project working folder
+    cwd = pathlib.Path(os.getcwd()).as_posix()
+
+    # Output folder
+    outFolder = posixpath.join(cwd, 'tests/out')
+    pathlib.Path(outFolder).mkdir(parents=True, exist_ok=True)
+    print('Output folder:', outFolder)
+
+    # Output file prefix
+    outFilePrefix = posixpath.join(outFolder, 'test')
+
+    # Test audio file (from args or default one)
+    defaultAudio = 'tests/test-audios/test-short.mp3'
+    #  defaultAudio = 'tests/test-audios/StarWars3.wav'
+    #  defaultAudio = 'tests/test-audios/StarWars3.converted.mp3'
+    filename = sys.argv[1] if len(sys.argv) > 1 else defaultAudio
+    print('Input file name:', filename)
+    inFileName = posixpath.join(cwd, filename)
+
+    fileSize = os.path.getsize(inFileName)
+    print('Input file size:', fileSize)
+    print('Max file size:', maxAudioFileSize)
+
+    piecesCount = getDesiredPiecesCount(fileSize, maxAudioFileSize)
+    print('Pieces count:', piecesCount)
+
+    # Go splitting
+    splitMp3(inFileName, outFilePrefix, piecesCount)

@@ -29,7 +29,7 @@ from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 from core.logger import loggerConfig
 
-from core.helpers.timeStamp import getTimeStamp
+from core.helpers.time import getTimeStamp
 
 #  _appConfig = {
 #      **dotenv_values('.env'),
@@ -146,7 +146,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logStr = formatStr % data
             #  print(logStr)
             logger.info(logStr)
-            timeStr = getTimeStamp(True)
+            timeStr = getTimeStamp()
             response = 'OK ' + timeStr
             # print('Result: ' + response)
             self.wfile.write(response.encode('utf-8'))
