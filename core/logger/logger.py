@@ -8,6 +8,7 @@ import pathlib
 import posixpath
 
 from core.appConfig import appConfig, IS_VERCEL
+from core.helpers.runtime import getModPath
 from core.logger import loggerConfig
 from core.logger.CustomHttpHandler import CustomHttpHandler, customHttpHandlerFormatter
 from concurrent_log_handler import ConcurrentRotatingFileHandler
@@ -30,6 +31,9 @@ _defaultFormatter = logging.Formatter(loggerConfig.formatStr)
 
 
 def getLogger(id: str | None = None):
+    if not id:
+        # Create deafault id (for the parent module, with deep=True getModPath parameter)
+        id = getModPath(True)
     logger = logging.getLogger(id)
     # Default handler (console)...
     consoleHandler = logging.StreamHandler()
