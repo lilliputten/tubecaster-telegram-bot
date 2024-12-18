@@ -22,6 +22,7 @@ concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # librosa = "^0.10.2.post1" # NOTE: ffmpeg is required, see: https://www.ffmpeg.org/download.html
 # pydub = "^0.25.1"
 # ffmpeg-python = "^0.2.0" # @see https://kkroening.github.io/ffmpeg-python/
+prisma = "^0.15.0"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
