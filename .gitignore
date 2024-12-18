@@ -40,13 +40,9 @@ config.local.yml
 
 # Data
 *.db
-db/*
-!db/.keep
 questions.yaml
 
 # Client files
-/local-image.*
-/test-image.*
 /test-*
 /temp*
 

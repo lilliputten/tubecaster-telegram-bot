@@ -60,7 +60,7 @@
         // "-s", ".", // Search in path
         "-p", "*_test.py", // Search pattern
         "-k", // Specify test match string below...
-        "test_getVideoTags_shouldProcessChannelName"        
+        "test_prisma_should_create_record"        
       ],
     },
     {
@@ -72,7 +72,7 @@
         "-f", // It'll stop on first fail
         "db/prisma_test.py",
         // "-k", // Specify test match string below...
-        // "test_getVideoTags_shouldProcessOtherTags"
+        // "test_prisma_should_create_record"
       ],
     },
     {
