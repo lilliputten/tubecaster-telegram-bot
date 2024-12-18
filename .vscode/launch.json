@@ -70,9 +70,9 @@
       "module": "unittest",
       "args": [
         "-f", // It'll stop on first fail
-        "botCore/helpers/_getVideoTags_test.py",
-        "-k", // Specify test match string below...
-        "test_getVideoTags_shouldProcessOtherTags"
+        "db/prisma_test.py",
+        // "-k", // Specify test match string below...
+        // "test_getVideoTags_shouldProcessOtherTags"
       ],
     },
     {
@@ -99,7 +99,7 @@
       "name": "Python: Specific File",
       "type": "debugpy",
       "request": "launch",
-      "program": "tests/downloadAndSendAudioToChat.test.py",
+      "program": "db/_prisma_test.py",
       "console": "integratedTerminal"
     },    
     {

@@ -73,3 +73,4 @@ zia*
 
 .vercel
 .handler-saves
+/prisma/.data*

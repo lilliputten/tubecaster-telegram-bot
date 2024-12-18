@@ -4,24 +4,25 @@
 // See for `DATABASE_URL` parameter in the environment for the sqlite file location (under the `prisma` folder).
 
 generator client {
-  provider = "prisma-client-js"
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
 }
 
 // provider = "sqlite" | "postgresql", see 'prisma-switch.mjs' (if provided)
 // env("DATABASE_URL")
 datasource db {
   provider = "sqlite"
-  url      = "file:database.db"
+  url      = env("DATABASE_URL")
 }
 
-
 model Command {
-  id   Int    @id @default(autoincrement())
-  messageId   Int
-  updateId   Int
-  userId   Int
-  username String
-  isActive Boolean @default(false)
+  id        Int     @id @default(autoincrement())
+  messageId Int
+  updateId  Int
+  userId    Int
+  username  String
+  isActive  Boolean @default(false)
 
   @@map("Commands")
 }

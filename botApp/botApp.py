@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import sys
 import telebot  # pyTelegramBotAPI
 
 from core.appConfig import TELEGRAM_TOKEN
@@ -7,6 +8,8 @@ from core.appConfig import TELEGRAM_TOKEN
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
+
+IS_TEST = 'unittest' in sys.modules.keys()
 
 _logger = getDebugLogger()
 
@@ -47,7 +50,8 @@ def startBotApp():
     return botApp
 
 
-botApp = startBotApp()
+if not IS_TEST:
+    botApp = startBotApp()
 
 
 __all__ = [
