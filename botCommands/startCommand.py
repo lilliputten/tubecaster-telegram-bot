@@ -3,7 +3,7 @@
 import telebot  # pyTelegramBotAPI
 
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.appConfig import LOCAL, appConfig, PROJECT_INFO
 from core.utils import debugObj
 
@@ -13,7 +13,7 @@ from botCore.helpers import createCommonButtonsMarkup
 from botCore import botConfig
 
 
-logger = getLogger('botCommands/startCommand')
+logger = getDebugLogger()
 
 
 def startCommand(chat: telebot.types.Chat):

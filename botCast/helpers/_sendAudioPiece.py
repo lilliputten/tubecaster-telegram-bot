@@ -8,8 +8,8 @@ from urllib.request import urlopen
 
 from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 
 from botApp import botApp
 from botCore.helpers import (
@@ -20,7 +20,7 @@ from botCore.types import TVideoInfo
 from botCore.constants import emojies
 
 
-_logger = getLogger(getModPath())   # 'botCast/helpers/_sendAudioPiece')
+_logger = getDebugLogger()   # 'botCast/helpers/_sendAudioPiece')
 
 
 def sendAudioPiece(

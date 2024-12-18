@@ -3,7 +3,7 @@
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
@@ -11,7 +11,7 @@ from botCore.helpers import replyOrSend
 from botCore.constants import emojies
 from botCast import sendInfoToChat
 
-_logger = getLogger('botCommands/infoCommand')
+_logger = getDebugLogger()
 
 
 def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):

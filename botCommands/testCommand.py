@@ -6,14 +6,14 @@ import traceback
 #  from core.helpers.errors import errorToString
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.appConfig import appConfig, TELEGRAM_OWNER_ID
 
 from botApp import botApp
 from core.utils import debugObj
 
 
-_logger = getLogger('botCommands/testCommand')
+_logger = getDebugLogger()
 
 
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):

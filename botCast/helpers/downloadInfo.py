@@ -2,13 +2,13 @@
 
 from core.helpers.files import youtubeLinkPrefix
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from ..helpers.prepareLinkInfo import prepareLinkInfo
 
 
-_logger = getLogger('botCast/downloadInfo')
+_logger = getDebugLogger()
 
 
 def downloadInfo(

@@ -3,12 +3,12 @@
 import telebot  # pyTelegramBotAPI
 
 from core.appConfig import TELEGRAM_TOKEN
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 
-_logger = getLogger()
+_logger = getDebugLogger()
 
 
 def showDebug():

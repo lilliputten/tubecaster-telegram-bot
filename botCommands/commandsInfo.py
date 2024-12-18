@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 
 commandsInfo = {
@@ -27,9 +27,9 @@ def showInfo():
         '',
         'Here are the bot commands list to provide (via copy/paste) to the BotFather:',
         infoStr,
-        ''
+        #  '',
     ]
-    infoContent = '\n\n'.join(infoItems)
+    infoContent = '\n\n'.join(infoItems) + '\n'
     _logger.info(infoContent)
 
 

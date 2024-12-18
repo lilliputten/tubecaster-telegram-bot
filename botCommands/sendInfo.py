@@ -5,7 +5,7 @@ import telebot  # pyTelegramBotAPI
 from core.appConfig import LOCAL, LOGGING_CHANNEL_ID, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
 
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 
 from botApp import botApp
 from core.utils import debugObj
@@ -13,7 +13,7 @@ from core.utils import debugObj
 from botCore import botConfig
 
 
-logger = getLogger('botCommands/sendInfo')
+logger = getDebugLogger()
 
 commonInfoData = {
     'LOCAL': LOCAL,

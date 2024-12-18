@@ -3,7 +3,7 @@
 from functools import partial
 import telebot  # pyTelegramBotAPI
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
@@ -12,7 +12,7 @@ from botCore.helpers import replyOrSend
 from botCast import downloadAndSendAudioToChat
 
 
-_logger = getLogger('botCommands/castCommand')
+_logger = getDebugLogger()
 
 
 def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):

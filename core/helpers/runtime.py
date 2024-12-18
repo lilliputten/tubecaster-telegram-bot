@@ -8,13 +8,10 @@ import pathlib
 _PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
 
 
-def getModPath(deep: int | bool | None = None, traces: traceback.StackSummary | None = None):
-    if deep:
-        print('[getModPath deep]')
-    # NOTE: Required to pass extracted traceback
+def getModulePath(deep: int | bool | None = None, traces: traceback.StackSummary | None = None):
     if not traces:
         limit = 2
-        if type(deep) is int: # isinstance(deep, int):
+        if type(deep) is int:   # isinstance(deep, int):
             limit = deep
         elif deep:
             limit = 3
@@ -38,7 +35,7 @@ def getTrace(appendStr=None, traces: traceback.StackSummary | None = None):
     # NOTE: Required to pass extracted traceback
     if not traces:
         traces = traceback.extract_stack(None, 2)
-    modPath = getModPath(None, traces)
+    modPath = getModulePath(None, traces)
     modNameMatch = re.search(r'([^\\/]*).py$', modPath)
     modName = modNameMatch.group(1) if modNameMatch else modPath
     funcName = getFuncName(traces)

@@ -9,7 +9,7 @@ See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.helpers.errors import errorToString
 
 from botApp import botApp
@@ -26,7 +26,7 @@ from .startCommand import startCommand
 from .testCommand import testCommand
 
 
-_logger = getLogger('botCommands/commands')
+_logger = getDebugLogger()
 
 _logTraceback = False
 

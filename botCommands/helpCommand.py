@@ -9,7 +9,7 @@ from botCore import botConfig
 from .commandsInfo import commandsInfo
 
 
-#  _logger = getLogger('botCommands/helpCommand')
+#  _logger = getDebugLogger()
 
 
 def helpCommand(chat: telebot.types.Chat):

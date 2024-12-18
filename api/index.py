@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 from core.helpers.time import formatTime
 
 
@@ -13,7 +13,7 @@ from botRoutes import botRoutes
 from botCommands import registerCommands
 
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 
 def showDebug():

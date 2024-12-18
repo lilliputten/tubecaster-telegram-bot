@@ -8,7 +8,7 @@ import re
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.helpers.time import RepeatedTimer
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
@@ -21,9 +21,9 @@ from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadInfo import downloadInfo
 
 
-_logger = getLogger('botCast/sendInfoToChat')
+_logger = getDebugLogger()
 
-_timerDelyay = 5
+_timerDelay = 5
 
 
 def updateChatStatus(chatId: str | int):
@@ -61,7 +61,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
     updateChatStatus(chatId)
 
     # Start update timer
-    timer = RepeatedTimer(_timerDelyay, updateChatStatus, chatId)
+    timer = RepeatedTimer(_timerDelay, updateChatStatus, chatId)
 
     options: YtdlOptionsType | None = None
 

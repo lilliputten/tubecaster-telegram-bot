@@ -4,8 +4,8 @@ import pathlib
 import traceback
 from typing import Callable
 
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split
@@ -18,7 +18,7 @@ TPieceCallback = Callable[[str, int | None, int | None], None]
 
 logTraceback = False
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 
 def splitAudio(

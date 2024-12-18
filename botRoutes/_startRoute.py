@@ -6,9 +6,9 @@ from flask import Response
 
 from core.appConfig import PROJECT_INFO
 from core.helpers.errors import errorToString
-from core.helpers.runtime import getModPath
+
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
@@ -18,7 +18,7 @@ from .botRoutes import botRoutes
 
 startTimeStr = getTimeStamp()
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 logTraceback = False
 

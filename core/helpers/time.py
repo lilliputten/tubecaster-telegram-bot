@@ -42,7 +42,7 @@ def getTimeFormat(precise: TPrecise | None = None):
 def formatTime(precise: TPrecise | None = None, date: TDateLike | None = None):
     format = getTimeFormat(precise)
     dateVal: datetime
-    if type(date) is int: # isinstance(date, int):
+    if type(date) is int:   # isinstance(date, int):
         dateFloat = float(date)
         dateVal = datetime.fromtimestamp(dateFloat)
     elif type(date) is datetime and date:

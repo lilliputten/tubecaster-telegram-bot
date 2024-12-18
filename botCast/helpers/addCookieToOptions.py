@@ -2,12 +2,12 @@
 
 import posixpath
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.appConfig import appConfig
 
 from botCore.types import YtdlOptionsType
 
-_logger = getLogger('botCast/addCookieToOptions')
+_logger = getDebugLogger()
 
 
 def addCookieToOptions(options: YtdlOptionsType):

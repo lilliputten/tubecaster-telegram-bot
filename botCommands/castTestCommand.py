@@ -2,7 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.appConfig import TELEGRAM_OWNER_ID
 
 from botApp import botApp
@@ -10,7 +10,7 @@ from botCast import downloadAndSendAudioToChat
 from botCast.config import demoVideo
 
 
-_logger = getLogger('botCommands/castTestCommand')
+_logger = getDebugLogger()
 
 
 def castTestCommand(chat: telebot.types.Chat, message: telebot.types.Message):
