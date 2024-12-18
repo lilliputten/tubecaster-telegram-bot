@@ -1,37 +1,56 @@
 # -*- coding:utf-8 -*-
 
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO
+from core.helpers.runtime import getModPath
 from core.logger import getLogger
 from core.helpers.time import formatTime
 
 
-# First put he logger record
-WERKZEUG_RUN_MAIN = appConfig.get('WERKZEUG_RUN_MAIN')
-logger = getLogger('api/index')
-timeStr = formatTime()
-logger.info(
-    'App started, PROJECT_INFO=%s, LOCAL=%s, WERKZEUG_RUN_MAIN=%s, time=%s'
-    % (PROJECT_INFO, LOCAL, WERKZEUG_RUN_MAIN, timeStr)
-)
-
-
+from core.utils import debugObj
 from flaskApp import flaskApp
 from botRoutes import botRoutes
 
 from botCommands import registerCommands
 
-# Start the actual app
-flaskApp.register_blueprint(botRoutes, url_prefix='/')
 
-# Start commands
-registerCommands()
+_logger = getLogger(getModPath())
+
+
+def showDebug():
+    """
+    Debug: Show application start info.
+    """
+    timeStr = formatTime()
+    debugItems = {
+        'PROJECT_INFO': PROJECT_INFO,
+        'LOCAL': LOCAL,
+        'WERKZEUG_RUN_MAIN': appConfig.get('WERKZEUG_RUN_MAIN'),
+        'timeStr': timeStr,
+    }
+    logItems = [
+        'Application started',
+        debugObj(debugItems),
+    ]
+    logContent = '\n'.join(logItems)
+    _logger.info(logContent)
+
+
+# Start the actual app
+def startApp():
+    showDebug()
+
+    flaskApp.register_blueprint(botRoutes, url_prefix='/')
+
+    # Start commands
+    registerCommands()
+
+    return flaskApp
 
 
 # Expose `app` variable
-app = flaskApp
+app = startApp()
 __all__ = ['app']
 
 
 if __name__ == '__main__':
-    token = appConfig.get('TELEGRAM_TOKEN')
-    logger.debug('Token: %s' % token)
+    _logger.debug('PROJECT_INFO: %s' % PROJECT_INFO)

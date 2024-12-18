@@ -61,8 +61,8 @@ def webhookRoute():
     messageChat = message.chat if message else None
     messageDate = formatTime(None, message.date) if message else None
     messageFromUser = message.from_user if message else None
-    fromUserId = messageFromUser.id if messageFromUser else None
-    fromUserUsername = messageFromUser.username if messageFromUser else None
+    userId = messageFromUser.id if messageFromUser else None
+    username = messageFromUser.username if messageFromUser else None
     chatId = messageChat.id if messageChat else None
     obj = {
         'startTimeStr': startTimeStr,
@@ -79,8 +79,8 @@ def webhookRoute():
         'messageId': messageId,
         'messageContentType': messageContentType,
         'messageDate': messageDate,
-        'fromUserId': fromUserId,
-        'fromUserUsername': fromUserUsername,
+        'userId': userId,
+        'username': username,
         'chatId': chatId,
     }
     debugData = debugObj(obj)
@@ -100,7 +100,7 @@ def webhookRoute():
             logContent = '\n'.join(
                 [
                     'webhookRoute: Update %d finished' % updateId,
-                    debugData,
+                    #  debugData,
                 ]
             )
             _logger.info(logContent)

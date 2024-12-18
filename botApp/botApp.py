@@ -2,20 +2,18 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.appConfig import LOCAL, TELEGRAM_TOKEN, PROJECT_INFO
+from core.appConfig import TELEGRAM_TOKEN
 from core.helpers.runtime import getModPath
 from core.logger import getLogger
 from core.utils import debugObj
 
 
-_logger = getLogger(getModPath())
+_logger = getLogger()
 
 
 def showDebug():
     debugItems = {
-        'PROJECT_INFO': PROJECT_INFO,
         'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
-        'LOCAL': LOCAL,
     }
     logItems = [
         'botApp started',
