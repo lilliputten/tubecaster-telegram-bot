@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Clean all temp files
-# @changed 2024.11.23, 19:54
+# @changed 2024.12.19, 14:03
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
@@ -33,12 +33,14 @@ $FINDCMD . \
     -o -name '__pycache__' \
   \) \
   -exec $RMCMD -Rvf {} \; \
-  ; echo OK
-
-# $RMCMD -Rf \
-#   *_ \
-#   *.py[co] \
-#   .*sw[op] \
-#   *.bak \
-#   *.tmp
-
+; $RMCMD -Rf \
+  *.log \
+  local.log* \
+  .*.lock \
+  *_ \
+  *~ \
+  *.py[co] \
+  .*sw[op] \
+  *.bak \
+  *.tmp \
+; echo OK

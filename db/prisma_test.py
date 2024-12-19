@@ -7,11 +7,19 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _prisma_test`
 
 import os
+import sys
+import pathlib
+
 from typing import Optional
 from unittest import TestCase, main, mock
 
 from prisma import Prisma
 from prisma.models import Command
+
+# Inject project path to allow server-side tests
+PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
+print('Project path:', PROJECT_PATH)
+sys.path.insert(1, PROJECT_PATH)
 
 from db.dbConfig import testEnv
 
