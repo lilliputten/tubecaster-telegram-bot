@@ -5,15 +5,18 @@ from flask import Response
 from flask import request
 import telebot  # pyTelegramBotAPI
 
+from prisma import Prisma
+from prisma.models import Command
+
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
-
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
 
+# from botCore.helpers._getUserName import getUserName
 from botCore.botConfig import WEBHOOK_URL
 
 from .botRoutes import botRoutes
@@ -55,14 +58,14 @@ def webhookRoute():
     updateId = update.update_id if update else None
     message = update.message if update else None
     messageText = message.text if message else None
-    messageId = message.id if message else None
+    messageId = message.id if message else 0
     #  messageJson = message.json if message else None
     messageContentType = message.content_type if message else None
     messageChat = message.chat if message else None
     messageDate = formatTime(None, message.date) if message else None
-    messageFromUser = message.from_user if message else None
-    userId = messageFromUser.id if messageFromUser else None
-    username = messageFromUser.username if messageFromUser else None
+    user = message.from_user if message else None
+    userId = user.id if user else 0
+    # usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
     obj = {
         'startTimeStr': startTimeStr,
@@ -73,14 +76,14 @@ def webhookRoute():
         'message': repr(message),
         #  'messageJson': repr(messageJson),
         'messageChat': repr(messageChat),
-        'messageFromUser': repr(messageFromUser),
+        'user': repr(user),
         'updateId': updateId,
         'messageText': messageText,
         'messageId': messageId,
         'messageContentType': messageContentType,
         'messageDate': messageDate,
         'userId': userId,
-        'username': username,
+        # 'usernameStr': usernameStr,
         'chatId': chatId,
     }
     debugData = debugObj(obj)
@@ -92,11 +95,33 @@ def webhookRoute():
     )
     _logger.info(logContent)
 
+    db: Prisma | None = None
+    command: Command | None = None
+
     if update:
         try:
             if not update or not updateId:
                 raise Exception('No update id provided!')
+
+            # # Store the command data...
+            # db = Prisma()
+            # if not db.is_connected():
+            #     db.connect()
+            # # TODO: Check if this command (by messageId) exists in the database?
+            # command = db.command.create(
+            #     data={
+            #         'updateId': updateId,
+            #         'messageId': messageId,
+            #         'userId': userId,
+            #         'userStr': usernameStr,
+            #     },
+            # )
+            # db.disconnect()
+
+            # Process the command...
             botApp.process_new_updates([update])
+
+            # Done, show info
             logContent = '\n'.join(
                 [
                     'webhookRoute: Update %d finished' % updateId,
@@ -114,5 +139,16 @@ def webhookRoute():
                 _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
             _logger.error(errMsg)
             return Response(errMsg, headers={'Content-type': 'text/plain'})
+        # finally:
+        #     # Remove stored command...
+        #     if db and command:
+        #         if not db.is_connected():
+        #             db.connect()
+        #         db.command.delete(
+        #             where={
+        #                 'id': command.id,
+        #             },
+        #         )
+        #         db.disconnect()
 
     return Response('OK', headers={'Content-type': 'text/plain'})

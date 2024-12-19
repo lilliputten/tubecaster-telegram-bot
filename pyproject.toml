@@ -12,7 +12,7 @@ packages = [
 
 [tool.poetry.dependencies]
 # NOTE: ffmpeg is required, see: https://www.ffmpeg.org/download.html
-python = "^3.10"
+python = "^3.11"
 flask = "^3.1.0"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"

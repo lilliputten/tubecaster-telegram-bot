@@ -5,7 +5,7 @@ import telebot  # pyTelegramBotAPI
 
 def getUserName(user: telebot.types.User | None):
     if not user:
-        return None
+        return 'Unknown'
     userId = user.id if user else None
     username = user.username if user else None
     firstName = user.first_name if user else None
