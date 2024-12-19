@@ -43,7 +43,7 @@ class Test_prisma(TestCase):
                     'updateId': 1,
                     'messageId': 1,
                     'userId': 1,
-                    'username': 'Test user',
+                    'userStr': 'Test user',
                 },
             )
             # Should have numeric id property

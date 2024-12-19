@@ -21,7 +21,7 @@ model Command {
   messageId Int
   updateId  Int
   userId    Int
-  username  String
+  userStr   String
   isActive  Boolean @default(false)
 
   @@map("Commands")
