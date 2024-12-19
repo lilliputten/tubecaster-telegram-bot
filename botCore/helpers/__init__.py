@@ -2,7 +2,8 @@ from ._createCommonButtonsMarkup import createCommonButtonsMarkup
 from ._createVideoCaptionStr import createVideoCaptionStr
 from ._getDesiredPiecesCount import getDesiredPiecesCount
 from ._getFormattedVideoFileSize import getFormattedVideoFileSize
-from ._getUserName import getUserName
+
+# from ._getUserName import getUserName
 from ._getVideoDetailsStr import getVideoDetailsStr
 from ._getVideoTags import getVideoTags
 from ._prepareYoutubeDate import prepareYoutubeDate
@@ -13,7 +14,7 @@ __all__ = [
     'createVideoCaptionStr',
     'getDesiredPiecesCount',
     'getFormattedVideoFileSize',
-    'getUserName',
+    # 'getUserName',
     'getVideoDetailsStr',
     'getVideoTags',
     'prepareYoutubeDate',

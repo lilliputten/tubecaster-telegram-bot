@@ -13,12 +13,12 @@ from core.appConfig import (
 
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger
-
-from botApp import botApp
-from botCore.helpers import getUserName
 from core.utils import debugObj
 
+from botApp import botApp
 from botCore import botConfig
+
+# from botCore.helpers._getUserName import getUserName
 
 
 logger = getDebugLogger()
@@ -51,13 +51,11 @@ def sendCommandInfo(message: telebot.types.Message):
     messageDate = formatTime(None, message.date)
     user = message.from_user
     userId = user.id if user else None
-    #  chatId = chat.id
     text = message.text
-    usernameStr = getUserName(user)
+    # usernameStr = getUserName(user)
     json = message.json
     fromData: dict = json.get('from', {})
     languageCode = fromData.get('language_code')
-    #  userId = fromData.get('id')
     commandHash = ' '.join(
         list(
             filter(
@@ -79,9 +77,8 @@ def sendCommandInfo(message: telebot.types.Message):
         'stickerSetName': stickerSetName,
         'stickerEmoji': stickerEmoji,
         'timeStr': getTimeStamp(),
-        #  'chatId': chatId,
         'userId': userId,
-        'usernameStr': usernameStr,
+        # 'usernameStr': usernameStr,
         'languageCode': languageCode,
         'messageDate': messageDate,
         **commonInfoData,
@@ -111,14 +108,14 @@ def sendQueryInfo(query: telebot.types.CallbackQuery):
     message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
 
     userId = user.id
-    usernameStr = getUserName(user)
+    # usernameStr = getUserName(user)
     text = message.text if message else None
 
     obj = {
         'data': data,
         'text': text,
         'userId': userId,
-        'usernameStr': usernameStr,
+        # 'usernameStr': usernameStr,
         'gameShortName': gameShortName,
         'id': id,
         'inlineMessageId': inlineMessageId,

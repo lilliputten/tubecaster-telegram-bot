@@ -4,7 +4,6 @@ import sys
 import telebot  # pyTelegramBotAPI
 
 from core.appConfig import TELEGRAM_TOKEN
-
 from core.logger import getDebugLogger
 from core.utils import debugObj
 

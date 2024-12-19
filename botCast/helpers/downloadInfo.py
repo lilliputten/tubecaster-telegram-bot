@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 
 from core.helpers.time import getTimeStamp
-from core.helpers.urls import isYoutubeLink
+
+# from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
@@ -19,8 +20,8 @@ def downloadInfo(
     """
     This is usually the first action: to retrieve the video info from youtube.
     """
-    if not isYoutubeLink(url):
-        raise Exception('The url should be a valid youtube link. But we got: %s' % url)
+    # if not isYoutubeLink(url):
+    #     raise Exception('The url should be a valid youtube link. But we got: %s' % url)
 
     # Start...
     obj = {
