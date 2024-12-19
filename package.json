@@ -1,7 +1,7 @@
 {
   "name": "tubecaster-telegram-bot",
   "version": "0.0.10",
-  "timestamp": "2024.12.18 17:54:07 +0300",
+  "timestamp": "2024.12.19 23:15:01 +0300",
   "changed": "2024.12.19, 22:42",
   "description": "Simple video to audio caster telegram bot: @tubecasterbot",
   "main_": "api/index.py",

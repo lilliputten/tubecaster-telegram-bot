@@ -21,7 +21,7 @@ PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
 print('Project path:', PROJECT_PATH)
 sys.path.insert(1, PROJECT_PATH)
 
-from db.dbConfig import testEnv
+from db._testDbConfig import testEnv
 
 
 @mock.patch.dict(os.environ, testEnv)
