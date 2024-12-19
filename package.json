@@ -2,7 +2,7 @@
   "name": "tubecaster-telegram-bot",
   "version": "0.0.10",
   "timestamp": "2024.12.18 17:54:07 +0300",
-  "changed": "2024.12.19, 14:04",
+  "changed": "2024.12.19, 22:42",
   "description": "Simple video to audio caster telegram bot: @tubecasterbot",
   "main_": "api/index.py",
   "keywords": ["python", "flask", "telegram", "bot", "youtube"],
@@ -17,10 +17,11 @@
     "syslog-server": "^1.0.1"
   },
   "scripts": {
-    "prisma-generate-UNUSED": "echo --Switch database client-- && node prisma-switch.mjs",
+    "prisma-switch-UNUSED": "echo --Switch database client-- && node prisma-switch.mjs",
     "prisma-generate": "echo --Generate database client-- && poetry run prisma generate",
     "prisma-db-push": "echo --Create database-- && poetry run prisma db push",
     "prisma-db-push-test": "echo --Create test database-- && cross-env DATABASE_URL='file:.data-test.db' poetry run prisma db push",
+    "prisma-init": "echo --Initialize prisma environment- && npm-run-all prisma-generate prisma-db-push prisma-db-push-test",
     "prisma-studio": "echo --Run database explorer-- && poetry run prisma studio",
     "prisma-studio-test": "echo --Run database explorer-- && cross-env DATABASE_URL='file:.data-test.db' poetry run prisma studio",
     "ngrok-tunnel": "echo --Start ngrok tunnel for flask and logging server (don't forget to add following ngrok address WEBHOOK_HOST to .env.local for webhook or .env.logging-ngrok for logging)-- && ngrok http 5000",
@@ -32,6 +33,7 @@
     "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
     "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all pyformat pylint",
     "pytests": "echo --Run python tests /poetry/venv/-- && poetry run python -m unittest discover -v -f -t . -s . -p *_test.py",
+    "dev-venv": "echo --Run flask dev server under venv-- && flask --app api --debug run",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
     "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"

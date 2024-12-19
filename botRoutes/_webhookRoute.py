@@ -5,8 +5,8 @@ from flask import Response
 from flask import request
 import telebot  # pyTelegramBotAPI
 
-from prisma import Prisma
-from prisma.models import Command
+# from prisma import Prisma
+# from prisma.models import Command
 
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
@@ -16,7 +16,7 @@ from core.utils import debugObj
 
 from botApp import botApp
 
-# from botCore.helpers._getUserName import getUserName
+from botCore.helpers import getUserName
 from botCore.botConfig import WEBHOOK_URL
 
 from .botRoutes import botRoutes
@@ -65,7 +65,7 @@ def webhookRoute():
     messageDate = formatTime(None, message.date) if message else None
     user = message.from_user if message else None
     userId = user.id if user else 0
-    # usernameStr = getUserName(user)
+    usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
     obj = {
         'startTimeStr': startTimeStr,
@@ -95,8 +95,8 @@ def webhookRoute():
     )
     _logger.info(logContent)
 
-    db: Prisma | None = None
-    command: Command | None = None
+    # db: Prisma | None = None
+    # command: Command | None = None
 
     if update:
         try:

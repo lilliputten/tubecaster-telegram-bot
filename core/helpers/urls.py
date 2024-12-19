@@ -1,11 +1,7 @@
 # -*- coding:utf-8 -*-
 
 
-import re
-
-# from ..constants import youtubeLinkPrefixRegex
-
-youtubeLinkPrefixRegex = re.compile(r'^https://(\w*\.)?(youtube\.com|youtu\.be)/')
+from ..constants import youtubeLinkPrefixRegex
 
 
 def isYoutubeLink(url: str):

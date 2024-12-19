@@ -1,8 +1,7 @@
 import re
 import os
 
-# from ..constants import youtubeLinkPrefixRegex
-youtubeLinkPrefixRegex = re.compile(r'^https://(\w*\.)?(youtube\.com|youtu\.be)/')
+from ..constants import youtubeLinkPrefixRegex
 
 
 def getIdFromName(name: str):

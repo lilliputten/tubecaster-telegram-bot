@@ -3,7 +3,6 @@
 import telebot  # pyTelegramBotAPI
 import traceback
 
-#  from core.helpers.errors import errorToString
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger
@@ -12,7 +11,7 @@ from core.utils import debugObj
 
 from botApp import botApp
 
-# from botCore.helpers._getUserName import getUserName
+from botCore.helpers import getUserName
 
 
 _logger = getDebugLogger()
@@ -40,7 +39,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'chatId': chatId,
             #  'userId': userId,
             'name': name,
-            # 'usernameStr': getUserName(user),
+            'usernameStr': getUserName(user),
             'languageCode': languageCode,
             'LOCAL': appConfig.get('LOCAL'),
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),

@@ -44,7 +44,10 @@ def startBotApp():
 
     # @see https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py
     botApp.enable_save_next_step_handlers(delay=2)
-    botApp.load_next_step_handlers()
+
+    # XXX: This line causes an error:
+    # AttributeError: partially initialized module 'botApp.botApp' has no attribute 'message_handler' (most likely due to a circular import)
+    # botApp.load_next_step_handlers()
 
     return botApp
 

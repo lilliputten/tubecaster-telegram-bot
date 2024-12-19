@@ -99,6 +99,7 @@ def defaultCommand(message):
     try:
         contentType = message.content_type
         text = message.text
+        # The command text seems to be an youtube video link, so try to cast it...
         if contentType == 'text' and isYoutubeLink(text):
             _logger.info('defaultCommand: Processing as a cast command')
             castCommand(message.chat, message)
