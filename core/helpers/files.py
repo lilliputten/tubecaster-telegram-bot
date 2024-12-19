@@ -1,8 +1,7 @@
 import re
 import os
 
-# @see https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486
-youtubeLinkPrefix = re.compile(r'^https://(\w*\.)?(youtube\.com|youtu\.be)/')
+from .. import constants
 
 
 def getIdFromName(name: str):
@@ -14,7 +13,7 @@ def getIdFromName(name: str):
 
 def getFileIdFromUrl(url: str, username: str):
     filename = url
-    filename = re.sub(youtubeLinkPrefix, '', filename)
+    filename = re.sub(constants.youtubeLinkPrefixRegex, '', filename)
     filename = getIdFromName(filename)
     filename = re.sub(r'^watch-v-', '', filename)
     if username:

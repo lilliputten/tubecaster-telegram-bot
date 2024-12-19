@@ -25,6 +25,7 @@ def startCommand(chat: telebot.types.Chat):
         'timeStr': getTimeStamp(),
         'chatId': chatId,
         'username': username,
+        # 'usernameStr': getUserName(user),
         'first_name': first_name,
         'LOCAL': appConfig.get('LOCAL'),
     }

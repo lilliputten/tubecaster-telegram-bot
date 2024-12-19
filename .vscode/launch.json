@@ -6,6 +6,26 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Flask server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        // NOTE: Default options are parsed from `.flaskenv` file
+        // "FLASK_APP": "src/server.py:app",
+        // "FLASK_ENV": "development",
+        // "FLASK_DEBUG": "0",
+      },
+      "args": [
+        "--app",
+        "api",
+        "--debug",
+        "run",
+        //  "--no-debugger",
+      ],
+      "jinja": true
+    },
+    {
       "name": "Poetry flask server",
       "type": "debugpy",
       "request": "launch",
@@ -19,26 +39,6 @@
       "args": [
         "run",
         "flask",
-        "--app",
-        "api",
-        "--debug",
-        "run",
-        //  "--no-debugger",
-      ],
-      "jinja": true
-    },
-    {
-      "name": "Flask server",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "flask",
-      "env": {
-        // NOTE: Default options are parsed from `.flaskenv` file
-        // "FLASK_APP": "src/server.py:app",
-        // "FLASK_ENV": "development",
-        // "FLASK_DEBUG": "0",
-      },
-      "args": [
         "--app",
         "api",
         "--debug",

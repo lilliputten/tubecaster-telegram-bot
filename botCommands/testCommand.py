@@ -4,6 +4,7 @@ import telebot  # pyTelegramBotAPI
 import traceback
 
 #  from core.helpers.errors import errorToString
+from botCore.helpers import getUserName
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger
@@ -20,6 +21,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     try:
         chatId = chat.id  # Is userId
         text = message.text
+        user = message.from_user
         username = chat.username
         first_name = chat.first_name
         last_name = chat.last_name
@@ -36,15 +38,16 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'timeStr': getTimeStamp(),
             'chatId': chatId,
             #  'userId': userId,
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
+            'name': name,
+            'usernameStr': getUserName(user),
+            #  'first_name': first_name,
+            #  'last_name': last_name,
             'languageCode': languageCode,
             'LOCAL': appConfig.get('LOCAL'),
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
         }
-        debugStr = debugObj(obj)  # , _debugKeysList)
+        debugStr = debugObj(obj)
         logContent = '\n'.join(
             [
                 'testCommand: %s' % text,

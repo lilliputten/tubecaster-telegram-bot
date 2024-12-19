@@ -9,6 +9,7 @@ See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 import telebot  # pyTelegramBotAPI
 import traceback
 
+from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.helpers.errors import errorToString
 
@@ -96,14 +97,20 @@ def defaultCommand(message):
     sendCommandInfo(message)
     chatId = message.chat.id
     try:
-        botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
-        markup = createCommonButtonsMarkup()
-        botApp.send_message(
-            message.chat.id,
-            emojies.robot
-            + " Ok, I'm here and look forward to your command.\n\nSee /help for the list of the available commands.",
-            reply_markup=markup,
-        )
+        contentType = message.content_type
+        text = message.text
+        if contentType == 'text' and isYoutubeLink(text):
+            _logger.info('defaultCommand: Processing as a cast command')
+            castCommand(message.chat, message)
+        else:
+            botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
+            markup = createCommonButtonsMarkup()
+            botApp.send_message(
+                message.chat.id,
+                emojies.robot
+                + " Ok, I'm here and look forward to your command.\n\nSee /help for the list of the available commands.",
+                reply_markup=markup,
+            )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
