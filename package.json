@@ -2,7 +2,7 @@
   "name": "tubecaster-telegram-bot",
   "version": "0.0.10",
   "timestamp": "2024.12.20 00:46:32 +0300",
-  "changed": "2024.12.19, 22:42",
+  "changed": "2024.12.20, 00:50",
   "description": "Simple video to audio caster telegram bot: @tubecasterbot",
   "main_": "api/index.py",
   "keywords": ["python", "flask", "telegram", "bot", "youtube"],
@@ -32,8 +32,7 @@
     "pyformat-autopep8": "echo --Run autopep8 python formatter-- && poetry run autopep8 .",
     "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
     "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all pyformat pylint",
-    "pytests": "echo --Run python tests /poetry/venv/-- && poetry run python -m unittest discover -v -f -t . -s . -p *_test.py",
-    "dev-venv": "echo --Run flask dev server under venv-- && flask --app api --debug run",
+    "pytests": "echo --Run python tests with poetry-- && poetry run python -m unittest discover -v -f -t . -s . -p *_test.py",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
     "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"
