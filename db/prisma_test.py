@@ -17,9 +17,7 @@ from prisma import Prisma
 from prisma.models import Command
 
 # Inject project path to allow server-side tests
-PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
-print('Project path:', PROJECT_PATH)
-sys.path.insert(1, PROJECT_PATH)
+sys.path.insert(1, pathlib.Path(os.getcwd()).as_posix())
 
 from db._testDbConfig import testEnv
 

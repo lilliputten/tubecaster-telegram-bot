@@ -70,7 +70,7 @@
       "module": "unittest",
       "args": [
         "-f", // It'll stop on first fail
-        "db/prisma_test.py",
+        "db/_deleteCommandById_test.py",
         // "-k", // Specify test match string below...
         // "test_prisma_should_create_record"
       ],
