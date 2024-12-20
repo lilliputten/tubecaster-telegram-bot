@@ -35,7 +35,7 @@ class Test_prisma(TestCase):
         self.db = Prisma()
         self.db.connect()
 
-    def tearUp(self):
+    def tearDown(self):
         self.db.disconnect()
 
     def test_prisma_should_connect(self):

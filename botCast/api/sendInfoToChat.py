@@ -138,7 +138,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = emojies.error + ' Error fetching an video info: ' + errText
+        errMsg = emojies.error + ' Error fetching a video info: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:

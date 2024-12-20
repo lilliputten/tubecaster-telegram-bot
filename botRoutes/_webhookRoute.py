@@ -1,12 +1,10 @@
 # -*- coding:utf-8 -*-
 
 import traceback
+from typing import Optional
 from flask import Response
 from flask import request
 import telebot  # pyTelegramBotAPI
-
-# from prisma import Prisma
-# from prisma.models import Command
 
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
@@ -14,8 +12,12 @@ from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
+from db.types import TNewCommandData, TPrismaCommand
+from db import checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
+
 from botApp import botApp
 
+from botCore.constants import emojies
 from botCore.helpers import getUserName
 from botCore.botConfig import WEBHOOK_URL
 
@@ -67,7 +69,7 @@ def webhookRoute():
     userId = user.id if user else 0
     usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
-    obj = {
+    debugData = {
         'startTimeStr': startTimeStr,
         'timeStr': timeStr,
         'WEBHOOK_URL': WEBHOOK_URL,
@@ -86,49 +88,97 @@ def webhookRoute():
         # 'usernameStr': usernameStr,
         'chatId': chatId,
     }
-    debugData = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'webhookRoute: Update %d started' % updateId,
-            debugData,
-        ]
-    )
+    debugStr = debugObj(debugData)
+    logItems = [
+        'webhookRoute: Update %d for message %d started' % (updateId, messageId),
+        debugStr,
+    ]
+    logContent = '\n'.join(logItems)
     _logger.info(logContent)
 
     # db: Prisma | None = None
     # command: Command | None = None
 
     if update:
+        createdCommand: Optional[TPrismaCommand] = None
+        # isFinished: bool = False
         try:
             if not update or not updateId:
-                raise Exception('No update id provided!')
+                raise Exception('No update id has been provided!')
+            if not messageId:
+                raise Exception('No message id has been provided!')
 
-            # # Store the command data...
-            # db = Prisma()
-            # if not db.is_connected():
-            #     db.connect()
-            # # TODO: Check if this command (by messageId) exists in the database?
-            # command = db.command.create(
-            #     data={
-            #         'updateId': updateId,
-            #         'messageId': messageId,
-            #         'userId': userId,
-            #         'userStr': usernameStr,
-            #     },
-            # )
-            # db.disconnect()
-
-            # Process the command...
-            botApp.process_new_updates([update])
-
-            # Done, show info
-            logContent = '\n'.join(
-                [
-                    'webhookRoute: Update %d finished' % updateId,
-                    #  debugData,
+            existedCommand = checkCommandExistsForMessageId(messageId)
+            if existedCommand:
+                # Command already exists, do nothing, but notify user
+                debugData = {
+                    'commandId': existedCommand.id,
+                    'repeated': existedCommand.repeated,
+                    'createdAtStr': formatTime(None, existedCommand.createdAt),
+                    'updatedAtStr': formatTime(None, existedCommand.updatedAt),
+                    'timeStr': timeStr,
+                    'messageChat': repr(messageChat),
+                    'updateId': updateId,
+                    'messageText': messageText,
+                    'messageId': messageId,
+                    'messageContentType': messageContentType,
+                    'messageDate': messageDate,
+                    'userId': userId,
+                    'usernameStr': usernameStr,
+                    'chatId': chatId,
+                }
+                debugStr = debugObj(debugData)
+                logItems = [
+                    'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
+                    debugStr,
                 ]
-            )
-            _logger.info(logContent)
+                logContent = '\n'.join(logItems)
+                _logger.info(logContent)
+                # TODO: Update message: Find first temp message and
+                if chatId:
+                    newMessage = botApp.send_message(
+                        chatId,
+                        emojies.waiting + ' Your command is still processing, be patient, please...',
+                    )
+                    addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
+                    # TODO: Add new command to temp messages
+            else:
+                # Create new command
+                commandData: TNewCommandData = {
+                    'updateId': updateId,
+                    'messageId': messageId,
+                    'userId': userId,
+                    'userStr': usernameStr,
+                }
+                createdCommand = addCommand(commandData)
+
+                # Process the command...
+                botApp.process_new_updates([update])
+
+                debugData = {
+                    'commandId': createdCommand.id,
+                    'createdAtStr': formatTime(None, createdCommand.createdAt),
+                    'updatedAtStr': formatTime(None, createdCommand.updatedAt),
+                    'timeStr': timeStr,
+                    'messageChat': repr(messageChat),
+                    'updateId': updateId,
+                    'messageText': messageText,
+                    'messageId': messageId,
+                    'messageContentType': messageContentType,
+                    'messageDate': messageDate,
+                    'userId': userId,
+                    'usernameStr': usernameStr,
+                    'chatId': chatId,
+                }
+                debugStr = debugObj(debugData)
+                logItems = [
+                    'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
+                    debugStr,
+                ]
+                logContent = '\n'.join(logItems)
+
+                _logger.info(logContent)
+                # isFinished = True
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
@@ -139,16 +189,10 @@ def webhookRoute():
                 _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
             _logger.error(errMsg)
             return Response(errMsg, headers={'Content-type': 'text/plain'})
-        # finally:
-        #     # Remove stored command...
-        #     if db and command:
-        #         if not db.is_connected():
-        #             db.connect()
-        #         db.command.delete(
-        #             where={
-        #                 'id': command.id,
-        #             },
-        #         )
-        #         db.disconnect()
+        finally:
+            # Remove created command...
+            if createdCommand:
+                # TODO: Remove temp messages
+                deleteCommandById(createdCommand.id)
 
     return Response('OK', headers={'Content-type': 'text/plain'})

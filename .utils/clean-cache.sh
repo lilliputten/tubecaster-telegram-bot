@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Clean all temp files
-# @changed 2024.12.19, 14:03
+# @changed 2024.12.20, 12:20
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
@@ -23,7 +23,6 @@ $FINDCMD . \
   -not \( -name '*UNUSED' -prune \) \
   -not \( -name 'publish*' -prune \) \
   -not \( -name 'node_modules' -prune \) \
-  \
   \( \
     -name '*_' \
     -o -name '*.py[co]' \
@@ -35,6 +34,7 @@ $FINDCMD . \
   -exec $RMCMD -Rvf {} \; \
 ; $RMCMD -Rf \
   *.log \
+  .handler-saves \
   local.log* \
   .*.lock \
   *_ \

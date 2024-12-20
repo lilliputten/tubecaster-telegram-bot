@@ -31,6 +31,7 @@ def initWebhook():
     return botApp.set_webhook(
         url=WEBHOOK_URL,
         timeout=600,  # Increase timeout to allow long video downloads
+        drop_pending_updates=True,
     )
 
 

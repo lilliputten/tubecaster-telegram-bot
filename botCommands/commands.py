@@ -6,6 +6,7 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
+from time import sleep
 import telebot  # pyTelegramBotAPI
 import traceback
 
@@ -36,6 +37,12 @@ _logTraceback = False
 def testReaction(message: telebot.types.Message):
     sendCommandInfo(message)
     testCommand(message.chat, message)
+
+
+@botApp.message_handler(commands=['castTest'])
+def castTestReaction(message: telebot.types.Message):
+    sendCommandInfo(message)
+    castTestCommand(message.chat, message)
 
 
 @botApp.message_handler(commands=['help'])
@@ -70,12 +77,6 @@ def startCast(query: telebot.types.CallbackQuery):
     castCommand(message.chat, message)
 
 
-@botApp.message_handler(commands=['castTest'])
-def castTestReaction(message: telebot.types.Message):
-    sendCommandInfo(message)
-    castTestCommand(message.chat, message)
-
-
 @botApp.message_handler(commands=['cast'])
 def castReaction(message: telebot.types.Message):
     sendCommandInfo(message)
@@ -102,7 +103,10 @@ def defaultCommand(message):
         # The command text seems to be an youtube video link, so try to cast it...
         if contentType == 'text' and isYoutubeLink(text):
             _logger.info('defaultCommand: Processing as a cast command')
-            castCommand(message.chat, message)
+            # DEBUG!
+            sleep(100)
+            print('OK')
+            # castCommand(message.chat, message)
         else:
             botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
             markup = createCommonButtonsMarkup()
