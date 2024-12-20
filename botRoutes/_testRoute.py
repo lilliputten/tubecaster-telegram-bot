@@ -46,7 +46,7 @@ def testRoute():
             'LOGS_SERVER_HOST': appConfig.get('LOGS_SERVER_HOST'),
             'LOGS_SERVER_URL': loggerConfig.LOGS_SERVER_URL,
             'LOGS_SERVER_PORT': appConfig.get('LOGS_SERVER_PORT'),
-            'YT_COOKIE': truncStr(appConfig.get('YT_COOKIE', 'NONE'), 50),
+            # 'YT_COOKIE': truncStr(appConfig.get('YT_COOKIE', 'NONE'), 50),
             'WEBHOOK_URL': WEBHOOK_URL,
             'LOCAL': LOCAL,
         }

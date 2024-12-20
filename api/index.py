@@ -13,6 +13,7 @@ _logger = getDebugLogger()
 
 _logTraceback = False
 
+
 def showDebug():
     """
     Debug: Show application start info.
