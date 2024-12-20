@@ -48,7 +48,7 @@ def startCommand(chat: telebot.types.Chat):
         if LOCAL
         else None,
     ]
-    content = '\n\n'.join(msgItems)
+    content = '\n\n'.join(filter(None, msgItems))
     logger.info(logContent)
     # Show menu
     markup = createCommonButtonsMarkup()

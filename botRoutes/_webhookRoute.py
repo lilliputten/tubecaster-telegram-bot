@@ -12,8 +12,8 @@ from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
-# from db._types import TNewCommandData, TPrismaCommand
-from db import types as dbTypes, checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
+# \<\(dbTypes\|checkCommandExistsForMessageId\|addCommand\|deleteCommandById\|addTempMessage\)\>
+# from db import types as dbTypes, checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
 
 from botApp import botApp
 
@@ -85,7 +85,7 @@ def webhookRoute():
         'messageContentType': messageContentType,
         'messageDate': messageDate,
         'userId': userId,
-        # 'usernameStr': usernameStr,
+        'usernameStr': usernameStr,
         'chatId': chatId,
     }
     debugStr = debugObj(debugData)
@@ -96,19 +96,15 @@ def webhookRoute():
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
 
-    # db: Prisma | None = None
-    # command: Command | None = None
-
     if update:
-        createdCommand: Optional[dbTypes.TPrismaCommand] = None
-        # isFinished: bool = False
+        # createdCommand: Optional[dbTypes.TPrismaCommand] = None
         try:
             if not update or not updateId:
                 raise Exception('No update id has been provided!')
             if not messageId:
                 raise Exception('No message id has been provided!')
 
-            existedCommand = checkCommandExistsForMessageId(messageId)
+            existedCommand = False # checkCommandExistsForMessageId(messageId)
             if existedCommand:
                 # Command already exists, do nothing, but notify user
                 debugData = {
@@ -140,25 +136,24 @@ def webhookRoute():
                         chatId,
                         emojies.waiting + ' Your command is still processing, be patient, please...',
                     )
-                    addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
-                    # TODO: Add new command to temp messages
+                    # addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
             else:
-                # Create new command
-                commandData: dbTypes.TNewCommandData = {
-                    'updateId': updateId,
-                    'messageId': messageId,
-                    'userId': userId,
-                    'userStr': usernameStr,
-                }
-                createdCommand = addCommand(commandData)
+                # # Create new command
+                # commandData: dbTypes.TNewCommandData = {
+                #     'updateId': updateId,
+                #     'messageId': messageId,
+                #     'userId': userId,
+                #     'userStr': usernameStr,
+                # }
+                # createdCommand = addCommand(commandData)
 
                 # Process the command...
                 botApp.process_new_updates([update])
 
                 debugData = {
-                    'commandId': createdCommand.id,
-                    'createdAtStr': formatTime(None, createdCommand.createdAt),
-                    'updatedAtStr': formatTime(None, createdCommand.updatedAt),
+                    # 'commandId': createdCommand.id,
+                    # 'createdAtStr': formatTime(None, createdCommand.createdAt),
+                    # 'updatedAtStr': formatTime(None, createdCommand.updatedAt),
                     'timeStr': timeStr,
                     'messageChat': repr(messageChat),
                     'updateId': updateId,
@@ -178,7 +173,6 @@ def webhookRoute():
                 logContent = '\n'.join(logItems)
 
                 _logger.info(logContent)
-                # isFinished = True
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
             sTraceback = str(traceback.format_exc())
@@ -190,9 +184,10 @@ def webhookRoute():
             _logger.error(errMsg)
             return Response(errMsg, headers={'Content-type': 'text/plain'})
         finally:
-            # Remove created command...
-            if createdCommand:
-                # TODO: Remove temp messages
-                deleteCommandById(createdCommand.id)
+            pass
+            # # Remove created command...
+            # if createdCommand:
+            #     # TODO: Remove temp messages
+            #     deleteCommandById(createdCommand.id)
 
     return Response('OK', headers={'Content-type': 'text/plain'})
