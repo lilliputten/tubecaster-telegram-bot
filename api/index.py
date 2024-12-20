@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 
+import traceback
 from core.appConfig import LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
+from core.helpers.errors import errorToString
 from core.logger import getDebugLogger
 from core.helpers.time import formatTime
 from core.utils import debugObj
@@ -9,6 +11,7 @@ from core.utils import debugObj
 
 _logger = getDebugLogger()
 
+_logTraceback = False
 
 def showDebug():
     """
@@ -36,14 +39,25 @@ showDebug()
 from flaskApp import flaskApp
 
 if isNormalRun:
-    from botRoutes import botRoutes
+    try:
+        from botRoutes import botRoutes
+        from botCommands import registerCommands
 
-    from botCommands import registerCommands
+        # Register routes
+        flaskApp.register_blueprint(botRoutes, url_prefix='/')
 
-    flaskApp.register_blueprint(botRoutes, url_prefix='/')
-
-    # Start commands
-    registerCommands()
+        # Start commands
+        registerCommands()
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'Error caught: ' + sError
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info('Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
+        raise err
 
 
 # Expose `app` variable
