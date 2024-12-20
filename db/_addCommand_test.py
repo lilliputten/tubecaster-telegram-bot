@@ -4,48 +4,40 @@
 # NOTE: For running only current test use:
 #  - `python -m unittest -v -f botCore/helpers/_addCommand_test.py` (under venv)
 #  - `poetry run python -m unittest -v -f botCore/helpers/_addCommand_test.py`
-#  - `poetry run python -m unittest -v -f -p '*_test.py' -k _addCommand_test`
+#  - `poetry run python -m unittest discover -v -f -t . -s . -p "*_test.py" -k _addCommand_test`
 
 import os
-from typing import Final, Optional
+from typing import Optional
 
-from prisma import Prisma
 from prisma.models import Command
 
 from unittest import TestCase, main, mock
 
-from .init import closeDb, openDb
+from ._init import closeDb, initDb
 
 from ._testDbConfig import testEnv
-from .types import TNewCommandData, TPrismaCommand
+from ._types import TNewCommandData, TPrismaCommand
 from ._addCommand import addCommand
 
 
 @mock.patch.dict(os.environ, testEnv)
 class Test_addCommand_test(TestCase):
-
-    db: Prisma = openDb()
-
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        cls.db = openDb()
-        print('setUpClass', cls.db)
+        initDb()
 
     @classmethod
     def tearDownClass(cls):
         closeDb()
 
     def setUp(self):
-        print('setUp', self.db)
-        # self.db.connect()
         pass
 
     def tearDown(self):
-        # self.db.disconnect()
         pass
 
-    def test_XXX_addCommand_should_add_new_record_with_id(self):
+    def test_addCommand_should_add_new_record_with_id(self):
         command: Optional[TPrismaCommand] = None
         try:
             data: TNewCommandData = {

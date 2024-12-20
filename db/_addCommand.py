@@ -1,6 +1,6 @@
 from prisma.models import Command
 
-from .types import TNewCommandData
+from ._types import TNewCommandData
 
 
 def addCommand(data: TNewCommandData):

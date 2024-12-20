@@ -7,21 +7,20 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _checkCommandExistsForMessageId_test`
 
 import os
-import sys
+from random import randrange
 import traceback
-from typing import Optional, Final
-from prisma import Prisma
-import time
+from typing import Optional
+from prisma.models import Command
 
 from unittest import TestCase, main, mock
 
 from core.helpers.errors import errorToString
 
+from ._init import closeDb, initDb
 from ._testDbConfig import testEnv
-from .types import TPrismaCommand
-from ._checkCommandExistsForMessageId import checkCommandExistsForMessageId
+from ._types import TPrismaCommand
 
-MAXINT = 2**31 - 1
+from ._checkCommandExistsForMessageId import checkCommandExistsForMessageId
 
 
 @mock.patch.dict(os.environ, testEnv)
@@ -29,28 +28,31 @@ class Test_checkCommandExistsForMessageId_test(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
+        initDb()
+
+    @classmethod
+    def tearDownClass(cls):
+        closeDb()
 
     def test_checkCommandExistsForMessageId_should_add_new_record_with_id(self):
-        db: Final[Prisma] = Prisma()
+        # db: Final[Prisma] = Prisma()
         command: Optional[TPrismaCommand] = None
         try:
-            # Create a test record...
-            if not db.is_connected():
-                db.connect()
+            commandClient = Command.prisma()
             # Create a "unique" message id
-            messageId = int(time.time() * 10000000) % MAXINT
-            command = db.command.create(
+            messageId = randrange(1, 9999)
+            command = commandClient.create(
                 data={
-                    'updateId': 1,
                     'messageId': messageId,
-                    'userId': 1,
-                    'userStr': 'Test user',
+                    'updateId': randrange(1, 9999),
+                    'userId': randrange(1, 9999),
+                    'userStr': 'Test',
                 },
             )
             # Try to remove...
             isExists = checkCommandExistsForMessageId(messageId)
             # Try to find supposed to be absent...
-            testCommand = db.command.find_unique(
+            testCommand = commandClient.find_unique(
                 where={
                     'id': command.id,
                 },
@@ -68,17 +70,13 @@ class Test_checkCommandExistsForMessageId_test(TestCase):
             print('Error: ' + errMsg)
         finally:
             # Clean up...
-            if db:
-                if command:
-                    if not db.is_connected():
-                        db.connect()
-                    db.command.delete(
-                        where={
-                            'id': command.id,
-                        },
-                    )
-                if db.is_connected():
-                    db.disconnect()
+            if command:
+                commandClient = Command.prisma()
+                commandClient.delete(
+                    where={
+                        'id': command.id,
+                    },
+                )
 
 
 if __name__ == '__main__':

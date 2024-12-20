@@ -1,8 +1,3 @@
-# from typing import (
-#     TypedDict,
-#     # Optional,
-# )
-
 from prisma.models import Command, TempMessage
 from prisma.types import CommandCreateInput
 
@@ -14,12 +9,6 @@ TMessageId = int
 TNewCommandData = CommandCreateInput
 
 TTempMessage = TempMessage
-
-# class TNewCommandData(TypedDict):
-#     updateId: int   # Type[Command.updateId]
-#     messageId: int
-#     userId: int
-#     userStr: str
 
 
 __all__ = [

@@ -1,16 +1,10 @@
 # -*- coding:utf-8 -*-
 
-from core.appConfig import appConfig, LOCAL, PROJECT_INFO
+from core.appConfig import LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
 from core.logger import getDebugLogger
 from core.helpers.time import formatTime
-
-
 from core.utils import debugObj
-from flaskApp import flaskApp
-from botRoutes import botRoutes
-
-from botCommands import registerCommands
 
 
 _logger = getDebugLogger()
@@ -24,7 +18,8 @@ def showDebug():
     debugItems = {
         'PROJECT_INFO': PROJECT_INFO,
         'LOCAL': LOCAL,
-        'WERKZEUG_RUN_MAIN': appConfig.get('WERKZEUG_RUN_MAIN'),
+        'WERKZEUG_RUN_MAIN': WERKZEUG_RUN_MAIN,
+        'isNormalRun': isNormalRun,
         'timeStr': timeStr,
     }
     logItems = [
@@ -35,20 +30,24 @@ def showDebug():
     _logger.info(logContent)
 
 
-# Start the actual app
-def startApp():
-    showDebug()
+showDebug()
+
+
+from flaskApp import flaskApp
+
+if isNormalRun:
+    from botRoutes import botRoutes
+
+    from botCommands import registerCommands
 
     flaskApp.register_blueprint(botRoutes, url_prefix='/')
 
     # Start commands
     registerCommands()
 
-    return flaskApp
-
 
 # Expose `app` variable
-app = startApp()
+app = flaskApp
 __all__ = ['app']
 
 

@@ -47,6 +47,8 @@ appConfig = {
 }
 
 LOCAL = bool(appConfig.get('LOCAL'))
+WERKZEUG_RUN_MAIN = bool(appConfig.get('WERKZEUG_RUN_MAIN'))
+isNormalRun = not LOCAL or WERKZEUG_RUN_MAIN
 
 AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
 

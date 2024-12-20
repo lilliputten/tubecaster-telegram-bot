@@ -1,6 +1,6 @@
 from prisma.models import Command
 
-from .types import TCommandId
+from ._types import TCommandId
 
 
 def deleteCommandById(id: TCommandId):

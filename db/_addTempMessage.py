@@ -1,18 +1,16 @@
-from prisma import Prisma
+from prisma.models import TempMessage
 
-from .types import TCommandId, TMessageId
+from ._types import TCommandId, TMessageId
 
 
 def addTempMessage(
     commandId: TCommandId,
     messageId: TMessageId,
 ):
-    db = Prisma()
     try:
-        if not db.is_connected():
-            db.connect()
         # TODO: Check if this command (by messageId) exists in the database?
-        tempMessage = db.tempmessage.create(
+        tempMessageClient = TempMessage.prisma()
+        tempMessage = tempMessageClient.create(
             data={
                 'commandId': commandId,
                 'messageId': messageId,
@@ -20,4 +18,4 @@ def addTempMessage(
         )
         return tempMessage
     finally:
-        db.disconnect()
+        pass

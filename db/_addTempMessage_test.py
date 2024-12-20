@@ -9,33 +9,36 @@
 import os
 from random import randrange
 import traceback
-from typing import Optional, Final
-from prisma import Prisma
+from typing import Optional
+from prisma.models import Command, TempMessage
 
 from unittest import TestCase, main, mock
 
 from core.helpers.errors import errorToString
 
+from ._init import closeDb, initDb
+
 from ._testDbConfig import testEnv
-from .types import TPrismaCommand, TTempMessage
+from ._types import TTempMessage
+
 from ._addTempMessage import addTempMessage
 
 
 @mock.patch.dict(os.environ, testEnv)
 class Test_addTempMessage_test(TestCase):
-
-    db: Final[Prisma] = Prisma()
-    command: Optional[TPrismaCommand]
-
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
+        initDb()
+
+    @classmethod
+    def tearDownClass(cls):
+        closeDb()
 
     def setUp(self):
-        # self.db = Prisma()
-        self.db.connect()
         # Create base command
-        self.command = self.db.command.create(
+        commandClient = Command.prisma()
+        self.command = commandClient.create(
             data={
                 'updateId': randrange(1, 9999),
                 'messageId': randrange(1, 9999),
@@ -46,13 +49,13 @@ class Test_addTempMessage_test(TestCase):
 
     def tearDown(self):
         if self.command:
-            self.db.command.delete(
+            commandClient = Command.prisma()
+            commandClient.delete(
                 where={
                     'id': self.command.id,
                 },
             )
             self.command = None
-        self.db.disconnect()
 
     def test_addTempMessage_should_add_new_item_with_id(self):
         tempMessage: Optional[TTempMessage] = None
@@ -71,7 +74,8 @@ class Test_addTempMessage_test(TestCase):
             print('Error: ' + errMsg)
         finally:
             if tempMessage:
-                self.db.tempmessage.delete(
+                tempMessageClient = TempMessage.prisma()
+                tempMessageClient.delete(
                     where={
                         'id': tempMessage.id,
                     },
@@ -80,11 +84,13 @@ class Test_addTempMessage_test(TestCase):
     def test_addTempMessage_should_be_removed_if_command_deleted(self):
         tempMessage: Optional[TTempMessage] = None
         try:
+            commandClient = Command.prisma()
+            tempMessageClient = TempMessage.prisma()
             # Create temp message
             if self.command:
                 tempMessage = addTempMessage(commandId=self.command.id, messageId=self.command.messageId)
                 # Remove basic command
-                self.db.command.delete(
+                commandClient.delete(
                     where={
                         'id': self.command.id,
                     },
@@ -93,7 +99,7 @@ class Test_addTempMessage_test(TestCase):
             if not tempMessage:
                 raise Exception('No temp message has been created')
             # Try to find temp message again
-            testTempMessage = self.db.tempmessage.find_unique(
+            testTempMessage = tempMessageClient.find_unique(
                 where={
                     'id': tempMessage.id,
                 },
@@ -107,7 +113,8 @@ class Test_addTempMessage_test(TestCase):
             print('Error: ' + errMsg)
         finally:
             if tempMessage:
-                self.db.tempmessage.delete(
+                tempMessageClient = TempMessage.prisma()
+                tempMessageClient.delete(
                     where={
                         'id': tempMessage.id,
                     },

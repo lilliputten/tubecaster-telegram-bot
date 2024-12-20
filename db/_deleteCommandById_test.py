@@ -7,41 +7,34 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _deleteCommandById_test`
 
 import os
-from typing import Optional, Final
-from prisma import Prisma
+from typing import Optional
+from prisma.models import Command
 
 from unittest import TestCase, main, mock
 
-from db.init import closeDb, openDb
+from ._init import closeDb, initDb
 
 from ._testDbConfig import testEnv
-from .types import TPrismaCommand
+from ._types import TPrismaCommand
 from ._deleteCommandById import deleteCommandById
 
 
 @mock.patch.dict(os.environ, testEnv)
 class Test_deleteCommandById_test(TestCase):
-
-    db: Prisma
-
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        cls.db = openDb()
-        print('setUpClass', cls.db)
+        initDb()
 
     @classmethod
     def tearDownClass(cls):
         closeDb()
 
-    def test_XXX_deleteCommandById_should_add_new_record_with_id(self):
-        db: Final[Prisma] = Prisma()
+    def test_deleteCommandById_should_add_new_record_with_id(self):
         command: Optional[TPrismaCommand] = None
         try:
-            # Create test record...
-            if not db.is_connected():
-                db.connect()
-            command = db.command.create(
+            commandClient = Command.prisma()
+            command = commandClient.create(
                 data={
                     'updateId': 1,
                     'messageId': 1,
@@ -52,13 +45,12 @@ class Test_deleteCommandById_test(TestCase):
             # Try to remove...
             deleteCommandById(command.id)
             # Try to find supposed to be absent...
-            removedCommand = db.command.find_unique(
+            removedCommand = commandClient.find_unique(
                 where={
                     'id': command.id,
                 },
             )
             self.assertIsNone(removedCommand)
-            db.disconnect()
             command = None
         # except Exception as err:
         #     errText = errorToString(err, show_stacktrace=False)
@@ -69,17 +61,13 @@ class Test_deleteCommandById_test(TestCase):
         #     #  raise Exception(errMsg)
         finally:
             # Clean up...
-            if db:
-                if command:
-                    if not db.is_connected():
-                        db.connect()
-                    db.command.delete(
-                        where={
-                            'id': command.id,
-                        },
-                    )
-                if db.is_connected():
-                    db.disconnect()
+            if command:
+                commandClient = Command.prisma()
+                commandClient.delete(
+                    where={
+                        'id': command.id,
+                    },
+                )
 
 
 if __name__ == '__main__':

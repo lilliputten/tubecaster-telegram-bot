@@ -1,21 +1,19 @@
-from prisma import Prisma
+from prisma.models import Command
 
-from .types import TMessageId
+from ._types import TMessageId
 
 
 def checkCommandExistsForMessageId(messageId: TMessageId):
-    db = Prisma()
+    commandClient = Command.prisma()
     try:
-        if not db.is_connected():
-            db.connect()
-        command = db.command.find_first(
+        command = commandClient.find_first(
             where={
                 'messageId': messageId,
             },
         )
         if command:
             # Update counter and return the object if exists...
-            db.command.update(
+            commandClient.update(
                 where={'id': command.id},
                 data={'repeated': {'increment': 1}},
             )
@@ -23,4 +21,4 @@ def checkCommandExistsForMessageId(messageId: TMessageId):
         # Return falsy value otherwise (all is ok)
         return None
     finally:
-        db.disconnect()
+        pass

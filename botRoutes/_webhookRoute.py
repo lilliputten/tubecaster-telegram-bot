@@ -12,8 +12,8 @@ from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger
 from core.utils import debugObj
 
-from db.types import TNewCommandData, TPrismaCommand
-from db import checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
+# from db._types import TNewCommandData, TPrismaCommand
+from db import types as dbTypes, checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
 
 from botApp import botApp
 
@@ -100,7 +100,7 @@ def webhookRoute():
     # command: Command | None = None
 
     if update:
-        createdCommand: Optional[TPrismaCommand] = None
+        createdCommand: Optional[dbTypes.TPrismaCommand] = None
         # isFinished: bool = False
         try:
             if not update or not updateId:
@@ -144,7 +144,7 @@ def webhookRoute():
                     # TODO: Add new command to temp messages
             else:
                 # Create new command
-                commandData: TNewCommandData = {
+                commandData: dbTypes.TNewCommandData = {
                     'updateId': updateId,
                     'messageId': messageId,
                     'userId': userId,
