@@ -12,6 +12,8 @@ from prisma import Prisma
 
 from unittest import TestCase, main, mock
 
+from db.init import closeDb, openDb
+
 from ._testDbConfig import testEnv
 from .types import TPrismaCommand
 from ._deleteCommandById import deleteCommandById
@@ -19,11 +21,20 @@ from ._deleteCommandById import deleteCommandById
 
 @mock.patch.dict(os.environ, testEnv)
 class Test_deleteCommandById_test(TestCase):
+
+    db: Prisma
+
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
+        cls.db = openDb()
+        print('setUpClass', cls.db)
 
-    def test_deleteCommandById_should_add_new_record_with_id(self):
+    @classmethod
+    def tearDownClass(cls):
+        closeDb()
+
+    def test_XXX_deleteCommandById_should_add_new_record_with_id(self):
         db: Final[Prisma] = Prisma()
         command: Optional[TPrismaCommand] = None
         try:

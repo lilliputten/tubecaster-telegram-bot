@@ -71,7 +71,7 @@
       "args": [
         "-v", // Verbose
         "-f", // It'll stop on first fail
-        "db/_addTempMessage_test.py",
+        "db/_addCommand_test.py",
         // "-k", // Specify test match string below...
         // "test_prisma_should_create_record"
       ],

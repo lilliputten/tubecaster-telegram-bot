@@ -1,12 +1,14 @@
 #!/bin/sh
 # @desc Check if run under .venv environment
-# @changed 2024.12.20, 12:57
+# @changed 2024.12.21, 02:28
 
 PYTHON=`which python`
 
-if [[ $PYTHON != *".venv"* ]]; then
-   echo "Should run under .venv environment"
-   exit 1
+echo "$PYTHON" | grep -q ".venv"
+
+if [ $? = 1 ]; then
+  echo "ERROR: Should run under .venv environment"
+  exit 1
 fi
 
-echo "Ok, runnning under .venv environment"
+echo "OK: Runnning under .venv environment"
