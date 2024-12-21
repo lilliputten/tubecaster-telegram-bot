@@ -8,7 +8,7 @@ from core.appConfig import STATIC_PATH, isNormalRun
 from core.helpers.errors import errorToString
 from core.logger.logger import getDebugLogger
 
-# from db import initDb, closeDb
+from db import initDb, closeDb
 
 
 _logger = getDebugLogger()
@@ -28,11 +28,12 @@ def createFlaskApp():
         if isNormalRun:
             flaskApp.wsgi_app = ProxyFix(flaskApp.wsgi_app, x_host=1)
 
-            # # Initialize prisma
-            # with flaskApp.app_context():
-            #     initDb(g)
-            #
-            # flaskApp.teardown_appcontext(closeDb)
+            # Initialize prisma
+            with flaskApp.app_context():
+                initDb(g)
+
+            # Register teardown handler
+            flaskApp.teardown_appcontext(closeDb)
 
         return flaskApp
 
