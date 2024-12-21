@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-
+from core.helpers.strings import ansiStyle
 from core.logger import getDebugLogger
 
 
@@ -29,7 +29,7 @@ def showInfo():
         infoStr,
         #  '',
     ]
-    infoContent = '\n\n'.join(infoItems) + '\n'
+    infoContent = ansiStyle('\n\n'.join(infoItems), 'cyan') + '\n'
     _logger.info(infoContent)
 
 

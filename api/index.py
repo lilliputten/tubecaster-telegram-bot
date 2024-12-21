@@ -5,6 +5,7 @@ import traceback
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
 from core.helpers.errors import errorToString
+from core.helpers.strings import ansiStyle
 from core.logger import getDebugLogger
 from core.helpers.time import formatTime
 from core.utils import debugObj
@@ -34,7 +35,7 @@ def showDebug():
         'TZ': appConfig.get('TZ'),
     }
     logItems = [
-        'Application started',
+        ansiStyle('Application started', 'bold', 'green'),
         debugObj(debugItems),
     ]
     logContent = '\n'.join(logItems)
