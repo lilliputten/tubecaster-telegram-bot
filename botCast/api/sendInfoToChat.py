@@ -3,12 +3,11 @@
 import telebot  # pyTelegramBotAPI
 from datetime import timedelta
 import traceback
-import re
 
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger, titleStyle, tretiaryStyle, secondaryStyle, errorStyle, warningTitleStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -127,7 +126,6 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         )
         logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
-        #  replyOrSend(botApp, infoContent, chatId, originalMessage)
         botApp.edit_message_text(
             chat_id=chatId,
             text=infoContent,
@@ -142,9 +140,10 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
-        _logger.error('sendInfoToChat: ' + errMsg)
-        #  replyOrSend(botApp, errMsg, chatId, originalMessage)
+            _logger.info(
+                warningTitleStyle('sendInfoToChat: Traceback for the following error:') + tretiaryStyle(sTraceback)
+            )
+        _logger.error(errorStyle('sendInfoToChat: ' + errMsg))
         botApp.edit_message_text(
             chat_id=chatId,
             text=errMsg,

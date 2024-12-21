@@ -1,9 +1,11 @@
 # -*- coding:utf-8 -*-
 
+import traceback
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.helpers.errors import errorToString
+from core.logger import getDebugLogger, titleStyle, secondaryStyle, tretiaryStyle, errorStyle, warningTitleStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -15,28 +17,47 @@ from botCast import sendInfoToChat
 
 _logger = getDebugLogger()
 
+_logTraceback = False
+
 
 def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
-    text = message.text
-    chatId = chat.id
-    username = getUserName(message.from_user)
-    if not text:
-        botApp.reply_to(message, 'Video url is expected.')
-        return
-    url = text
-    obj = {
-        'url': url,
-        'chatId': chatId,
-        'username': username,
-    }
-    debugStr = debugObj(obj)
-    logItems = [
-        titleStyle('infoForUrlStep: Start'),
-        secondaryStyle(debugStr),
-    ]
-    logContent = '\n'.join(logItems)
-    _logger.info(logContent)
-    sendInfoToChat(url, chat.id, username, message)
+    _logger.info('infoForUrlStep: Before')
+    try:
+        text = message.text
+        chatId = chat.id
+        username = getUserName(message.from_user)
+        if not text:
+            botApp.reply_to(message, 'Video url is expected.')
+            return
+        url = text
+        obj = {
+            'url': url,
+            'chatId': chatId,
+            'username': username,
+        }
+        debugStr = debugObj(obj)
+        logItems = [
+            titleStyle('infoForUrlStep: Start'),
+            secondaryStyle(debugStr),
+        ]
+        logContent = '\n'.join(logItems)
+        _logger.info(logContent)
+        sendInfoToChat(url, chat.id, username, message)
+    except Exception as err:
+        errText = errorToString(err, show_stacktrace=False)
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+        errMsg = emojies.error + ' Error fetching a video info: ' + errText
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info(
+                warningTitleStyle('infoForUrlStep: Traceback for the following error:') + tretiaryStyle(sTraceback)
+            )
+        _logger.error(errorStyle('infoForUrlStep: ' + errMsg))
+        botApp.send_message(
+            chat_id=chat.id,
+            text=errMsg,
+        )
 
 
 def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
@@ -44,13 +65,34 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     text = message.text if message and message.text else ''
     args = text.strip().split()
     argsCount = len(args) - 1
-    if argsCount < 1:
-        replyMsg = emojies.question + ' Ok, now send the video address:'
-        replyOrSend(botApp, replyMsg, chat.id, message)
-        botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
-        return
-    elif argsCount > 1:
-        botApp.reply_to(message, 'Too many arguments (expected only video address).')
-        return
-    url = args[1]
-    sendInfoToChat(url, chat.id, username, message)
+    try:
+        if argsCount < 1:
+            replyMsg = emojies.question + ' Ok, now send the video address:'
+            replyOrSend(botApp, replyMsg, chat.id, message)
+            _logger.info(titleStyle('infoCommand: Registered a handler for url answer: infoForUrlStep'))
+            botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
+            return
+        elif argsCount > 1:
+            botApp.reply_to(message, 'Too many arguments (expected only video address).')
+            return
+        url = args[1]
+        sendInfoToChat(url, chat.id, username, message)
+    except Exception as err:
+        errText = errorToString(err, show_stacktrace=False)
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+        errMsg = emojies.error + ' Error fetching a video info: ' + errText
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info(
+                warningTitleStyle('infoCommand: Traceback for the following error:') + tretiaryStyle(sTraceback)
+            )
+        _logger.error(errorStyle('infoCommand: ' + errMsg))
+        botApp.send_message(
+            chat_id=chat.id,
+            text=errMsg,
+        )
+        #  raise Exception(errMsg)
+    finally:
+        _logger.info(titleStyle('infoCommand: Finished'))
+

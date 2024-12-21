@@ -165,11 +165,10 @@ def webhookRoute():
                 }
                 debugStr = debugObj(debugData)
                 logItems = [
-                    titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
+                    titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
                     secondaryStyle(debugStr),
                 ]
                 logContent = '\n'.join(logItems)
-
                 _logger.info(logContent)
         except Exception as err:
             sError = errorToString(err, show_stacktrace=False)
@@ -187,5 +186,12 @@ def webhookRoute():
             if createdCommand:
                 # TODO: Remove temp messages
                 deleteCommandById(createdCommand.id)
+            debugStr = debugObj(debugData)
+            logItems = [
+                titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
+                secondaryStyle(debugStr),
+            ]
+            logContent = '\n'.join(logItems)
+            _logger.info(logContent)
 
     return Response('OK', headers={'Content-type': 'text/plain'})

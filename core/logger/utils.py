@@ -5,7 +5,7 @@ def errorTitleStyle(s: str):
     return ansiStyle(s, 'underline', 'bold', 'red')
 
 
-def warningITitlenfo(s: str):
+def warningTitleStyle(s: str):
     return ansiStyle(s, 'underline', 'bold', 'yellow')
 
 

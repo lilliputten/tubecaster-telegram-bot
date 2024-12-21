@@ -11,7 +11,7 @@ from .utils import (
     secondaryStyle,
     titleStyle,
     tretiaryStyle,
-    warningITitlenfo,
+    warningTitleStyle,
     warningStyle,
 )
 
@@ -24,6 +24,6 @@ __all__ = [
     'secondaryStyle',
     'titleStyle',
     'tretiaryStyle',
-    'warningITitlenfo',
+    'warningTitleStyle',
     'warningStyle',
 ]

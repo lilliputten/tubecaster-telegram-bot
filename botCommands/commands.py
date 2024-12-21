@@ -8,14 +8,17 @@ See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 
 from time import sleep
 import telebot  # pyTelegramBotAPI
+# from telebot.storage import StateMemoryStorage, StateDataContext, StateStorageBase # TODO?
 import traceback
 
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.helpers.errors import errorToString
+from core.utils import debugObj
 
 from botApp import botApp
 from botCore.constants import stickers, emojies
+from botCore.helpers import getUserName
 from botCore.helpers import replyOrSend
 from botCore.helpers import createCommonButtonsMarkup
 
@@ -89,11 +92,63 @@ def infoReaction(message: telebot.types.Message):
     infoCommand(message.chat, message)
 
 
+def checkDefaultCommand(message: telebot.types.Message):
+    text = message.text
+    sticker = message.sticker
+    stickerFileId = sticker.file_id if sticker else None
+    stickerEmoji = sticker.emoji if sticker else None
+    stickerSetName = sticker.set_name if sticker else None
+    messageId = message.id
+    contentType = message.content_type
+    user = message.from_user
+    userId = user.id if user else None
+    text = message.text
+    usernameStr = getUserName(user)
+    json = message.json
+    fromData: dict = json.get('from', {})
+    languageCode = fromData.get('language_code')
+    commandHash = ' '.join(
+        list(
+            filter(
+                None,
+                [
+                    contentType,
+                    text,
+                ],
+            )
+        )
+    )
+    obj = {
+        'commandHash': commandHash,
+        'contentType': contentType,
+        'messageId': messageId,
+        'text': text,
+        'sticker': repr(sticker),
+        'stickerFileId': stickerFileId,
+        'stickerSetName': stickerSetName,
+        'stickerEmoji': stickerEmoji,
+        # 'timeStr': getTimeStamp(),
+        'userId': userId,
+        'usernameStr': usernameStr,
+        'languageCode': languageCode,
+        # 'messageDate': messageDate,
+    }
+    debugStr = debugObj(obj)
+    logItems = [
+        titleStyle('checkDefaultCommand: %s' % commandHash),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
+    _logger.info(logContent)
+    return False
+
+
 # Handle all other messages.
-@botApp.message_handler(
-    func=lambda _: True,
-    content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
-)
+# @botApp.message_handler(
+#     func=checkDefaultCommand,
+#     # func=lambda query: not query.data.startswith('start'),
+#     content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
+# )
 def defaultCommand(message):
     sendCommandInfo(message)
     chatId = message.chat.id
@@ -102,7 +157,7 @@ def defaultCommand(message):
         text = message.text
         # The command text seems to be an youtube video link, so try to cast it...
         if contentType == 'text' and isYoutubeLink(text):
-            _logger.info('defaultCommand: Processing as a cast command')
+            _logger.info(titleStyle('defaultCommand: Processing as a cast command'))
             castCommand(message.chat, message)
         else:
             botApp.send_sticker(chatId, sticker=stickers.busyMrCat)
@@ -120,7 +175,7 @@ def defaultCommand(message):
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('defaultCommand: Traceback for the following error:' + sTraceback)
+            _logger.info(titleStyle('defaultCommand: Traceback for the following error:' + sTraceback))
         _logger.error('defaultCommand: ' + errMsg)
         replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
 
