@@ -8,6 +8,8 @@ import pathlib
 import posixpath
 
 from core.appConfig import appConfig, IS_VERCEL
+
+from core.helpers.runtime import getModulePath
 from core.logger import loggerConfig
 from core.logger.CustomHttpHandler import CustomHttpHandler, customHttpHandlerFormatter
 from concurrent_log_handler import ConcurrentRotatingFileHandler
@@ -29,7 +31,10 @@ logging.basicConfig(
 _defaultFormatter = logging.Formatter(loggerConfig.formatStr)
 
 
-def getLogger(id: str | None = None):
+def getDebugLogger(id: str | None = None):
+    if not id:
+        # Create deafault id - for the parent module, with deep=True getModulePath parameter
+        id = getModulePath(True)
     logger = logging.getLogger(id)
     # Default handler (console)...
     consoleHandler = logging.StreamHandler()
@@ -64,7 +69,7 @@ def getLogger(id: str | None = None):
         syslogHandler.formatter = _defaultFormatter
         logger.addHandler(syslogHandler)
     #  if useDebugLogs: # DEBUG
-    #     addDebugLog('getLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
+    #     addDebugLog('getDebugLogger %s USE_LOGS_SERVER: %s' % (id, USE_LOGS_SERVER))
     # Create a custom http logger handler
     if loggerConfig.USE_LOGS_SERVER:
         httpHandler = CustomHttpHandler(
@@ -81,5 +86,5 @@ def getLogger(id: str | None = None):
 
 # Module exports...
 __all__ = [
-    'getLogger',
+    'getDebugLogger',
 ]

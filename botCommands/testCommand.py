@@ -3,26 +3,28 @@
 import telebot  # pyTelegramBotAPI
 import traceback
 
-#  from core.helpers.errors import errorToString
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.appConfig import appConfig, TELEGRAM_OWNER_ID
-
-from botApp import botApp
 from core.utils import debugObj
 
+from botApp import botApp
 
-_logger = getLogger('botCommands/testCommand')
+from botCore.helpers import getUserName
+
+
+_logger = getDebugLogger()
 
 
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     try:
         chatId = chat.id  # Is userId
         text = message.text
+        user = message.from_user
         username = chat.username
         first_name = chat.first_name
-        last_name = chat.last_name
+        # last_name = chat.last_name
         name = first_name if first_name else username
         json = message.json
         fromData: dict = json.get('from', {})
@@ -36,15 +38,14 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'timeStr': getTimeStamp(),
             'chatId': chatId,
             #  'userId': userId,
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
+            'name': name,
+            'usernameStr': getUserName(user),
             'languageCode': languageCode,
             'LOCAL': appConfig.get('LOCAL'),
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
         }
-        debugStr = debugObj(obj)  # , _debugKeysList)
+        debugStr = debugObj(obj)
         logContent = '\n'.join(
             [
                 'testCommand: %s' % text,

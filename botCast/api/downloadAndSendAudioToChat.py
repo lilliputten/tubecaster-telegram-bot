@@ -7,9 +7,9 @@ import traceback
 from core.appConfig import LOCAL
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
-from core.helpers.runtime import getModPath
+
 from core.helpers.time import RepeatedTimer
-from core.logger import getLogger
+from core.logger import getDebugLogger
 
 from botApp import botApp
 from botCore.types import YtdlOptionsType
@@ -25,7 +25,7 @@ from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
 from ..helpers._sendAudioToChat import sendAudioToChat
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 _timerDelay = 5
 

@@ -1,12 +1,12 @@
 import json
 import subprocess
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 
 from ._helpers import convertKwargsToCmdLineArgs
 
 
-_logger = getLogger('core/ffmpeg/_probe')
+_logger = getDebugLogger()
 
 
 def probe(filename: str, **kwargs):

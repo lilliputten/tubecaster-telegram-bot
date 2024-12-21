@@ -1,14 +1,15 @@
 # -*- coding:utf-8 -*-
 
-from core.helpers.files import youtubeLinkPrefix
 from core.helpers.time import getTimeStamp
-from core.logger import getLogger
+
+from core.helpers.urls import isYoutubeLink
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from ..helpers.prepareLinkInfo import prepareLinkInfo
 
 
-_logger = getLogger('botCast/downloadInfo')
+_logger = getDebugLogger()
 
 
 def downloadInfo(
@@ -19,7 +20,7 @@ def downloadInfo(
     """
     This is usually the first action: to retrieve the video info from youtube.
     """
-    if not youtubeLinkPrefix.match(url):
+    if not isYoutubeLink(url):
         raise Exception('The url should be a valid youtube link. But we got: %s' % url)
 
     # Start...

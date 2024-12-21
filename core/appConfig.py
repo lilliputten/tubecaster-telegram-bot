@@ -22,6 +22,8 @@ with open(posixpath.join(STATIC_PATH, 'project-info.txt')) as fh:
         PROJECT_INFO = info.strip()
 
 appConfig = {
+    # Basic environment variables
+    **dotenv_values('.env'),
     # Real telegram webhook address for the real deploy server
     **dotenv_values('.env.server'),
     # Local flask server tunneled for telegram webhook access and LOCAL flag
@@ -45,6 +47,8 @@ appConfig = {
 }
 
 LOCAL = bool(appConfig.get('LOCAL'))
+WERKZEUG_RUN_MAIN = bool(appConfig.get('WERKZEUG_RUN_MAIN'))
+isNormalRun = not LOCAL or WERKZEUG_RUN_MAIN
 
 AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
 

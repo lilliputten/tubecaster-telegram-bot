@@ -1,18 +1,40 @@
+# -*- coding:utf-8 -*-
+
+
+from core.logger import getDebugLogger
+
+
+_logger = getDebugLogger()
+
+
 commandsInfo = {
+    'cast URL': 'Convert YouTube video to audio for listening.',
+    'info URL': 'Show information about the YouTube video.',
     'start': 'Gives information about the bot.',
     'help': 'Gives information about all of the available commands.',
-    'info URL': 'Show information about the YouTube video.',
-    'cast URL': 'Convert YouTube video to audio for listening.',
 }
-
-# Provide commands list in the format of `{command} - {explanation}`
-_infoStr = '\n'.join(['%s - %s' % (k.split()[0], commandsInfo[k]) for k in commandsInfo])
-print('\nHere are the bot commands list to provide to the BotFather:\n\n' + _infoStr + '\n')
 
 hiddenCommands = [
     'castTest',
     'test',
 ]
+
+
+def showInfo():
+    # Provide commands list in the format of `{command} - {explanation}`
+    infoStr = '\n'.join(['%s - %s' % (k.split()[0], commandsInfo[k]) for k in commandsInfo])
+    infoItems = [
+        '',
+        'Here are the bot commands list to provide (via copy/paste) to the BotFather:',
+        infoStr,
+        #  '',
+    ]
+    infoContent = '\n\n'.join(infoItems) + '\n'
+    _logger.info(infoContent)
+
+
+showInfo()
+
 
 __all__ = [
     'commandsInfo',

@@ -14,7 +14,7 @@ import os  # noqa
 
 # Server only params (start locally with dev-mode flask command, or `pnpm run dev`)...
 venvRoot = '/var/www'
-venv = '.venv-default'
+venv = '.venv-tubecaster'
 venvActivateScript = 'bin/activate_this.py'
 
 # Activate venv...

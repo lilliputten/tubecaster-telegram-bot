@@ -41,12 +41,15 @@ def getTimeFormat(precise: TPrecise | None = None):
 
 def formatTime(precise: TPrecise | None = None, date: TDateLike | None = None):
     format = getTimeFormat(precise)
-    if not date:
-        date = datetime.now(tzObject)
-    elif isinstance(date, int):
+    dateVal: datetime
+    if type(date) is int:   # isinstance(date, int):
         dateFloat = float(date)
-        date = datetime.fromtimestamp(dateFloat)
-    stamp = date.strftime(format).strip()
+        dateVal = datetime.fromtimestamp(dateFloat)
+    elif type(date) is datetime and date:
+        dateVal = date
+    else:
+        dateVal = datetime.now(tzObject)
+    stamp = dateVal.strftime(format).strip()
     if precise == True or precise == 'precise':
         stamp = stamp[:-3]
     return stamp

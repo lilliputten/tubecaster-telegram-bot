@@ -3,21 +3,22 @@
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botApp import botApp
+from botCore.helpers import getUserName
 from botCore.helpers import replyOrSend
 from botCore.constants import emojies
 from botCast import sendInfoToChat
 
-_logger = getLogger('botCommands/infoCommand')
+_logger = getDebugLogger()
 
 
 def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
     text = message.text
     chatId = chat.id
-    username = str(chat.username)
+    username = getUserName(message.from_user)
     if not text:
         botApp.reply_to(message, 'Video url is expected.')
         return
@@ -39,7 +40,7 @@ def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
 
 
 def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
-    username = str(chat.username)
+    username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
     argsCount = len(args) - 1

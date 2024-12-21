@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
 from core.appConfig import appConfig, TEMP_PATH
-from core.logger import getLogger
+from core.logger import getDebugLogger
 
 from botCore.types import YtdlOptionsType
 
-_logger = getLogger('botCast/getYtdlBaseOptions')
+_logger = getDebugLogger()
 
 
 def getYtdlBaseOptions():

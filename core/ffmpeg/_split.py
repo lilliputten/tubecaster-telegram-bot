@@ -1,11 +1,11 @@
 import subprocess
 
-from core.logger import getLogger
+from core.logger import getDebugLogger
 
 from ._helpers import convertKwargsToCmdLineArgs
 
 
-_logger = getLogger('core/ffmpeg/_split')
+_logger = getDebugLogger()
 
 
 def split(filename: str, outFilename: str, start: float, end: float, format='mp4', **kwargs):

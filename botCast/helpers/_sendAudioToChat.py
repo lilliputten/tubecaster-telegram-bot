@@ -8,8 +8,8 @@ from functools import partial
 from core.appConfig import MAX_AUDIO_FILE_SIZE
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
-from core.helpers.runtime import getModPath
-from core.logger import getLogger
+
+from core.logger import getDebugLogger
 
 from botApp import botApp
 from botCore.types import TVideoInfo
@@ -23,7 +23,7 @@ from ..config.castConfig import logTraceback
 from ..helpers._sendAudioPiece import sendAudioPiece
 
 
-_logger = getLogger(getModPath())
+_logger = getDebugLogger()
 
 
 def sendAudioToChat(

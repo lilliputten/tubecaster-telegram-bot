@@ -6,10 +6,12 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
+from time import sleep
 import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.logger import getLogger
+from core.helpers.urls import isYoutubeLink
+from core.logger import getDebugLogger
 from core.helpers.errors import errorToString
 
 from botApp import botApp
@@ -26,7 +28,7 @@ from .startCommand import startCommand
 from .testCommand import testCommand
 
 
-_logger = getLogger('botCommands/commands')
+_logger = getDebugLogger()
 
 _logTraceback = False
 
@@ -35,6 +37,12 @@ _logTraceback = False
 def testReaction(message: telebot.types.Message):
     sendCommandInfo(message)
     testCommand(message.chat, message)
+
+
+@botApp.message_handler(commands=['castTest'])
+def castTestReaction(message: telebot.types.Message):
+    sendCommandInfo(message)
+    castTestCommand(message.chat, message)
 
 
 @botApp.message_handler(commands=['help'])
@@ -69,12 +77,6 @@ def startCast(query: telebot.types.CallbackQuery):
     castCommand(message.chat, message)
 
 
-@botApp.message_handler(commands=['castTest'])
-def castTestReaction(message: telebot.types.Message):
-    sendCommandInfo(message)
-    castTestCommand(message.chat, message)
-
-
 @botApp.message_handler(commands=['cast'])
 def castReaction(message: telebot.types.Message):
     sendCommandInfo(message)
@@ -96,14 +98,24 @@ def defaultCommand(message):
     sendCommandInfo(message)
     chatId = message.chat.id
     try:
-        botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
-        markup = createCommonButtonsMarkup()
-        botApp.send_message(
-            message.chat.id,
-            emojies.robot
-            + " Ok, I'm here and look forward to your command.\n\nSee /help for the list of the available commands.",
-            reply_markup=markup,
-        )
+        contentType = message.content_type
+        text = message.text
+        # The command text seems to be an youtube video link, so try to cast it...
+        if contentType == 'text' and isYoutubeLink(text):
+            _logger.info('defaultCommand: Processing as a cast command')
+            # # DEBUG!
+            # sleep(100)
+            # print('OK')
+            castCommand(message.chat, message)
+        else:
+            botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
+            markup = createCommonButtonsMarkup()
+            botApp.send_message(
+                message.chat.id,
+                emojies.robot
+                + " Ok, I'm here and look forward to your command.\n\nSee /help for the list of the available commands.",
+                reply_markup=markup,
+            )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

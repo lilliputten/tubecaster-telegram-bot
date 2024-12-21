@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// See for `DATABASE_URL` parameter in the environment for the sqlite file location (under the `prisma` folder).
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+// provider = "sqlite" | "postgresql", see 'prisma-switch.mjs' (if provided)
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model TempMessage {
+  id        Int     @id @default(autoincrement())
+  messageId Int
+  commandId Int
+  command   Command @relation(fields: [commandId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("TempMessages")
+}
+
+model Command {
+  id        Int     @id @default(autoincrement())
+  messageId Int
+  updateId  Int
+  userId    Int
+  userStr   String
+  repeated  Int     @default(1)
+  isActive  Boolean @default(true)
+
+  tempMessages TempMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Commands")
+}

@@ -3,14 +3,14 @@
 import traceback
 
 from core.helpers.errors import errorToString
-from core.logger import getLogger
+from core.logger import getDebugLogger
 from core.utils import debugObj
 
 from botCore.types import TVideoInfo, YtdlOptionsType
 
 from ..config.castConfig import YTDL, logTraceback
 
-_logger = getLogger('botCast/sendInfoToChat')
+_logger = getDebugLogger()
 
 
 def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
