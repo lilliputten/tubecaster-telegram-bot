@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import sysconfig
 import traceback
 from core.appConfig import LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
@@ -25,6 +26,7 @@ def showDebug():
         'WERKZEUG_RUN_MAIN': WERKZEUG_RUN_MAIN,
         'isNormalRun': isNormalRun,
         'timeStr': timeStr,
+        'EXT_SUFFIX': sysconfig.get_config_var('EXT_SUFFIX'),
     }
     logItems = [
         'Application started',
