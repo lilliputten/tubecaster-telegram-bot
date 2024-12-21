@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from core.helpers.strings import ansiStyle
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, tretiaryInfo
 
 
 _logger = getDebugLogger()
@@ -29,7 +28,7 @@ def showInfo():
         infoStr,
         #  '',
     ]
-    infoContent = ansiStyle('\n\n'.join(infoItems), 'cyan') + '\n'
+    infoContent = tretiaryInfo('\n\n'.join(infoItems)) + '\n'
     _logger.info(infoContent)
 
 

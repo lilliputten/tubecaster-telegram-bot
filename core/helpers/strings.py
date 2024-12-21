@@ -12,10 +12,10 @@ if os.name == 'nt':
         _logAddStyle = False
 
 
-def truncStr(str: str, maxLen: int):
-    if len(str) >= maxLen - 1:
-        str = str[: maxLen - 1] + '…'
-    return str
+def truncStr(s: str, maxLen: int):
+    if len(s) >= maxLen - 1:
+        s = s[: maxLen - 1] + '…'
+    return s
 
 
 def ansiStyle(value: str, *styles: str) -> str:
@@ -23,12 +23,23 @@ def ansiStyle(value: str, *styles: str) -> str:
         return value
 
     codes = {
+        'high': 0,
+        'underline': 4,
         'bold': 1,
+        # 'red': 31,
+        # 'green': 32,
+        # 'yellow': 33,
+        # 'magenta': 35,
+        # 'cyan': 36,
+        #
+        'black': 30, # ???
         'red': 31,
         'green': 32,
         'yellow': 33,
+        'blue': 34,
         'magenta': 35,
         'cyan': 36,
+        'white': 37, # ???
     }
 
     for style in styles:
