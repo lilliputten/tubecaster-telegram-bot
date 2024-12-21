@@ -6,7 +6,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 _logger = getDebugLogger()
 

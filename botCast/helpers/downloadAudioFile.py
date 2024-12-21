@@ -3,7 +3,7 @@
 import traceback
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botCore.types import TVideoInfo, YtdlOptionsType

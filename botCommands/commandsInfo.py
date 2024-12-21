@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from core.logger import getDebugLogger, tretiaryInfo
+from core.logger import getDebugLogger, tretiaryStyle
 
 
 _logger = getDebugLogger()
@@ -28,7 +28,7 @@ def showInfo():
         infoStr,
         #  '',
     ]
-    infoContent = tretiaryInfo('\n\n'.join(infoItems)) + '\n'
+    infoContent = tretiaryStyle('\n\n'.join(infoItems)) + '\n'
     _logger.info(infoContent)
 
 

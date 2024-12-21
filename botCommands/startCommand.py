@@ -3,7 +3,7 @@
 import telebot  # pyTelegramBotAPI
 
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import LOCAL, appConfig, PROJECT_INFO
 from core.utils import debugObj
 

@@ -7,7 +7,7 @@ import pathlib
 from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
 from core.utils import debugObj
 

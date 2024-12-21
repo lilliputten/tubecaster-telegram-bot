@@ -5,7 +5,7 @@ import traceback
 
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import appConfig, TELEGRAM_OWNER_ID
 from core.utils import debugObj
 
@@ -49,13 +49,13 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         logContent = '\n'.join(
             [
                 'testCommand: %s' % text,
-                debugStr,
+                secondaryStyle(debugStr),
             ]
         )
         content = '\n\n'.join(
             [
                 'Hi, %s! Here is your test results:' % name,
-                debugStr,
+                secondaryStyle(debugStr),
             ]
         )
         _logger.info(logContent)

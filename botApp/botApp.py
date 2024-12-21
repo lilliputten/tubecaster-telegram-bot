@@ -4,7 +4,7 @@ import sys
 import telebot  # pyTelegramBotAPI
 
 from core.appConfig import TELEGRAM_TOKEN
-from core.logger import getDebugLogger, secondaryInfo, errorInfo, titleInfo
+from core.logger import getDebugLogger, secondaryStyle, errorStyle, titleStyle
 from core.utils import debugObj
 
 
@@ -18,8 +18,8 @@ def showDebug():
         'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
     }
     logItems = [
-        titleInfo('botApp started'),
-        secondaryInfo(debugObj(debugItems)),
+        titleStyle('botApp started'),
+        secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
@@ -35,7 +35,7 @@ def startBotApp():
     if not TELEGRAM_TOKEN:
         # NOTE: For the VDS environment this message will appear in a log file under the `/var/www/.uwsgi-apps/logs` folder
         errMsg = 'No telegram token defined'
-        _logger.error(errorInfo(errMsg))
+        _logger.error(errorStyle(errMsg))
         raise Exception(errMsg)
 
     # @see: https://pypi.org/project/pyTelegramBotAPI/

@@ -9,7 +9,7 @@ import telebot  # pyTelegramBotAPI
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 # Prisma/db variables regex: \<\(dbTypes\|checkCommandExistsForMessageId\|addCommand\|deleteCommandById\|addTempMessage\)\>
@@ -89,7 +89,7 @@ def webhookRoute():
     debugStr = debugObj(debugData)
     logItems = [
         'webhookRoute: Update %d for message %d started' % (updateId, messageId),
-        debugStr,
+        secondaryStyle(debugStr),
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
@@ -124,7 +124,7 @@ def webhookRoute():
                 debugStr = debugObj(debugData)
                 logItems = [
                     'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
-                    debugStr,
+                    secondaryStyle(debugStr),
                 ]
                 logContent = '\n'.join(logItems)
                 _logger.info(logContent)
@@ -166,7 +166,7 @@ def webhookRoute():
                 debugStr = debugObj(debugData)
                 logItems = [
                     'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
-                    debugStr,
+                    secondaryStyle(debugStr),
                 ]
                 logContent = '\n'.join(logItems)
 

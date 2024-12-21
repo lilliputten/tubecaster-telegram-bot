@@ -27,9 +27,11 @@ from contextlib import contextmanager
 import sys
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
-from core.logger import loggerConfig
-
 from core.helpers.time import getTimeStamp
+
+from core.logger import loggerConfig
+from core.logger.NoColorFormatter import NoColorFormatter
+
 
 #  _appConfig = {
 #      **dotenv_values('.env'),
@@ -58,6 +60,8 @@ _loggingLevel = logging.INFO   # DEBUG
 
 _localLogFormat = '%(message)s'
 _localFormatter = logging.Formatter(_localLogFormat)
+
+_noColorFormatter = NoColorFormatter()
 
 # Format for re-create remote log string (local data won't be included into the output)
 formatStr = ' '.join(
@@ -179,9 +183,9 @@ def initLocalLogger(id: str | None = None):
             #  delay=True,
             #  errors=True,
         )  # max log file size 100 MB
-        localLogFileHandler.setFormatter(_localFormatter)
+        localLogFileHandler.setFormatter(_noColorFormatter)
         localLogFileHandler.setLevel(_loggingLevel)
-        localLogFileHandler.formatter = _localFormatter
+        localLogFileHandler.formatter = _noColorFormatter
         localLogFileHandler.level = _loggingLevel
         logger.addHandler(localLogFileHandler)
     return logger

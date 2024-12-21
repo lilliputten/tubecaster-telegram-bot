@@ -1,18 +1,29 @@
 from .logger import getDebugLogger
 from . import loggerConfig
 
-# from .loggerConfig import *
 from .CustomHttpHandler import *
 from .DebugLog import *
-from .utils import secondaryInfo, errorInfo, primaryInfo, tretiaryInfo, warningInfo, titleInfo
+
+from .utils import (
+    errorStyle,
+    errorTitleStyle,
+    primaryStyle,
+    secondaryStyle,
+    titleStyle,
+    tretiaryStyle,
+    warningITitlenfo,
+    warningStyle,
+)
 
 __all__ = [
+    'errorStyle',
+    'errorTitleStyle',
     'getDebugLogger',
     'loggerConfig',
-    'errorInfo',
-    'warningInfo',
-    'primaryInfo',
-    'titleInfo',
-    'secondaryInfo',
-    'tretiaryInfo',
+    'primaryStyle',
+    'secondaryStyle',
+    'titleStyle',
+    'tretiaryStyle',
+    'warningITitlenfo',
+    'warningStyle',
 ]

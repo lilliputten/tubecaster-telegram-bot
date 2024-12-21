@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from core.appConfig import appConfig, TEMP_PATH
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from botCore.types import YtdlOptionsType
 

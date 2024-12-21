@@ -5,7 +5,7 @@ import telebot  # pyTelegramBotAPI
 
 from botCore.helpers import getUserName
 from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -34,7 +34,7 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
     logContent = '\n'.join(
         [
             'castForUrlStep: Start',
-            debugStr,
+            secondaryStyle(debugStr),
         ]
     )
     _logger.info(logContent)

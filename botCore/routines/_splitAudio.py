@@ -5,7 +5,7 @@ import traceback
 from typing import Callable
 
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split

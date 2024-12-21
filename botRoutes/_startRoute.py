@@ -8,7 +8,7 @@ from core.appConfig import PROJECT_INFO
 from core.helpers.errors import errorToString
 
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -64,7 +64,7 @@ def startRoute():
     debugStr = debugObj(debugItems)
     logItems = [
         'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
-        debugStr,
+        secondaryStyle(debugStr),
     ]
     logContent = '\n'.join(logItems)
     msgItems = [

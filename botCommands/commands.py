@@ -11,7 +11,7 @@ import telebot  # pyTelegramBotAPI
 import traceback
 
 from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.helpers.errors import errorToString
 
 from botApp import botApp
@@ -103,9 +103,6 @@ def defaultCommand(message):
         # The command text seems to be an youtube video link, so try to cast it...
         if contentType == 'text' and isYoutubeLink(text):
             _logger.info('defaultCommand: Processing as a cast command')
-            # # DEBUG!
-            # sleep(100)
-            # print('OK')
             castCommand(message.chat, message)
         else:
             botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)

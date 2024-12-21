@@ -10,7 +10,7 @@ from core.helpers.errors import errorToString
 
 from core.helpers.strings import truncStr
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, loggerConfig
+from core.logger import getDebugLogger, loggerConfig, titleStyle, secondaryStyle
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
@@ -53,12 +53,12 @@ def testRoute():
         debugStr = debugObj(debugItems)
         logItems = [
             titleStr,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
         msgItems = [
             titleStr,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
         msgContent = '\n\n'.join(msgItems)
         _logger.info(logContent)

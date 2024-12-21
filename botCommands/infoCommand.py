@@ -3,7 +3,7 @@
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -29,12 +29,11 @@ def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         'username': username,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'infoForUrlStep: Start',
-            debugStr,
-        ]
-    )
+    logItems = [
+        titleStyle('infoForUrlStep: Start'),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
     _logger.info(logContent)
     sendInfoToChat(url, chat.id, username, message)
 

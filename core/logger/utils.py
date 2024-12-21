@@ -1,22 +1,33 @@
-
 from core.helpers.strings import ansiStyle
 
 
+def errorTitleStyle(s: str):
+    return ansiStyle(s, 'underline', 'bold', 'red')
 
-def errorInfo(s: str):
+
+def warningITitlenfo(s: str):
+    return ansiStyle(s, 'underline', 'bold', 'yellow')
+
+
+def errorStyle(s: str):
     return ansiStyle(s, 'red')
 
-def warningInfo(s: str):
+
+def warningStyle(s: str):
     return ansiStyle(s, 'yellow')
 
-def titleInfo(s: str):
+
+def titleStyle(s: str):
     return ansiStyle(s, 'underline', 'bold')
 
-def primaryInfo(s: str):
+
+def primaryStyle(s: str):
     return ansiStyle(s, 'underline', 'bold', 'green')
 
-def secondaryInfo(s: str):
+
+def secondaryStyle(s: str):
     return ansiStyle(s, 'cyan')
 
-def tretiaryInfo(s: str):
+
+def tretiaryStyle(s: str):
     return ansiStyle(s, 'blue')

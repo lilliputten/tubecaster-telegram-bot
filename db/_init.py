@@ -5,7 +5,7 @@ from flask.ctx import _AppCtxGlobals
 from prisma import Prisma, register, get_client
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 TGlobalCtx = _AppCtxGlobals
 

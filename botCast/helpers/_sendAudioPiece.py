@@ -9,7 +9,7 @@ from urllib.request import urlopen
 from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from botApp import botApp
 from botCore.helpers import (

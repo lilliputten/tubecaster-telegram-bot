@@ -12,7 +12,7 @@ from core.appConfig import (
 )
 
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -87,13 +87,13 @@ def sendCommandInfo(message: telebot.types.Message):
     logContent = '\n'.join(
         [
             'command: %s' % commandHash,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
     )
     content = '\n\n'.join(
         [
             'TubeCaster bot received a command: %s' % text,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
     )
     notifyOwner(content, logContent)
@@ -127,13 +127,13 @@ def sendQueryInfo(query: telebot.types.CallbackQuery):
     logContent = '\n'.join(
         [
             'query: %s' % data,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
     )
     content = '\n\n'.join(
         [
             'TubeCaster bot received a query: %s' % data,
-            debugStr,
+            secondaryStyle(debugStr),
         ]
     )
     notifyOwner(content, logContent)

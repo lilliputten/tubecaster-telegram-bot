@@ -21,7 +21,7 @@ from . import loggerConfig
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging
 
-noColorFormatter = NoColorFormatter()
+_noColorFormatter = NoColorFormatter()
 
 # Remove default handlers...
 logging.getLogger().handlers.clear()
@@ -59,11 +59,9 @@ def getDebugLogger(id: str | None = None):
             #  delay=True,
             #  errors=True,
         )  # max log file size 100 MB
-        # localLogFileHandler.setFormatter(_defaultFormatter)
-        localLogFileHandler.setFormatter(noColorFormatter)
+        localLogFileHandler.setFormatter(_noColorFormatter)
         localLogFileHandler.setLevel(loggerConfig.loggingLevel)
-        # localLogFileHandler.formatter = _defaultFormatter
-        localLogFileHandler.formatter = noColorFormatter
+        localLogFileHandler.formatter = _noColorFormatter
         localLogFileHandler.level = loggerConfig.loggingLevel
         logger.addHandler(localLogFileHandler)
     # Syslog, @see https://docs.python.org/3/library/logging.handlers.html#sysloghandler
