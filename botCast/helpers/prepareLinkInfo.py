@@ -29,7 +29,7 @@ def prepareLinkInfo(url: str, username: str):
         # Prepare options...
         options = getYtdlBaseOptions()
 
-        folderName = getTimeStamp('id') + '-' + username
+        folderName = getTimeStamp('id') + '-' + getIdFromName(username)
         destFolder = options['_destFolder'] = posixpath.join(TEMP_PATH, folderName)
         # Ensure temp folder is exists
         pathlib.Path(destFolder).mkdir(parents=True, exist_ok=True)

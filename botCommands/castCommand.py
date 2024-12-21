@@ -3,6 +3,7 @@
 from functools import partial
 import telebot  # pyTelegramBotAPI
 
+from botCore.helpers import getUserName
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.utils import debugObj
@@ -19,7 +20,7 @@ _logger = getDebugLogger()
 def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
     text = message.text
     chatId = chat.id
-    username = str(chat.username)
+    username = getUserName(message.from_user)
     if not text:
         botApp.reply_to(message, 'Video url is expected.')
         return
@@ -48,7 +49,7 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     `URL`
     """
     chatId = chat.id
-    username = str(chat.username)
+    username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
     argsCount = len(args) - 1

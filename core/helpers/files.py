@@ -7,7 +7,7 @@ from ..constants import youtubeLinkPrefixRegex
 def getIdFromName(name: str):
     filename = name  # .lower()
     filename = re.sub(r'\W+', ' ', filename).strip()
-    #  filename = re.sub(r'\s+', '-', filename)
+    filename = re.sub(r'\s+', '-', filename)
     return filename
 
 

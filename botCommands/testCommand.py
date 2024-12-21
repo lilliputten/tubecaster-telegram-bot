@@ -24,7 +24,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         user = message.from_user
         username = chat.username
         first_name = chat.first_name
-        last_name = chat.last_name
+        # last_name = chat.last_name
         name = first_name if first_name else username
         json = message.json
         fromData: dict = json.get('from', {})
