@@ -31,12 +31,11 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         'username': username,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'castForUrlStep: Start',
-            secondaryStyle(debugStr),
-        ]
-    )
+    logItems = [
+        titleStyle('castForUrlStep: Start'),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
     _logger.info(logContent)
     downloadAndSendAudioToChat(url, chatId, username, message)
 
@@ -55,7 +54,7 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     argsCount = len(args) - 1
     if argsCount < 1:
         if not args[0] or not isYoutubeLink(args[0]):
-            replyMsg = emojies.success + ' Ok, now send the video address:'
+            replyMsg = emojies.question + ' Ok, now send the video address:'
             replyOrSend(botApp, replyMsg, chat.id, message)
             botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
             return

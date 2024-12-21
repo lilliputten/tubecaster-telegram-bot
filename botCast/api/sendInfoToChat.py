@@ -125,7 +125,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
                 )
             )
         )
-        logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
+        logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
         #  replyOrSend(botApp, infoContent, chatId, originalMessage)
         botApp.edit_message_text(

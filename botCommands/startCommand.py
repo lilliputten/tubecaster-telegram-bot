@@ -30,7 +30,7 @@ def startCommand(chat: telebot.types.Chat):
         'LOCAL': appConfig.get('LOCAL'),
     }
     logItems = [
-        'startCommand',
+        titleStyle('startCommand'),
         debugObj(debugItems),
     ]
     logContent = '\n'.join(logItems)

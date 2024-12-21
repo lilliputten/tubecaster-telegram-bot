@@ -84,18 +84,16 @@ def sendCommandInfo(message: telebot.types.Message):
         **commonInfoData,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'command: %s' % commandHash,
-            secondaryStyle(debugStr),
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            'TubeCaster bot received a command: %s' % text,
-            secondaryStyle(debugStr),
-        ]
-    )
+    logItems = [
+        titleStyle('command: %s' % commandHash),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
+    msgItems = [
+        'TubeCaster bot received a command: %s' % text,
+        secondaryStyle(debugStr),
+    ]
+    content = '\n\n'.join(msgItems)
     notifyOwner(content, logContent)
 
 
@@ -124,12 +122,11 @@ def sendQueryInfo(query: telebot.types.CallbackQuery):
         **commonInfoData,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'query: %s' % data,
-            secondaryStyle(debugStr),
-        ]
-    )
+    logItems = [
+        'query: %s' % data,
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
     content = '\n\n'.join(
         [
             'TubeCaster bot received a query: %s' % data,

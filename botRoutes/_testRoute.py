@@ -52,13 +52,13 @@ def testRoute():
         }
         debugStr = debugObj(debugItems)
         logItems = [
-            titleStr,
+            titleStyle(titleStyle(titleStr)),
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
         msgItems = [
             titleStr,
-            secondaryStyle(debugStr),
+            debugStr,
         ]
         msgContent = '\n\n'.join(msgItems)
         _logger.info(logContent)

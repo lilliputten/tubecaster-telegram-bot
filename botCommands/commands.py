@@ -105,7 +105,7 @@ def defaultCommand(message):
             _logger.info('defaultCommand: Processing as a cast command')
             castCommand(message.chat, message)
         else:
-            botApp.send_sticker(chatId, sticker=stickers.greetingMrCar)
+            botApp.send_sticker(chatId, sticker=stickers.busyMrCat)
             markup = createCommonButtonsMarkup()
             botApp.send_message(
                 message.chat.id,

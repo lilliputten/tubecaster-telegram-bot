@@ -33,7 +33,7 @@ def downloadInfo(
     debugData = debugObj(obj)
     logContent = '\n'.join(
         [
-            'downloadInfo',
+            titleStyle('downloadInfo'),
             debugData,
         ]
     )

@@ -1,9 +1,12 @@
 import os
+import re
 
 
 # Enable ansi colors for console output, see `ansiStyle`
 _logAddStyle = True
 
+# Regex for ANSI colour codes
+ANSI_RE = re.compile(r'\x1b\[[0-9;]*m')
 
 if os.name == 'nt':
     try:
@@ -16,6 +19,10 @@ def truncStr(s: str, maxLen: int):
     if len(s) >= maxLen - 1:
         s = s[: maxLen - 1] + '…'
     return s
+
+
+def removeAnsiStyles(s: str):
+    return re.sub(ANSI_RE, '', s)
 
 
 def ansiStyle(value: str, *styles: str) -> str:

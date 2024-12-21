@@ -63,7 +63,7 @@ def startRoute():
     }
     debugStr = debugObj(debugItems)
     logItems = [
-        'startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed',
+        titleStyle('startRoute: Webhook adding result: %s' % 'Succeed' if result else 'Failed'),
         secondaryStyle(debugStr),
     ]
     logContent = '\n'.join(logItems)

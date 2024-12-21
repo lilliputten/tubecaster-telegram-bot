@@ -34,7 +34,7 @@ def rootRoute():
         }
         debugStr = debugObj(debugItems)
         logItems = [
-            'rootRoute: Empty test route',
+            titleStyle('rootRoute: Empty test route'),
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)

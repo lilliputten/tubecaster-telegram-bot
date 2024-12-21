@@ -46,18 +46,16 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
         }
         debugStr = debugObj(obj)
-        logContent = '\n'.join(
-            [
-                'testCommand: %s' % text,
-                secondaryStyle(debugStr),
-            ]
-        )
-        content = '\n\n'.join(
-            [
-                'Hi, %s! Here is your test results:' % name,
-                secondaryStyle(debugStr),
-            ]
-        )
+        logItems = [
+            titleStyle('testCommand: %s' % text),
+            secondaryStyle(debugStr),
+        ]
+        logContent = '\n'.join(logItems)
+        msgItems = [
+            'Hi, %s! Here is your test results:' % name,
+            debugStr,
+        ]
+        content = '\n\n'.join(msgItems)
         _logger.info(logContent)
         botApp.send_message(chatId, content)
     except Exception as err:

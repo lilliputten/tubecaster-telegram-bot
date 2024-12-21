@@ -7,7 +7,7 @@ Test simple message sending code.
 import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.logger import secondaryStyle
+from core.logger import secondaryStyle, titleStyle
 from core.utils import debugObj
 from core.helpers.errors import errorToString
 from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
@@ -24,12 +24,11 @@ def showInfo():
         'TELEGRAM_OWNER_ID': TELEGRAM_OWNER_ID,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'testSendMessage: showInfo:',
-            secondaryStyle(debugStr),
-        ]
-    )
+    logItems = [
+        titleStyle('testSendMessage: showInfo:'),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
     print(logContent)
 
 

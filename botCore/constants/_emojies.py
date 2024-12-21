@@ -1,4 +1,4 @@
-question = '❓'
+question = '❔'
 waiting = '⏳'
 success = '✅'
 error = '❌'

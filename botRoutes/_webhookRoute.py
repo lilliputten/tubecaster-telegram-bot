@@ -88,7 +88,7 @@ def webhookRoute():
     }
     debugStr = debugObj(debugData)
     logItems = [
-        'webhookRoute: Update %d for message %d started' % (updateId, messageId),
+        titleStyle('webhookRoute: Update %d for message %d started' % (updateId, messageId)),
         secondaryStyle(debugStr),
     ]
     logContent = '\n'.join(logItems)
@@ -123,7 +123,7 @@ def webhookRoute():
                 }
                 debugStr = debugObj(debugData)
                 logItems = [
-                    'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
+                    titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
                     secondaryStyle(debugStr),
                 ]
                 logContent = '\n'.join(logItems)
@@ -165,7 +165,7 @@ def webhookRoute():
                 }
                 debugStr = debugObj(debugData)
                 logItems = [
-                    'webhookRoute: Update %d for message %d is already processing' % (updateId, messageId),
+                    titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
                     secondaryStyle(debugStr),
                 ]
                 logContent = '\n'.join(logItems)
