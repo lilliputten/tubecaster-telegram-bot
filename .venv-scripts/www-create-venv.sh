@@ -13,3 +13,8 @@ echo "Creating venv for www-data..." \
 # sudo -u www-data /var/www/.venv-default/bin/python -m prisma db push --accept-data-loss
 # See also:
 # sudo -u www-data sh
+#
+# Used manual setting for prisma query engine path variable (`PRISMA_QUERY_ENGINE_BINARY`) in:
+# /var/www/.uwsgi-apps/flask-tubecaster.ini
+#
+# See also initalization commands in `/var/www/automatic-webhook-deploy/config.php`

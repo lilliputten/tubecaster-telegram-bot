@@ -2,7 +2,7 @@
 
 import sysconfig
 import traceback
-from core.appConfig import LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
+from core.appConfig import appConfig, LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
 from core.helpers.errors import errorToString
 from core.logger import getDebugLogger
@@ -26,7 +26,12 @@ def showDebug():
         'WERKZEUG_RUN_MAIN': WERKZEUG_RUN_MAIN,
         'isNormalRun': isNormalRun,
         'timeStr': timeStr,
+        # NOTE: It's possible to encounter a bug if `EXT_SUFFIX` values will be different in different enviroments
         'EXT_SUFFIX': sysconfig.get_config_var('EXT_SUFFIX'),
+        # NOTE: Used manual setting for prisma query engine path variable (`PRISMA_QUERY_ENGINE_BINARY`) in `/var/www/.uwsgi-apps/flask-tubecaster.ini`
+        'PRISMA_QUERY_ENGINE_BINARY': appConfig.get('PRISMA_QUERY_ENGINE_BINARY'),
+        # NOTE: Timezone (set in `/var/www/.uwsgi-apps/flask-tubecaster.ini`)
+        'TZ': appConfig.get('TZ'),
     }
     logItems = [
         'Application started',
