@@ -76,7 +76,8 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     if not argsCount or (isInfoCommand and argsCount == 1):
         replyMsg = emojies.question + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
-        botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
+        _logger.info('infoCommand: Registering the next handler with infoForUrlStep')
+        botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))
         return
     url = args[0]
     if isInfoCommand and argsCount == 2:

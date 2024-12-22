@@ -63,6 +63,7 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     if not argsCount or (isCastCommand and argsCount == 1):
         replyMsg = emojies.question + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
+        _logger.info('castCommand: Registering the next handler with castForUrlStep')
         botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
         return
     url = args[0]
