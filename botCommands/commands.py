@@ -6,9 +6,11 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
-import telebot  # pyTelegramBotAPI
 import traceback
+import telebot  # pyTelegramBotAPI
+from telebot.states.sync.context import StateContext
 
+from botApp.botStates import BotStates
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.helpers.errors import errorToString
@@ -21,7 +23,7 @@ from botCore.helpers import replyOrSend
 from botCore.helpers import createCommonButtonsMarkup
 
 from .sendInfo import sendCommandInfo, sendQueryInfo
-from .infoCommand import infoCommand
+from .infoCommand import infoCommand, infoForUrlStep
 from .castCommand import castCommand
 from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
@@ -55,7 +57,7 @@ def helpReaction(message: telebot.types.Message):
 @botApp.message_handler(commands=['start'])
 def startReaction(message: telebot.types.Message):
     sendCommandInfo(message)
-    startCommand(message.chat)
+    startCommand(message.chat, message)
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'startHelp')
@@ -84,10 +86,16 @@ def castReaction(message: telebot.types.Message):
     castCommand(message.chat, message)
 
 
+@botApp.message_handler(state=BotStates.waitForCastUrl)
+def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, state)
+    infoForUrlStep(message.chat, message, state)
+
+
 @botApp.message_handler(commands=['info'])
-def infoReaction(message: telebot.types.Message):
-    sendCommandInfo(message)
-    infoCommand(message.chat, message)
+def infoReaction(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, state)
+    infoCommand(message.chat, message, state)
 
 
 def checkDefaultCommand(message: telebot.types.Message):

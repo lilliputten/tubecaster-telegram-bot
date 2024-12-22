@@ -4,12 +4,15 @@ import traceback
 import telebot  # pyTelegramBotAPI
 from functools import partial
 
+from telebot.states.sync.context import StateContext
+
 from core.helpers.errors import errorToString
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, titleStyle, secondaryStyle, tretiaryStyle, errorStyle, warningTitleStyle
 from core.utils import debugObj
 
 from botApp import botApp
+from botApp.botStates import BotStates
 from botCore.helpers import getUserName
 from botCore.helpers import replyOrSend
 from botCore.constants import emojies
@@ -21,7 +24,11 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
+def infoForUrlStep(
+    chat: telebot.types.Chat,
+    message: telebot.types.Message,
+    state: StateContext,
+):
     _logger.info('infoForUrlStep: Before')
     try:
         text = message.text
@@ -64,7 +71,17 @@ def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         )
 
 
-def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
+    # debugItems = {
+    #     'state': state,
+    # }
+    # logItems = [
+    #     titleStyle('infoCommand: start'),
+    #     secondaryStyle(debugObj(debugItems)),
+    # ]
+    # logContent = '\n'.join(logItems)
+    # _logger.info(logContent)
+    # userId = message.from_user.id if message.from_user else None
     username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
@@ -77,6 +94,9 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         replyMsg = emojies.question + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
         _logger.info('infoCommand: Registering the next handler with infoForUrlStep')
+        # if userId:
+        #     botApp.set_state(userId, BotStates.waitForInfoUrl, message.chat.id)
+        # state.set(BotStates.waitForInfoUrl)
         botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))
         return
     url = args[0]
@@ -106,4 +126,3 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         #  raise Exception(errMsg)
     finally:
         _logger.info(titleStyle('infoCommand: Finished'))
-

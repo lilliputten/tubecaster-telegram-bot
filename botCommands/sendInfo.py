@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 
+from typing import Optional
 import telebot  # pyTelegramBotAPI
+from telebot.states.sync.context import StateContext
 
 from core.appConfig import (
     LOCAL,
@@ -39,7 +41,7 @@ def notifyOwner(text: str, logInfo: str | None = None):
         botApp.send_message(LOGGING_CHANNEL_ID, text)
 
 
-def sendCommandInfo(message: telebot.types.Message):
+def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext] = None):
     #  chat = message.chat
     text = message.text
     sticker = message.sticker

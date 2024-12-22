@@ -50,5 +50,9 @@ line-length = 120
 # TODO!
 
 [tool.poetry.scripts]
-dev = 'mypackage.mymodule:mycommand'
+export_requirements = "poetry-scripts:export_requirements"
+pylint = "poetry-scripts.pylint:run"
+lint = "poetry-scripts:lint"
+format = "poetry-scripts:format"
+check_all = "poetry-scripts:check_all"
 

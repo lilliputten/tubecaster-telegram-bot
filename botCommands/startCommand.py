@@ -13,10 +13,16 @@ from botCore.helpers import createCommonButtonsMarkup
 from botCore import botConfig
 
 
-logger = getDebugLogger()
+_logger = getDebugLogger()
 
 
-def startCommand(chat: telebot.types.Chat):
+def processNextStep(message: telebot.types.Message):
+    chat = message.chat
+    # DEBUG
+    _logger.info('processNextStep: ' + repr(message.text))
+    botApp.send_message(chat.id, 'processNextStep')
+
+def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     chatId = chat.id
     username = chat.username
     first_name = chat.first_name
@@ -31,7 +37,7 @@ def startCommand(chat: telebot.types.Chat):
     }
     logItems = [
         titleStyle('startCommand'),
-        debugObj(debugItems),
+        secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
     msgItems = [
@@ -49,9 +55,10 @@ def startCommand(chat: telebot.types.Chat):
         else None,
     ]
     content = '\n\n'.join(filter(None, msgItems))
-    logger.info(logContent)
+    _logger.info(logContent)
     # Show menu
     markup = createCommonButtonsMarkup()
     # Send content and menu with a banner
     with open(botConfig.visualImagePath, 'rb') as fh:
         botApp.send_photo(chatId, photo=fh, caption=content, reply_markup=markup)
+    botApp.register_next_step_handler(message, processNextStep)
