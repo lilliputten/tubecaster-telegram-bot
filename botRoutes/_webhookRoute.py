@@ -150,6 +150,7 @@ def webhookRoute():
                 # Process the command...
                 botApp.process_new_updates([update])
 
+                stateValue = botApp.get_state(userId, chatId)
                 debugData = {
                     'commandId': createdCommand.id,
                     'createdAtStr': formatTime(None, createdCommand.createdAt),
@@ -164,6 +165,7 @@ def webhookRoute():
                     'userId': userId,
                     'usernameStr': usernameStr,
                     'chatId': chatId,
+                    'stateValue': stateValue,
                 }
                 debugStr = debugObj(debugData)
                 logItems = [

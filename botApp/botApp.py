@@ -57,11 +57,15 @@ def startBotApp():
     )
 
     # @see https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py
-    botApp.enable_save_next_step_handlers(delay=2)
+    botApp.enable_save_next_step_handlers(delay=1)
 
     # XXX: This line causes an error:
     # AttributeError: partially initialized module 'botApp.botApp' has no attribute 'message_handler' (most likely due to a circular import)
     botApp.load_next_step_handlers()
+
+    # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.enable_saving_states
+    # Default file name is `.state-save/states.pkl`
+    botApp.enable_saving_states()
 
     # necessary for state parameter in handlers.
     from telebot.states.sync.middleware import StateMiddleware
