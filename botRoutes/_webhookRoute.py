@@ -99,10 +99,10 @@ def webhookRoute():
         try:
             if not update or not updateId:
                 raise Exception('No update id has been provided!')
-            if not messageId:
-                raise Exception('No message id has been provided!')
+            # if not messageId:
+            #     raise Exception('No message id has been provided!')
 
-            existedCommand = checkCommandExistsForMessageId(messageId)
+            existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
             if existedCommand:
                 # Command already exists, do nothing, but notify user
                 debugData = {

@@ -5,6 +5,7 @@ import telebot  # pyTelegramBotAPI
 from functools import partial
 
 from core.helpers.errors import errorToString
+from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, titleStyle, secondaryStyle, tretiaryStyle, errorStyle, warningTitleStyle
 from core.utils import debugObj
 
@@ -30,6 +31,9 @@ def infoForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
             botApp.reply_to(message, 'Video url is expected.')
             return
         url = text
+        if not isYoutubeLink(url):
+            botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+            return
         obj = {
             'url': url,
             'chatId': chatId,
@@ -64,18 +68,24 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
-    argsCount = len(args) - 1
-    try:
-        if argsCount < 1:
-            replyMsg = emojies.question + ' Ok, now send the video address:'
-            replyOrSend(botApp, replyMsg, chat.id, message)
-            _logger.info(titleStyle('infoCommand: Registered a handler for url answer: infoForUrlStep'))
-            botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
-            return
-        elif argsCount > 1:
-            botApp.reply_to(message, 'Too many arguments (expected only video address).')
-            return
+    argsCount = len(args)
+    if argsCount > 2:
+        botApp.reply_to(message, emojies.error + ' Too many arguments.')
+        return
+    isInfoCommand = args[0] == '/info' if argsCount > 0 else False
+    if not argsCount or (isInfoCommand and argsCount == 1):
+        replyMsg = emojies.question + ' Ok, now send the video address:'
+        replyOrSend(botApp, replyMsg, chat.id, message)
+        botApp.register_next_step_handler(message, partial(infoForUrlStep, chat))
+        return
+    url = args[0]
+    if isInfoCommand and argsCount == 2:
         url = args[1]
+    if not isYoutubeLink(url):
+        botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+        return
+    # Wait for the url
+    try:
         sendInfoToChat(url, chat.id, username, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

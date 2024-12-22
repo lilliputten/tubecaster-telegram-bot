@@ -25,6 +25,9 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
         botApp.reply_to(message, 'Video url is expected.')
         return
     url = text
+    if not isYoutubeLink(url):
+        botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+        return
     obj = {
         'url': url,
         'chatId': chatId,
@@ -51,17 +54,21 @@ def castCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
-    argsCount = len(args) - 1
-    if argsCount < 1:
-        if not args[0] or not isYoutubeLink(args[0]):
-            replyMsg = emojies.question + ' Ok, now send the video address:'
-            replyOrSend(botApp, replyMsg, chat.id, message)
-            botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
-            return
-        # Else continue with th first argument as an url
-    elif argsCount > 1:
-        botApp.reply_to(message, 'Too many arguments (expected only video address).')
+    argsCount = len(args)
+    if argsCount > 2:
+        botApp.reply_to(message, emojies.error + ' Too many arguments.')
         return
-    # Get the last argument
-    url = args[argsCount - 1]
+    isCastCommand = args[0] == '/cast' if argsCount > 0 else False
+    # Wait for the url
+    if not argsCount or (isCastCommand and argsCount == 1):
+        replyMsg = emojies.question + ' Ok, now send the video address:'
+        replyOrSend(botApp, replyMsg, chat.id, message)
+        botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
+        return
+    url = args[0]
+    if isCastCommand and argsCount == 2:
+        url = args[1]
+    if not isYoutubeLink(url):
+        botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+        return
     downloadAndSendAudioToChat(url, chatId, username, message)

@@ -6,9 +6,7 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
-from time import sleep
 import telebot  # pyTelegramBotAPI
-# from telebot.storage import StateMemoryStorage, StateDataContext, StateStorageBase # TODO?
 import traceback
 
 from core.helpers.urls import isYoutubeLink
@@ -140,15 +138,15 @@ def checkDefaultCommand(message: telebot.types.Message):
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
-    return False
+    return True
 
 
 # Handle all other messages.
-# @botApp.message_handler(
-#     func=checkDefaultCommand,
-#     # func=lambda query: not query.data.startswith('start'),
-#     content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
-# )
+@botApp.message_handler(
+    func=checkDefaultCommand,
+    # func=lambda _: True,
+    content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
+)
 def defaultCommand(message):
     sendCommandInfo(message)
     chatId = message.chat.id
