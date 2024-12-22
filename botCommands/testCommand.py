@@ -22,6 +22,8 @@ _logger = getDebugLogger()
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
     try:
         chatId = chat.id  # Is userId
+        userId = message.from_user.id if message.from_user else chatId
+        stateValue = botApp.get_state(userId, chatId)
         text = message.text
         user = message.from_user
         username = chat.username
@@ -47,6 +49,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
             'state': state,
+            'stateValue': stateValue,
         }
         debugStr = debugObj(obj)
         logItems = [

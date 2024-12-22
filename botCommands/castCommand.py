@@ -66,7 +66,6 @@ def startWaitingForCastUrl(
 def castCommand(
     chat: telebot.types.Chat,
     message: telebot.types.Message,
-    state: StateContext,
 ):
     """
     Expects commands like:

@@ -78,7 +78,6 @@ def startCast(query: telebot.types.CallbackQuery):
         botApp.send_message(message.chat.id, errMsg)
         return
     startWaitingForCastUrl(message.chat, message)
-    # castCommand(message.chat, message, state)
 
 
 @botApp.message_handler(state=BotStates.waitForCastUrl)
@@ -89,9 +88,9 @@ def castForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 
 
 @botApp.message_handler(commands=['cast'])
-def castReaction(message: telebot.types.Message, state: StateContext):
+def castReaction(message: telebot.types.Message):
     sendCommandInfo(message)
-    castCommand(message.chat, message, state)
+    castCommand(message.chat, message)
 
 
 @botApp.message_handler(state=BotStates.waitForInfoUrl)
@@ -163,6 +162,7 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
     # func=checkDefaultCommand,
     func=lambda _: True,
     content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
+    state=None,
 )
 def defaultCommand(message: telebot.types.Message):
     sendCommandInfo(message)

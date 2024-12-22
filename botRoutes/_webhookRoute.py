@@ -68,6 +68,7 @@ def webhookRoute():
     userId = user.id if user else 0
     usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
+    stateValue = botApp.get_state(userId, chatId)
     debugData = {
         'startTimeStr': startTimeStr,
         'timeStr': timeStr,
@@ -85,6 +86,7 @@ def webhookRoute():
         'userId': userId,
         'usernameStr': usernameStr,
         'chatId': chatId,
+        'stateValue': stateValue,
     }
     debugStr = debugObj(debugData)
     logItems = [
@@ -186,7 +188,11 @@ def webhookRoute():
             if createdCommand:
                 # TODO: Remove temp messages
                 deleteCommandById(createdCommand.id)
-            debugStr = debugObj(debugData)
+            stateValue = botApp.get_state(userId, chatId)
+            debugStr = debugObj({
+                **debugData,
+                'stateValue': stateValue,
+            })
             logItems = [
                 titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
                 secondaryStyle(debugStr),
