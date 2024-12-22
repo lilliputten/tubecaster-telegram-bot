@@ -3,6 +3,8 @@
 import telebot  # pyTelegramBotAPI
 import traceback
 
+from telebot.states.sync.context import StateContext
+
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
@@ -17,7 +19,7 @@ from botCore.helpers import getUserName
 _logger = getDebugLogger()
 
 
-def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
     try:
         chatId = chat.id  # Is userId
         text = message.text
@@ -44,6 +46,7 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             'LOCAL': appConfig.get('LOCAL'),
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
+            'state': state,
         }
         debugStr = debugObj(obj)
         logItems = [

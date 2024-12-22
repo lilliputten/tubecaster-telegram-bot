@@ -22,5 +22,5 @@ def format():
 
 
 def check_all():
-    lint()
     format()
+    lint()

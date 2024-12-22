@@ -16,11 +16,12 @@ from botCore import botConfig
 _logger = getDebugLogger()
 
 
-def processNextStep(message: telebot.types.Message):
-    chat = message.chat
-    # DEBUG
-    _logger.info('processNextStep: ' + repr(message.text))
-    botApp.send_message(chat.id, 'processNextStep')
+# def processNextStep(message: telebot.types.Message):
+#     chat = message.chat
+#     # DEBUG
+#     _logger.info('processNextStep: ' + repr(message.text))
+#     botApp.send_message(chat.id, 'processNextStep')
+
 
 def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     chatId = chat.id
@@ -61,4 +62,4 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     # Send content and menu with a banner
     with open(botConfig.visualImagePath, 'rb') as fh:
         botApp.send_photo(chatId, photo=fh, caption=content, reply_markup=markup)
-    botApp.register_next_step_handler(message, processNextStep)
+    # botApp.register_next_step_handler(message, processNextStep)

@@ -27,7 +27,6 @@ _logTraceback = False
 def infoForUrlStep(
     chat: telebot.types.Chat,
     message: telebot.types.Message,
-    state: StateContext,
 ):
     _logger.info('infoForUrlStep: Before')
     try:
@@ -39,7 +38,10 @@ def infoForUrlStep(
             return
         url = text
         if not isYoutubeLink(url):
-            botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+            botApp.reply_to(
+                message,
+                emojies.error + ' A youtube url has been expected to fetch an info from. But you\'ve sent "%s".' % url,
+            )
             return
         obj = {
             'url': url,
@@ -72,16 +74,10 @@ def infoForUrlStep(
 
 
 def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
-    # debugItems = {
-    #     'state': state,
-    # }
-    # logItems = [
-    #     titleStyle('infoCommand: start'),
-    #     secondaryStyle(debugObj(debugItems)),
-    # ]
-    # logContent = '\n'.join(logItems)
-    # _logger.info(logContent)
-    # userId = message.from_user.id if message.from_user else None
+    """
+    Expects commands like:
+    `/info URL`
+    """
     username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()
@@ -94,18 +90,20 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
         replyMsg = emojies.question + ' Ok, now send the video address:'
         replyOrSend(botApp, replyMsg, chat.id, message)
         _logger.info('infoCommand: Registering the next handler with infoForUrlStep')
-        # if userId:
-        #     botApp.set_state(userId, BotStates.waitForInfoUrl, message.chat.id)
-        # state.set(BotStates.waitForInfoUrl)
-        botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))
+        # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
+        # botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))
+        state.set(BotStates.waitForInfoUrl)
         return
     url = args[0]
     if isInfoCommand and argsCount == 2:
         url = args[1]
     if not isYoutubeLink(url):
-        botApp.reply_to(message, emojies.error + ' A youtube url has been expected. But you have sent "%s"' % url)
+        botApp.reply_to(
+            message,
+            emojies.error + ' A youtube url has been expected to fetch an info from. But you\'ve sent "%s".' % url,
+        )
         return
-    # Wait for the url
+    # Wait for the url in the next message
     try:
         sendInfoToChat(url, chat.id, username, message)
     except Exception as err:
@@ -123,6 +121,5 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
             chat_id=chat.id,
             text=errMsg,
         )
-        #  raise Exception(errMsg)
     finally:
         _logger.info(titleStyle('infoCommand: Finished'))

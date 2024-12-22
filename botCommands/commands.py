@@ -24,7 +24,7 @@ from botCore.helpers import createCommonButtonsMarkup
 
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .infoCommand import infoCommand, infoForUrlStep
-from .castCommand import castCommand
+from .castCommand import castCommand, startWaitingForCastUrl, castForUrlStep
 from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
 from .startCommand import startCommand
@@ -37,9 +37,9 @@ _logTraceback = False
 
 
 @botApp.message_handler(commands=['test'])
-def testReaction(message: telebot.types.Message):
+def testReaction(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message)
-    testCommand(message.chat, message)
+    testCommand(message.chat, message, state)
 
 
 @botApp.message_handler(commands=['castTest'])
@@ -77,19 +77,28 @@ def startCast(query: telebot.types.CallbackQuery):
         _logger.error('startCast: Error: %s' % errMsg)
         botApp.send_message(message.chat.id, errMsg)
         return
-    castCommand(message.chat, message)
-
-
-@botApp.message_handler(commands=['cast'])
-def castReaction(message: telebot.types.Message):
-    sendCommandInfo(message)
-    castCommand(message.chat, message)
+    startWaitingForCastUrl(message.chat, message)
+    # castCommand(message.chat, message, state)
 
 
 @botApp.message_handler(state=BotStates.waitForCastUrl)
+def castForUrlStepHandler(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, state)
+    state.delete()
+    castForUrlStep(message.chat, message)
+
+
+@botApp.message_handler(commands=['cast'])
+def castReaction(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message)
+    castCommand(message.chat, message, state)
+
+
+@botApp.message_handler(state=BotStates.waitForInfoUrl)
 def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, state)
-    infoForUrlStep(message.chat, message, state)
+    state.delete()
+    infoForUrlStep(message.chat, message)
 
 
 @botApp.message_handler(commands=['info'])
@@ -98,73 +107,73 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
     infoCommand(message.chat, message, state)
 
 
-def checkDefaultCommand(message: telebot.types.Message):
-    text = message.text
-    sticker = message.sticker
-    stickerFileId = sticker.file_id if sticker else None
-    stickerEmoji = sticker.emoji if sticker else None
-    stickerSetName = sticker.set_name if sticker else None
-    messageId = message.id
-    contentType = message.content_type
-    user = message.from_user
-    userId = user.id if user else None
-    text = message.text
-    usernameStr = getUserName(user)
-    json = message.json
-    fromData: dict = json.get('from', {})
-    languageCode = fromData.get('language_code')
-    commandHash = ' '.join(
-        list(
-            filter(
-                None,
-                [
-                    contentType,
-                    text,
-                ],
-            )
-        )
-    )
-    obj = {
-        'commandHash': commandHash,
-        'contentType': contentType,
-        'messageId': messageId,
-        'text': text,
-        'sticker': repr(sticker),
-        'stickerFileId': stickerFileId,
-        'stickerSetName': stickerSetName,
-        'stickerEmoji': stickerEmoji,
-        # 'timeStr': getTimeStamp(),
-        'userId': userId,
-        'usernameStr': usernameStr,
-        'languageCode': languageCode,
-        # 'messageDate': messageDate,
-    }
-    debugStr = debugObj(obj)
-    logItems = [
-        titleStyle('checkDefaultCommand: %s' % commandHash),
-        secondaryStyle(debugStr),
-    ]
-    logContent = '\n'.join(logItems)
-    _logger.info(logContent)
-    return True
+# def checkDefaultCommand(message: telebot.types.Message):
+#     text = message.text
+#     sticker = message.sticker
+#     stickerFileId = sticker.file_id if sticker else None
+#     stickerEmoji = sticker.emoji if sticker else None
+#     stickerSetName = sticker.set_name if sticker else None
+#     messageId = message.id
+#     contentType = message.content_type
+#     user = message.from_user
+#     userId = user.id if user else None
+#     text = message.text
+#     usernameStr = getUserName(user)
+#     json = message.json
+#     fromData: dict = json.get('from', {})
+#     languageCode = fromData.get('language_code')
+#     commandHash = ' '.join(
+#         list(
+#             filter(
+#                 None,
+#                 [
+#                     contentType,
+#                     text,
+#                 ],
+#             )
+#         )
+#     )
+#     obj = {
+#         'commandHash': commandHash,
+#         'contentType': contentType,
+#         'messageId': messageId,
+#         'text': text,
+#         'sticker': repr(sticker),
+#         'stickerFileId': stickerFileId,
+#         'stickerSetName': stickerSetName,
+#         'stickerEmoji': stickerEmoji,
+#         # 'timeStr': getTimeStamp(),
+#         'userId': userId,
+#         'usernameStr': usernameStr,
+#         'languageCode': languageCode,
+#         # 'messageDate': messageDate,
+#     }
+#     debugStr = debugObj(obj)
+#     logItems = [
+#         titleStyle('checkDefaultCommand: %s' % commandHash),
+#         secondaryStyle(debugStr),
+#     ]
+#     logContent = '\n'.join(logItems)
+#     _logger.info(logContent)
+#     return True
 
 
 # Handle all other messages.
 @botApp.message_handler(
-    func=checkDefaultCommand,
-    # func=lambda _: True,
+    # func=checkDefaultCommand,
+    func=lambda _: True,
     content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
 )
-def defaultCommand(message):
+def defaultCommand(message: telebot.types.Message):
     sendCommandInfo(message)
     chatId = message.chat.id
     try:
         contentType = message.content_type
         text = message.text
         # The command text seems to be an youtube video link, so try to cast it...
-        if contentType == 'text' and isYoutubeLink(text):
+        if contentType == 'text' and text and isYoutubeLink(text):
             _logger.info(titleStyle('defaultCommand: Processing as a cast command'))
-            castCommand(message.chat, message)
+            castForUrlStep(message.chat, message)
         else:
             botApp.send_sticker(chatId, sticker=stickers.busyMrCat)
             markup = createCommonButtonsMarkup()
