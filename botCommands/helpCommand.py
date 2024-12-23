@@ -20,4 +20,9 @@ def helpCommand(chat: telebot.types.Chat):
         helpText += commandsInfo[key] + '\n'
     # Send content and menu with a banner
     with open(botConfig.coverImagePath, 'rb') as fh:
-        botApp.send_photo(chatId, photo=fh, caption=helpText)
+        botApp.send_photo(
+            chatId,
+            photo=fh,
+            caption=helpText,
+            reply_markup=telebot.types.ReplyKeyboardRemove(),
+        )

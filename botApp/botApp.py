@@ -4,7 +4,7 @@ import sys
 import telebot  # pyTelegramBotAPI
 
 from telebot import custom_filters
-from telebot.storage import StateMemoryStorage   # , StateDataContext, StateStorageBase
+from telebot.storage import StateMemoryStorage   # TODO: To use production-ready storage, like StateDataContext, StateStorageBase, etc?
 
 # from telebot.handler_backends import State, StatesGroup #States
 # from telebot.states import State, StatesGroup

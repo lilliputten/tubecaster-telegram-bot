@@ -8,19 +8,12 @@ from core.appConfig import LOCAL, appConfig, PROJECT_INFO
 from core.utils import debugObj
 
 from botApp import botApp
-from botCore.helpers import createCommonButtonsMarkup
+from botCore.helpers import createCommonButtonsMarkup,  getUserName
 
 from botCore import botConfig
 
 
 _logger = getDebugLogger()
-
-
-# def processNextStep(message: telebot.types.Message):
-#     chat = message.chat
-#     # DEBUG
-#     _logger.info('processNextStep: ' + repr(message.text))
-#     botApp.send_message(chat.id, 'processNextStep')
 
 
 def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
@@ -32,7 +25,7 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         'timeStr': getTimeStamp(),
         'chatId': chatId,
         'username': username,
-        # 'usernameStr': getUserName(user),
+        'usernameStr': getUserName(message.from_user),
         'first_name': first_name,
         'LOCAL': appConfig.get('LOCAL'),
     }
@@ -62,4 +55,3 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     # Send content and menu with a banner
     with open(botConfig.visualImagePath, 'rb') as fh:
         botApp.send_photo(chatId, photo=fh, caption=content, reply_markup=markup)
-    # botApp.register_next_step_handler(message, processNextStep)

@@ -58,7 +58,10 @@ def webhookRoute():
     #  shipping_query = None
     #  update_id = 574259009
     updateId = update.update_id if update else None
+    callback_query = update.callback_query if update else None
     message = update.message if update else None
+    if not message and callback_query:
+        message = callback_query.message
     messageText = message.text if message else None
     messageId = message.id if message else 0
     messageContentType = message.content_type if message else None
@@ -76,6 +79,7 @@ def webhookRoute():
         'LOCAL': LOCAL,
         'update': repr(update),
         'message': repr(message),
+        'callback_query': repr(callback_query),
         'messageChat': repr(messageChat),
         'user': repr(user),
         'updateId': updateId,
@@ -96,110 +100,113 @@ def webhookRoute():
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
 
-    if update:
-        createdCommand: Optional[dbTypes.TPrismaCommand] = None
-        try:
-            if not update or not updateId:
-                raise Exception('No update id has been provided!')
-            # if not messageId:
-            #     raise Exception('No message id has been provided!')
+    # Remove previous message markup
+    if callback_query and callback_query.message:
+        botApp.edit_message_reply_markup(chat_id=chatId, message_id=callback_query.message.id, reply_markup=None)
 
-            existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
-            if existedCommand:
-                # Command already exists, do nothing, but notify user
-                debugData = {
-                    'commandId': existedCommand.id,
-                    'repeated': existedCommand.repeated,
-                    'createdAtStr': formatTime(None, existedCommand.createdAt),
-                    'updatedAtStr': formatTime(None, existedCommand.updatedAt),
-                    'timeStr': timeStr,
-                    'messageChat': repr(messageChat),
-                    'updateId': updateId,
-                    'messageText': messageText,
-                    'messageId': messageId,
-                    'messageContentType': messageContentType,
-                    'messageDate': messageDate,
-                    'userId': userId,
-                    'usernameStr': usernameStr,
-                    'chatId': chatId,
-                }
-                debugStr = debugObj(debugData)
-                logItems = [
-                    titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
-                    secondaryStyle(debugStr),
-                ]
-                logContent = '\n'.join(logItems)
-                _logger.info(logContent)
-                # TODO: Update message: Find first temp message and
-                if chatId:
-                    newMessage = botApp.send_message(
-                        chatId,
-                        emojies.waiting + ' Your command is still processing, be patient, please...',
-                    )
-                    addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
-            else:
-                # Create new command
-                commandData: dbTypes.TNewCommandData = {
-                    'updateId': updateId,
-                    'messageId': messageId,
-                    'userId': userId,
-                    'userStr': usernameStr,
-                }
-                createdCommand = addCommand(commandData)
+    createdCommand: Optional[dbTypes.TPrismaCommand] = None
+    try:
+        if not update or not updateId:
+            raise Exception('No update id has been provided!')
+        if not messageId:
+            raise Exception('No message id has been provided!')
 
-                # Process the command...
-                botApp.process_new_updates([update])
-
-                stateValue = botApp.get_state(userId, chatId)
-                debugData = {
-                    'commandId': createdCommand.id,
-                    'createdAtStr': formatTime(None, createdCommand.createdAt),
-                    'updatedAtStr': formatTime(None, createdCommand.updatedAt),
-                    'timeStr': timeStr,
-                    'messageChat': repr(messageChat),
-                    'updateId': updateId,
-                    'messageText': messageText,
-                    'messageId': messageId,
-                    'messageContentType': messageContentType,
-                    'messageDate': messageDate,
-                    'userId': userId,
-                    'usernameStr': usernameStr,
-                    'chatId': chatId,
-                    'stateValue': stateValue,
-                }
-                debugStr = debugObj(debugData)
-                logItems = [
-                    titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
-                    secondaryStyle(debugStr),
-                ]
-                logContent = '\n'.join(logItems)
-                _logger.info(logContent)
-        except Exception as err:
-            sError = errorToString(err, show_stacktrace=False)
-            sTraceback = str(traceback.format_exc())
-            errMsg = 'webhookRoute: Error processing webhook update: ' + sError
-            if logTraceback:
-                errMsg += sTraceback
-            else:
-                _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
-            _logger.error(errMsg)
-            return Response(errMsg, headers={'Content-type': 'text/plain'})
-        finally:
-            pass
-            # Remove created command...
-            if createdCommand:
-                # TODO: Remove temp messages
-                deleteCommandById(createdCommand.id)
-            stateValue = botApp.get_state(userId, chatId)
-            debugStr = debugObj({
-                **debugData,
-                'stateValue': stateValue,
-            })
+        existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
+        if existedCommand:
+            # Command already exists, do nothing, but notify user
+            debugData = {
+                'commandId': existedCommand.id,
+                'repeated': existedCommand.repeated,
+                'createdAtStr': formatTime(None, existedCommand.createdAt),
+                'updatedAtStr': formatTime(None, existedCommand.updatedAt),
+                'timeStr': timeStr,
+                'messageChat': repr(messageChat),
+                'updateId': updateId,
+                'messageText': messageText,
+                'messageId': messageId,
+                'messageContentType': messageContentType,
+                'messageDate': messageDate,
+                'userId': userId,
+                'usernameStr': usernameStr,
+                'chatId': chatId,
+            }
+            debugStr = debugObj(debugData)
             logItems = [
-                titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
+                titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
                 secondaryStyle(debugStr),
             ]
             logContent = '\n'.join(logItems)
             _logger.info(logContent)
+            # TODO: Update message: Find first temp message and
+            if chatId:
+                newMessage = botApp.send_message(
+                    chatId,
+                    emojies.waiting + ' Your command is still processing, be patient, please...',
+                )
+                addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
+        else:
+            # Create new command
+            commandData: dbTypes.TNewCommandData = {
+                'updateId': updateId,
+                'messageId': messageId,
+                'userId': userId,
+                'userStr': usernameStr,
+            }
+            createdCommand = addCommand(commandData)
+
+            # Process the command...
+            botApp.process_new_updates([update])
+
+            stateValue = botApp.get_state(userId, chatId)
+            debugData = {
+                'commandId': createdCommand.id,
+                'createdAtStr': formatTime(None, createdCommand.createdAt),
+                'updatedAtStr': formatTime(None, createdCommand.updatedAt),
+                'timeStr': timeStr,
+                'messageChat': repr(messageChat),
+                'updateId': updateId,
+                'messageText': messageText,
+                'messageId': messageId,
+                'messageContentType': messageContentType,
+                'messageDate': messageDate,
+                'userId': userId,
+                'usernameStr': usernameStr,
+                'chatId': chatId,
+                'stateValue': stateValue,
+            }
+            debugStr = debugObj(debugData)
+            logItems = [
+                titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
+                secondaryStyle(debugStr),
+            ]
+            logContent = '\n'.join(logItems)
+            _logger.info(logContent)
+    except Exception as err:
+        sError = errorToString(err, show_stacktrace=False)
+        sTraceback = str(traceback.format_exc())
+        errMsg = 'webhookRoute: Error processing webhook update: ' + sError
+        if logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
+        _logger.error(errMsg)
+        return Response(errMsg, headers={'Content-type': 'text/plain'})
+    finally:
+        pass
+        # Remove created command...
+        if createdCommand:
+            # TODO: Remove temp messages
+            deleteCommandById(createdCommand.id)
+        stateValue = botApp.get_state(userId, chatId)
+        debugStr = debugObj({
+            **debugData,
+            'stateValue': stateValue,
+        })
+        logItems = [
+            titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
+            secondaryStyle(debugStr),
+        ]
+        logContent = '\n'.join(logItems)
+        _logger.info(logContent)
 
     return Response('OK', headers={'Content-type': 'text/plain'})
