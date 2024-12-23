@@ -8,7 +8,7 @@ from botCast.helpers._sendAudioToChat import sendAudioToChat
 
 from tests.testVideoInfo import videoInfo
 
-#  audioFile = 'temp/2024-12-17-15-53-52-test/Sample Videos Dummy Videos For Demo Use.mp4'
+#  audioFile = 'temp/2024-12-17-15-53-52-test/Sample Videos Dummy Videos For Demo Use.mp3'
 audioFile = 'tests/test-audios/test-short.mp3'
 audioFileName = posixpath.join(PROJECT_PATH, audioFile)
 
