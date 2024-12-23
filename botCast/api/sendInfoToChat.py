@@ -174,4 +174,3 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         # Remove temporary files and folders
         if options:
             cleanFiles(options)
-

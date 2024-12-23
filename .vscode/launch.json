@@ -100,7 +100,7 @@
       "name": "Python: Specific File",
       "type": "debugpy",
       "request": "launch",
-      "program": "db/_prisma_test.py",
+      "program": "tests/sendLocalAudioToChat.test.py",
       "console": "integratedTerminal"
     },    
     {

@@ -1,7 +1,5 @@
 import subprocess
 
-from .export_requirements import export_requirements
-
 
 def lint():
     print('Running pyright linter...')
@@ -24,3 +22,24 @@ def format():
 def check_all():
     format()
     lint()
+
+
+# def test():
+#     # NOTE: It doesn't work as poetry hasn't invoked it under the venv environment
+#     # TODO: Run in a less com;ex way?
+#     print('Running unittest tests...')
+#     cmd = [
+#         'python',
+#         '-m',
+#         'unittest',
+#         'discover',
+#         '-v',
+#         '-f',
+#         '-t',
+#         '.',
+#         '-s',
+#         '.',
+#         '-p',
+#         '*_test.py',
+#     ]
+#     subprocess.run(cmd)

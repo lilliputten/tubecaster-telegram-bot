@@ -54,7 +54,7 @@ export_requirements = "poetry-scripts:export_requirements"
 lint = "poetry-scripts:lint"
 format = "poetry-scripts:format"
 check_all = "poetry-scripts:check_all"
+# test = "poetry-scripts:test"
 prisma_format = "poetry-scripts.prisma:format"
 prisma_db_push = "poetry-scripts.prisma:db_push"
 prisma_db_push_test = "poetry-scripts.prisma:db_push_test"
-

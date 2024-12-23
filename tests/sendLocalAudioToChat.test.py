@@ -12,8 +12,10 @@ from tests.testVideoInfo import videoInfo
 audioFile = 'tests/test-audios/test-short.mp3'
 audioFileName = posixpath.join(PROJECT_PATH, audioFile)
 
+maxAudioFileSize = 30000
 
-def sendInfoToChatTest():
+
+def sendLocalAudioToChat():
     sendAudioToChat(
         chatId=TELEGRAM_OWNER_ID,
         rootMessage=None,
@@ -21,12 +23,12 @@ def sendInfoToChatTest():
         originalMessage=None,
         audioFileName=audioFileName,
         cleanUp=False,
-        maxAudioFileSize=10000,
+        maxAudioFileSize=maxAudioFileSize,
     )
 
 
 if __name__ == '__main__':
     try:
-        sendInfoToChatTest()
+        sendLocalAudioToChat()
     except Exception as err:
         print('ERROR:', repr(err))

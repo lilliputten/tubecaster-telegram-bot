@@ -148,7 +148,7 @@ def webhookRoute():
             if chatId:
                 # fmt: off
                 infoStr = ' '.join(filter(None, [
-                    emojies.waiting,
+                    emojies.sleeping,
                     'Your command',
                     '(%s)' % messageText if messageText else None,
                     'is still being processed, be patient, please...',

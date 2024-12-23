@@ -1,11 +1,12 @@
 # -*- coding:utf-8 -*-
 
+from typing import Optional
 import telebot  # pyTelegramBotAPI
 import os
 import traceback
 from functools import partial
 
-from core.appConfig import MAX_AUDIO_FILE_SIZE
+from core.appConfig import AUDIO_FILE_EXT, MAX_AUDIO_FILE_SIZE
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 
@@ -35,7 +36,9 @@ def sendAudioToChat(
     cleanUp: bool = True,
     maxAudioFileSize: int = MAX_AUDIO_FILE_SIZE,
     splitGap: int = 1,
+    delimiter: str = '-',
 ):
+    newMessage: Optional[telebot.types.Message] = None
     try:
         audioSize = os.path.getsize(audioFileName)
         audioSizeFmt = sizeofFmt(audioSize)
@@ -47,19 +50,27 @@ def sendAudioToChat(
             originalMessage,
         )
         useSplit = True
-        if useSplit and audioSize >= maxAudioFileSize:
+        isOversized = audioSize >= maxAudioFileSize
+        if useSplit:   # and isOversized:
             # File is too large, send it by pieces...
             piecesCount = getDesiredPiecesCount(audioSize, maxAudioFileSize)
-            outFilePrefix = audioFileName + '-part'
+            outFilePrefix = audioFileName
+            if outFilePrefix.endswith(AUDIO_FILE_EXT):
+                outFilePrefix = outFilePrefix[: len(outFilePrefix) - len(AUDIO_FILE_EXT)]
+            outFilePrefix += delimiter + ('part' if piecesCount > 1 else 'ready')
             infoMsg = (
-                emojies.waiting
-                + f' The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(maxAudioFileSize)} and will be divided into {piecesCount} parts...'
+                (
+                    emojies.waiting
+                    + ' '
+                    + f'The audio file size of {audioSizeFmt} exceeds the Telegram API limit of {sizeofFmt(maxAudioFileSize)} and will be divided into {piecesCount} parts...'
+                )
+                if isOversized
+                else (emojies.waiting + ' ' + f'Sending audio of size {audioSizeFmt}...')
             )
-            if rootMessage:
-                botApp.edit_message_text(
+            if isOversized:
+                newMessage = botApp.send_message(
                     chat_id=chatId,
                     text=infoMsg,
-                    message_id=rootMessage.id,
                 )
             _logger.info('downloadAndSendAudioToChat: %s' % infoMsg)
             splitAudio(
@@ -67,7 +78,7 @@ def sendAudioToChat(
                 outFilePrefix=outFilePrefix,
                 piecesCount=piecesCount,
                 pieceCallback=pieceCallback,
-                #  delimiter=delimiter,
+                delimiter=delimiter,
                 gap=splitGap,
                 removeFiles=cleanUp,
             )
@@ -88,3 +99,6 @@ def sendAudioToChat(
             _logger.info('sendAudioToChat: Traceback for the following error:' + sTraceback)
         _logger.error('sendAudioToChat: ' + errMsg)
         raise Exception(errMsg)
+    finally:
+        if newMessage:
+            botApp.delete_message(chat_id=chatId, message_id=newMessage.id)
