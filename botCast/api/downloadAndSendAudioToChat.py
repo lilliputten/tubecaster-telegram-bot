@@ -9,7 +9,7 @@ from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 
 from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from botApp import botApp
 from botCore.types import YtdlOptionsType
@@ -29,8 +29,8 @@ _logger = getDebugLogger()
 
 _timerDelay = 5
 
-_maxAudioFileSize = 20000
-_splitGap = 0
+# _maxAudioFileSize = 20000
+# _splitGap = 0
 
 
 def updateChatStatus(chatId: str | int):

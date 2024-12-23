@@ -5,7 +5,7 @@ import traceback
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, secondaryStyle, primaryStyle
 from core.helpers.time import formatTime
 from core.utils import debugObj
 
@@ -34,8 +34,8 @@ def showDebug():
         'TZ': appConfig.get('TZ'),
     }
     logItems = [
-        'Application started',
-        debugObj(debugItems),
+        primaryStyle('Application started'),
+        secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)

@@ -50,7 +50,7 @@ LOCAL = bool(appConfig.get('LOCAL'))
 WERKZEUG_RUN_MAIN = bool(appConfig.get('WERKZEUG_RUN_MAIN'))
 isNormalRun = not LOCAL or WERKZEUG_RUN_MAIN
 
-AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp4'))   # '.mp4'
+AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp3'))
 
 # Timezone (set `TZ_HOURS` to hours value to adjust date representation to corresponding timezone)
 TZ_HOURS = appConfig.get('TZ_HOURS_OFFSET')

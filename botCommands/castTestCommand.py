@@ -2,7 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import TELEGRAM_OWNER_ID
 
 from botCore.helpers import getUserName

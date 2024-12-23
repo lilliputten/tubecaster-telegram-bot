@@ -3,7 +3,7 @@
 from core.helpers.time import getTimeStamp
 
 from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from ..helpers.prepareLinkInfo import prepareLinkInfo
@@ -33,7 +33,7 @@ def downloadInfo(
     debugData = debugObj(obj)
     logContent = '\n'.join(
         [
-            'downloadInfo',
+            titleStyle('downloadInfo'),
             debugData,
         ]
     )

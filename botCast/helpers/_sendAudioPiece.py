@@ -1,15 +1,18 @@
 # -*- coding:utf-8 -*-
 
 from datetime import timedelta
+import traceback
 import telebot  # pyTelegramBotAPI
 from telebot.types import ReplyParameters
 import math
 from urllib.request import urlopen
 
 from core.ffmpeg import probe
+from core.helpers.errors import errorToString
 from core.helpers.files import getFormattedFileSize
 
-from core.logger import getDebugLogger
+from core.helpers.strings import truncStr
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from botApp import botApp
 from botCore.helpers import (
@@ -21,6 +24,8 @@ from botCore.constants import emojies
 
 
 _logger = getDebugLogger()   # 'botCast/helpers/_sendAudioPiece')
+
+logTraceback = False
 
 
 def sendAudioPiece(
@@ -40,7 +45,7 @@ def sendAudioPiece(
     durationFmt = str(timedelta(seconds=duration))
     # Video details...
     videoDetails = getVideoDetailsStr(videoInfo)
-    pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount else None
+    pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount and piecesCount > 1 else None
     #  # It's a copy of the message from `downloadAndSendAudioToChat`
     #  infoContent = ''.join(
     #      filter(
@@ -82,6 +87,11 @@ def sendAudioPiece(
             message_id=rootMessage.id,
             text=infoContent,
         )
+    else:
+        botApp.send_message(
+            chat_id=chatId,
+            text=infoContent,
+        )
     with open(audioFileName, 'rb') as audio:
         title = videoInfo.get('title')
         captionContent = createVideoCaptionStr(
@@ -112,6 +122,16 @@ def sendAudioPiece(
                 ),
             )
             _logger.info(captionContent)
+        except Exception as err:
+            errText = truncStr(errorToString(err, show_stacktrace=False), 100)
+            sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+            errMsg = emojies.error + ' Error sending an audio file to the chat: ' + errText
+            if logTraceback:
+                errMsg += sTraceback
+            else:
+                _logger.info('logTraceback: Traceback for the following error:' + sTraceback)
+            _logger.error('logTraceback: ' + errMsg)
+            raise Exception(errMsg)
         finally:
             if thumb:
                 thumb.close()

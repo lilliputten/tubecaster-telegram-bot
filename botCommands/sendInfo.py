@@ -1,22 +1,25 @@
 # -*- coding:utf-8 -*-
 
+from typing import Optional
 import telebot  # pyTelegramBotAPI
+from telebot.states.sync.context import StateContext
 
 from core.appConfig import (
     LOCAL,
     LOGGING_CHANNEL_ID,
     PROJECT_INFO,
     PROJECT_PATH,
-    TELEGRAM_TOKEN,
+    # TELEGRAM_TOKEN,
     # TELEGRAM_OWNER_ID,
 )
 
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 from botApp import botApp
-from botCore import botConfig
+
+# from botCore import botConfig
 
 from botCore.helpers import getUserName
 
@@ -27,8 +30,8 @@ commonInfoData = {
     'LOCAL': LOCAL,
     'PROJECT_INFO': PROJECT_INFO,
     'PROJECT_PATH': PROJECT_PATH,
-    'WEBHOOK_URL': botConfig.WEBHOOK_URL,
-    'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
+    # 'WEBHOOK_URL': botConfig.WEBHOOK_URL,
+    # 'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
 }
 
 
@@ -39,8 +42,9 @@ def notifyOwner(text: str, logInfo: str | None = None):
         botApp.send_message(LOGGING_CHANNEL_ID, text)
 
 
-def sendCommandInfo(message: telebot.types.Message):
+def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
     #  chat = message.chat
+    chatId = message.chat.id
     text = message.text
     sticker = message.sticker
     stickerFileId = sticker.file_id if sticker else None
@@ -50,23 +54,20 @@ def sendCommandInfo(message: telebot.types.Message):
     contentType = message.content_type
     messageDate = formatTime(None, message.date)
     user = message.from_user
-    userId = user.id if user else None
+    userId = user.id if user else chatId
     text = message.text
     usernameStr = getUserName(user)
     json = message.json
     fromData: dict = json.get('from', {})
     languageCode = fromData.get('language_code')
-    commandHash = ' '.join(
-        list(
-            filter(
-                None,
-                [
-                    contentType,
-                    text,
-                ],
-            )
-        )
-    )
+    stateValue = botApp.get_state(userId, chatId)
+    # fmt: off
+    commandHash = ' '.join(list(filter(None, [
+        info,
+        contentType,
+        text,
+    ])))
+    # fmt: on
     obj = {
         'commandHash': commandHash,
         'contentType': contentType,
@@ -81,37 +82,47 @@ def sendCommandInfo(message: telebot.types.Message):
         'usernameStr': usernameStr,
         'languageCode': languageCode,
         'messageDate': messageDate,
+        'stateValue': stateValue if stateValue else 'None',
         **commonInfoData,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'command: %s' % commandHash,
-            debugStr,
-        ]
-    )
-    content = '\n\n'.join(
-        [
-            'TubeCaster bot received a command: %s' % text,
-            debugStr,
-        ]
-    )
+    logItems = [
+        titleStyle('sendCommandInfo: %s' % commandHash),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
+    msgItems = [
+        'TubeCaster bot received a command: %s' % text,
+        secondaryStyle(debugStr),
+    ]
+    content = '\n\n'.join(msgItems)
     notifyOwner(content, logContent)
 
 
-def sendQueryInfo(query: telebot.types.CallbackQuery):
+def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
     data = query.data  # 'startHelp'
     user = query.from_user  # <telebot.types.User object at 0x000002B8D75517F0>
     gameShortName = query.game_short_name  # None
     id = query.id  # '2106243731802653912'
     inlineMessageId = query.inline_message_id  # None
     message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
+    chatId = message.chat.id
+    userId = user.id if user else chatId
+    stateValue = botApp.get_state(userId, chatId)
 
     userId = user.id
     usernameStr = getUserName(user)
     text = message.text if message else None
 
+    # fmt: off
+    queryHash = ' '.join(list(filter(None, [
+        info,
+        text,
+    ])))
+    # fmt: on
+
     obj = {
+        'queryHash': queryHash,
         'data': data,
         'text': text,
         'userId': userId,
@@ -121,19 +132,19 @@ def sendQueryInfo(query: telebot.types.CallbackQuery):
         'inlineMessageId': inlineMessageId,
         #  'json': json, # It's too long
         'message': repr(message),
+        'stateValue': stateValue if stateValue else 'None',
         **commonInfoData,
     }
     debugStr = debugObj(obj)
-    logContent = '\n'.join(
-        [
-            'query: %s' % data,
-            debugStr,
-        ]
-    )
+    logItems = [
+        'sendQueryInfo: %s' % data,
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
     content = '\n\n'.join(
         [
-            'TubeCaster bot received a query: %s' % data,
-            debugStr,
+            'TubeCaster bot received a query: %s' % queryHash,
+            secondaryStyle(debugStr),
         ]
     )
     notifyOwner(content, logContent)

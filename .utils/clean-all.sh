@@ -1,6 +1,6 @@
 #!/bin/sh
 # @desc Clean all temp files
-# @changed 2024.12.20, 12:20
+# @changed 2024.12.23, 03:40
 
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
@@ -35,6 +35,7 @@ $FINDCMD . \
 ; $RMCMD -Rf \
   *.log \
   .handler-saves \
+  .state-save \
   local.log* \
   .*.lock \
   *_ \

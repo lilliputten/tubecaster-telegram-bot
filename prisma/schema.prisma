@@ -17,7 +17,7 @@ datasource db {
 
 model TempMessage {
   id        Int     @id @default(autoincrement())
-  messageId Int
+  messageId BigInt
   commandId Int
   command   Command @relation(fields: [commandId], references: [id], onDelete: Cascade)
 
@@ -29,9 +29,9 @@ model TempMessage {
 
 model Command {
   id        Int     @id @default(autoincrement())
-  messageId Int
-  updateId  Int
-  userId    Int
+  messageId BigInt
+  updateId  BigInt
+  userId    BigInt
   userStr   String
   repeated  Int     @default(1)
   isActive  Boolean @default(true)

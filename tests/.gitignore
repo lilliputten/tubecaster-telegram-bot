@@ -1,3 +1,4 @@
-test-audios/*-part-*
+test-audios/*-part*
+test-audios/*-ready*
 out
 

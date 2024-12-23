@@ -3,12 +3,11 @@
 import telebot  # pyTelegramBotAPI
 from datetime import timedelta
 import traceback
-import re
 
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, tretiaryStyle, secondaryStyle, errorStyle, warningTitleStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -29,8 +28,26 @@ _timerDelay = 5
 def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
+
+    See:
+
+    - https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_chat_action
+    - https://core.telegram.org/bots/api#sendchataction
+
+    Action types (no type for 'no action'):
+
+    - typing for text messages
+    - upload_photo for photos
+    - record_video or upload_video for videos
+    - record_voice or upload_voice for voice notes
+    - upload_document for general files
+    - choose_sticker for stickers
+    - find_location for location data
+    - record_video_note,
+    - upload_video_note for video notes.
+
     """
-    botApp.send_chat_action(chatId, action='typing')
+    botApp.send_chat_action(chatId, action='upload_document')
 
 
 def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None):
@@ -125,9 +142,8 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
                 )
             )
         )
-        logContent = '\n'.join(['sendInfoToChat', debugStr, infoStr])
+        logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
-        #  replyOrSend(botApp, infoContent, chatId, originalMessage)
         botApp.edit_message_text(
             chat_id=chatId,
             text=infoContent,
@@ -142,9 +158,10 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('sendInfoToChat: Traceback for the following error:' + sTraceback)
-        _logger.error('sendInfoToChat: ' + errMsg)
-        #  replyOrSend(botApp, errMsg, chatId, originalMessage)
+            _logger.info(
+                warningTitleStyle('sendInfoToChat: Traceback for the following error:') + tretiaryStyle(sTraceback)
+            )
+        _logger.error(errorStyle('sendInfoToChat: ' + errMsg))
         botApp.edit_message_text(
             chat_id=chatId,
             text=errMsg,

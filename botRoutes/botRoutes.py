@@ -2,9 +2,7 @@
 
 from flask import Blueprint
 
-#  from core.appConfig import PROJECT_INFO
-
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
 
 from botCore.botConfig import WEBHOOK_URL
@@ -25,8 +23,8 @@ def showDebug():
         'WEBHOOK_URL': WEBHOOK_URL,
     }
     logItems = [
-        'botRoute: Blueprint routes started',
-        debugObj(debugItems),
+        titleStyle('botRoute: Blueprint routes started'),
+        secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)

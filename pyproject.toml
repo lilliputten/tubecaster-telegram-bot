@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.0.11"
+version = "0.0.12"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
@@ -24,6 +24,7 @@ concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # pydub = "^0.25.1"
 # ffmpeg-python = "^0.2.0" # @see https://kkroening.github.io/ffmpeg-python/
 prisma = "^0.15.0"
+colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
@@ -49,5 +50,11 @@ line-length = 120
 # TODO!
 
 [tool.poetry.scripts]
-dev = 'mypackage.mymodule:mycommand'
-
+export_requirements = "poetry-scripts:export_requirements"
+lint = "poetry-scripts:lint"
+format = "poetry-scripts:format"
+check_all = "poetry-scripts:check_all"
+# test = "poetry-scripts:test"
+prisma_format = "poetry-scripts.prisma:format"
+prisma_db_push = "poetry-scripts.prisma:db_push"
+prisma_db_push_test = "poetry-scripts.prisma:db_push_test"

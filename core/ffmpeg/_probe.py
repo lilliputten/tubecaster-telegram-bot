@@ -1,7 +1,7 @@
 import json
 import subprocess
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from ._helpers import convertKwargsToCmdLineArgs
 

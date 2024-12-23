@@ -3,20 +3,20 @@
 import telebot  # pyTelegramBotAPI
 
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import LOCAL, appConfig, PROJECT_INFO
 from core.utils import debugObj
 
 from botApp import botApp
-from botCore.helpers import createCommonButtonsMarkup
+from botCore.helpers import createCommonButtonsMarkup, getUserName
 
 from botCore import botConfig
 
 
-logger = getDebugLogger()
+_logger = getDebugLogger()
 
 
-def startCommand(chat: telebot.types.Chat):
+def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     chatId = chat.id
     username = chat.username
     first_name = chat.first_name
@@ -25,13 +25,13 @@ def startCommand(chat: telebot.types.Chat):
         'timeStr': getTimeStamp(),
         'chatId': chatId,
         'username': username,
-        # 'usernameStr': getUserName(user),
+        'usernameStr': getUserName(message.from_user),
         'first_name': first_name,
         'LOCAL': appConfig.get('LOCAL'),
     }
     logItems = [
-        'startCommand',
-        debugObj(debugItems),
+        titleStyle('startCommand'),
+        secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
     msgItems = [
@@ -49,7 +49,7 @@ def startCommand(chat: telebot.types.Chat):
         else None,
     ]
     content = '\n\n'.join(filter(None, msgItems))
-    logger.info(logContent)
+    _logger.info(logContent)
     # Show menu
     markup = createCommonButtonsMarkup()
     # Send content and menu with a banner

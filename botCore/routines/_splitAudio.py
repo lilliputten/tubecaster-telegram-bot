@@ -5,7 +5,7 @@ import traceback
 from typing import Callable
 
 
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split
@@ -67,7 +67,10 @@ def splitAudio(
         #  print('Pieces count:', piecesCount)
         #  print('Pieces duration (secs):', pieceDurationSec)
 
-        for n in range(piecesCount):
+        hasPieces = piecesCount > 1
+        pieces = range(piecesCount)
+        # realPiecesCount = len(pieces)
+        for n in pieces:
             no = n + 1
             start = n * pieceDurationSec
             if gap and n:
@@ -75,7 +78,11 @@ def splitAudio(
             end = (n + 1) * pieceDurationSec
             if gap and n < piecesCount - 1:
                 end += gap
-            outputFileName = f'{outFilePrefix}{delimiter}{no}{AUDIO_FILE_EXT}'
+            outputFileName = outFilePrefix
+            if hasPieces:
+                outputFileName += delimiter + str(no)
+            outputFileName += AUDIO_FILE_EXT
+            # outputFileName = f'{outFilePrefix}{delimiter}{no}{AUDIO_FILE_EXT}'
             _logger.info(f'splitAudio: Creating piece {no}/{piecesCount} ({start}-{end}) -> {outputFileName})')
             split(audioFileName, outputFileName, start=start, end=end)
             if pieceCallback:
@@ -83,7 +90,7 @@ def splitAudio(
             if removeFiles:
                 pathlib.Path(outputFileName).unlink(missing_ok=True)
 
-        _logger.info(f'splitAudio: Already created all {piecesCount} pieces')
+        _logger.info(f'splitAudio: Already created all {piecesCount} piece(s)')
 
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

@@ -8,7 +8,7 @@ import os
 from botCore.helpers import replyOrSend
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
+from core.logger import getDebugLogger, titleStyle, secondaryStyle
 
 from core.appConfig import TELEGRAM_OWNER_ID
 
