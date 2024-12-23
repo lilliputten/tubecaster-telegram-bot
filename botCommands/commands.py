@@ -106,57 +106,6 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
     infoCommand(message.chat, message, state)
 
 
-# def checkDefaultCommand(message: telebot.types.Message):
-#     text = message.text
-#     sticker = message.sticker
-#     stickerFileId = sticker.file_id if sticker else None
-#     stickerEmoji = sticker.emoji if sticker else None
-#     stickerSetName = sticker.set_name if sticker else None
-#     messageId = message.id
-#     contentType = message.content_type
-#     user = message.from_user
-#     userId = user.id if user else None
-#     text = message.text
-#     usernameStr = getUserName(user)
-#     json = message.json
-#     fromData: dict = json.get('from', {})
-#     languageCode = fromData.get('language_code')
-#     commandHash = ' '.join(
-#         list(
-#             filter(
-#                 None,
-#                 [
-#                     contentType,
-#                     text,
-#                 ],
-#             )
-#         )
-#     )
-#     obj = {
-#         'commandHash': commandHash,
-#         'contentType': contentType,
-#         'messageId': messageId,
-#         'text': text,
-#         'sticker': repr(sticker),
-#         'stickerFileId': stickerFileId,
-#         'stickerSetName': stickerSetName,
-#         'stickerEmoji': stickerEmoji,
-#         # 'timeStr': getTimeStamp(),
-#         'userId': userId,
-#         'usernameStr': usernameStr,
-#         'languageCode': languageCode,
-#         # 'messageDate': messageDate,
-#     }
-#     debugStr = debugObj(obj)
-#     logItems = [
-#         titleStyle('checkDefaultCommand: %s' % commandHash),
-#         secondaryStyle(debugStr),
-#     ]
-#     logContent = '\n'.join(logItems)
-#     _logger.info(logContent)
-#     return True
-
-
 # Handle all other messages.
 @botApp.message_handler(
     # func=checkDefaultCommand,

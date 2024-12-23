@@ -3,6 +3,7 @@ import os
 
 from db._testDbConfig import testEnv
 
+
 def format():
     print('Primsa: format...')
     cmd = [
@@ -22,6 +23,7 @@ def db_push():
     ]
     subprocess.run(cmd)
 
+
 def db_push_test():
     os.environ['DATABASE_URL'] = testEnv['DATABASE_URL']
     print('Primsa: db push...')
@@ -31,4 +33,3 @@ def db_push_test():
         'push',
     ]
     subprocess.run(cmd)
-

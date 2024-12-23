@@ -28,8 +28,26 @@ _timerDelay = 5
 def updateChatStatus(chatId: str | int):
     """
     Periodically update chat status.
+
+    See:
+
+    - https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_chat_action
+    - https://core.telegram.org/bots/api#sendchataction
+
+    Action types (no type for 'no action'):
+
+    - typing for text messages
+    - upload_photo for photos
+    - record_video or upload_video for videos
+    - record_voice or upload_voice for voice notes
+    - upload_document for general files
+    - choose_sticker for stickers
+    - find_location for location data
+    - record_video_note,
+    - upload_video_note for video notes.
+
     """
-    botApp.send_chat_action(chatId, action='typing')
+    botApp.send_chat_action(chatId, action='upload_document')
 
 
 def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None):
@@ -156,3 +174,4 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         # Remove temporary files and folders
         if options:
             cleanFiles(options)
+

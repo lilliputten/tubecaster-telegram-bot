@@ -13,7 +13,14 @@ from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
 
 # Prisma/db variables regex: \<\(dbTypes\|checkCommandExistsForMessageId\|addCommand\|deleteCommandById\|addTempMessage\)\>
-from db import types as dbTypes, checkCommandExistsForMessageId, addCommand, deleteCommandById, addTempMessage
+from db import (
+    types as dbTypes,
+    checkCommandExistsForMessageId,
+    addCommand,
+    deleteCommandById,
+    addTempMessage,
+    getTempMessagesForCommand,
+)
 
 from botApp import botApp
 
@@ -139,10 +146,15 @@ def webhookRoute():
             _logger.info(logContent)
             # TODO: Update message: Find first temp message and
             if chatId:
-                newMessage = botApp.send_message(
-                    chatId,
-                    emojies.waiting + ' Your command is still processing, be patient, please...',
-                )
+                # fmt: off
+                infoStr = ' '.join(filter(None, [
+                    emojies.waiting,
+                    'Your command',
+                    '(%s)' % messageText if messageText else None,
+                    'is still being processed, be patient, please...',
+                ]))
+                # fmt: on
+                newMessage = botApp.send_message(chatId, infoStr)
                 addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
         else:
             # Create new command
@@ -156,6 +168,14 @@ def webhookRoute():
 
             # Process the command...
             botApp.process_new_updates([update])
+
+            # DEBUG: Local test: try adding (and removing later, see `finally` section) a temp message...
+            if LOCAL and chatId and messageText == 'test':
+                newMessage = botApp.send_message(
+                    chatId,
+                    emojies.warning + ' Test temp message',
+                )
+                addTempMessage(commandId=createdCommand.id, messageId=newMessage.id)
 
             stateValue = botApp.get_state(userId, chatId)
             debugData = {
@@ -192,16 +212,31 @@ def webhookRoute():
         _logger.error(errMsg)
         return Response(errMsg, headers={'Content-type': 'text/plain'})
     finally:
-        pass
+        # TODO: To reset the current action?
+        # if chatId:
+        #     botApp.send_chat_action(chatId, action=None)
         # Remove created command...
         if createdCommand:
-            # TODO: Remove temp messages
+            # Remove temp messages...
+            if chatId:
+                tempMessages = getTempMessagesForCommand(createdCommand.id)
+                if len(tempMessages):
+                    tempMessageIds = list(
+                        map(
+                            lambda it: it.messageId,
+                            tempMessages,
+                        )
+                    )
+                    botApp.delete_messages(chat_id=chatId, message_ids=tempMessageIds)
+            # Delete all command data...
             deleteCommandById(createdCommand.id)
         stateValue = botApp.get_state(userId, chatId)
-        debugStr = debugObj({
-            **debugData,
-            'stateValue': stateValue,
-        })
+        debugStr = debugObj(
+            {
+                **debugData,
+                'stateValue': stateValue,
+            }
+        )
         logItems = [
             titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
             secondaryStyle(debugStr),

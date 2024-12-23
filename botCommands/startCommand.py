@@ -8,7 +8,7 @@ from core.appConfig import LOCAL, appConfig, PROJECT_INFO
 from core.utils import debugObj
 
 from botApp import botApp
-from botCore.helpers import createCommonButtonsMarkup,  getUserName
+from botCore.helpers import createCommonButtonsMarkup, getUserName
 
 from botCore import botConfig
 
