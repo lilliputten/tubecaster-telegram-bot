@@ -38,7 +38,7 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         'Hi, %s!' % name,
         'Welcome to the TubeCaster bot!',
         'The bot version is: %s.' % PROJECT_INFO,
-        'Use /cast to cast the youtube video to an audio or just send me it\'s url. Type /help to find all commands.',
+        'Use /cast to cast the youtube video to an audio or just send me its url. Type /help to find all commands.',
         ' '.join(
             [
                 'ATTENTION: Sorry, but at the moment the bot works in the LOCAL mode!',
