@@ -19,7 +19,7 @@ from botCore.helpers import getUserName
 _logger = getDebugLogger()
 
 
-def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
+def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, _state: StateContext):
     try:
         chatId = chat.id  # Is userId
         userId = message.from_user.id if message.from_user else chatId
@@ -33,7 +33,6 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
         json = message.json
         fromData: dict = json.get('from', {})
         languageCode = fromData.get('language_code')
-        #  userId = fromData.get('id')
         if not TELEGRAM_OWNER_ID or TELEGRAM_OWNER_ID != chatId:
             botApp.reply_to(message, 'Sorry you are not allowed to use this command.')
             return
@@ -48,8 +47,8 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
             'LOCAL': appConfig.get('LOCAL'),
             'PROJECT_INFO': appConfig.get('PROJECT_INFO'),
             'PROJECT_PATH': appConfig.get('PROJECT_PATH'),
-            'state': state,
-            'stateValue': stateValue,
+            # 'state': state,
+            'stateValue': stateValue if stateValue else 'None',
         }
         debugStr = debugObj(obj)
         logItems = [

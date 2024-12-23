@@ -60,7 +60,6 @@ def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext
     json = message.json
     fromData: dict = json.get('from', {})
     languageCode = fromData.get('language_code')
-    # stateValue = state.get() if state else None   # botApp.get_state(userId, chatId)
     stateValue = botApp.get_state(userId, chatId)
     # fmt: off
     commandHash = ' '.join(list(filter(None, [
@@ -82,7 +81,7 @@ def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext
         'usernameStr': usernameStr,
         'languageCode': languageCode,
         'messageDate': messageDate,
-        'stateValue': stateValue,
+        'stateValue': stateValue if stateValue else 'None',
         **commonInfoData,
     }
     debugStr = debugObj(obj)
@@ -108,7 +107,6 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, state: Optional[StateConte
     message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
     chatId = message.chat.id
     userId = user.id if user else chatId
-    # stateValue = state.get() if state else None   # botApp.get_state(userId, chatId)
     stateValue = botApp.get_state(userId, chatId)
 
     userId = user.id
@@ -125,7 +123,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, state: Optional[StateConte
         'inlineMessageId': inlineMessageId,
         #  'json': json, # It's too long
         'message': repr(message),
-        'stateValue': stateValue,
+        'stateValue': stateValue if stateValue else 'None',
         **commonInfoData,
     }
     debugStr = debugObj(obj)

@@ -29,8 +29,8 @@ _logger = getDebugLogger()
 
 _timerDelay = 5
 
-_maxAudioFileSize = 20000
-_splitGap = 0
+# _maxAudioFileSize = 20000
+# _splitGap = 0
 
 
 def updateChatStatus(chatId: str | int):
