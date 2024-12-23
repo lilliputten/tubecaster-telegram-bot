@@ -90,7 +90,7 @@ def splitAudio(
             if removeFiles:
                 pathlib.Path(outputFileName).unlink(missing_ok=True)
 
-        _logger.info(f'splitAudio: Already created all {piecesCount} pieces')
+        _logger.info(f'splitAudio: Already created all {piecesCount} piece(s)')
 
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

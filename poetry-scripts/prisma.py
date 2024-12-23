@@ -3,6 +3,15 @@ import os
 
 from db._testDbConfig import testEnv
 
+"""
+NOTE: It's probably better to use `sh .venv-scripts/prisma-init.sh` (under venv) manually due to prisma/poetry misunderstanding:
+
+```
+. ./.venv/Scripts/activate
+sh .venv-scripts/prisma-init.sh
+deactivate
+"""
+
 
 def format():
     print('Primsa: format...')

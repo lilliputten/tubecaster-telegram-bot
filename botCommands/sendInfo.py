@@ -42,7 +42,7 @@ def notifyOwner(text: str, logInfo: str | None = None):
         botApp.send_message(LOGGING_CHANNEL_ID, text)
 
 
-def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext] = None):
+def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
     #  chat = message.chat
     chatId = message.chat.id
     text = message.text
@@ -63,6 +63,7 @@ def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext
     stateValue = botApp.get_state(userId, chatId)
     # fmt: off
     commandHash = ' '.join(list(filter(None, [
+        info,
         contentType,
         text,
     ])))
@@ -98,7 +99,7 @@ def sendCommandInfo(message: telebot.types.Message, state: Optional[StateContext
     notifyOwner(content, logContent)
 
 
-def sendQueryInfo(query: telebot.types.CallbackQuery, state: Optional[StateContext] = None):
+def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
     data = query.data  # 'startHelp'
     user = query.from_user  # <telebot.types.User object at 0x000002B8D75517F0>
     gameShortName = query.game_short_name  # None
@@ -113,7 +114,15 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, state: Optional[StateConte
     usernameStr = getUserName(user)
     text = message.text if message else None
 
+    # fmt: off
+    queryHash = ' '.join(list(filter(None, [
+        info,
+        text,
+    ])))
+    # fmt: on
+
     obj = {
+        'queryHash': queryHash,
         'data': data,
         'text': text,
         'userId': userId,
@@ -134,7 +143,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, state: Optional[StateConte
     logContent = '\n'.join(logItems)
     content = '\n\n'.join(
         [
-            'TubeCaster bot received a query: %s' % data,
+            'TubeCaster bot received a query: %s' % queryHash,
             secondaryStyle(debugStr),
         ]
     )

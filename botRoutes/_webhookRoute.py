@@ -154,7 +154,11 @@ def webhookRoute():
                     'is still being processed, be patient, please...',
                 ]))
                 # fmt: on
-                newMessage = botApp.send_message(chatId, infoStr)
+                newMessage = botApp.send_message(
+                    chatId,
+                    infoStr,
+                    disable_web_page_preview=True,
+                )
                 addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
         else:
             # Create new command

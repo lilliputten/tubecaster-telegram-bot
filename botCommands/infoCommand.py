@@ -28,7 +28,7 @@ def infoForUrlStep(
     chat: telebot.types.Chat,
     message: telebot.types.Message,
 ):
-    _logger.info('infoForUrlStep: Before')
+    _logger.info('infoForUrlStep: Invoked')
     try:
         text = message.text
         chatId = chat.id

@@ -1,6 +1,7 @@
 question = '❔'
 waiting = '⏳'
 success = '✅'
+check = '☑️'
 error = '❌'
 warning = '⚠️'
 info = 'ℹ️'

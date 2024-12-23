@@ -45,10 +45,8 @@ def createVideoCaptionStr(
             ],
         )
     )
-    # if pieceInfo:
-    #     captionStr += ', part ' + pieceInfo
     captionPrefix = emojies.success
-    if pieceInfo and pieceNo and pieceNo + 1 < len(emojies.numbers):
+    if pieceInfo and pieceNo != None and pieceNo + 1 < len(emojies.numbers):
         captionPrefix = emojies.numbers[pieceNo + 1]
     captionStr = captionPrefix + ' ' + captionStr
     # fmt: off
