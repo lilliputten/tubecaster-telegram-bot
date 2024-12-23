@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from core.ffmpeg import probe
 from core.helpers.files import getFormattedFileSize
+from core.helpers.strings import truncStr
 
 from ..types import TVideoInfo
 from ..constants import emojies
@@ -14,6 +15,7 @@ from ._getVideoDetailsStr import getVideoDetailsStr
 #  from ._getFormattedVideoFileSize import getFormattedVideoFileSize
 #  from ._prepareYoutubeDate import prepareYoutubeDate
 
+_maxCaptionLength = 1024
 
 def createVideoCaptionStr(
     videoInfo: TVideoInfo,
@@ -96,4 +98,6 @@ def createVideoCaptionStr(
             ],
         )
     )
+    if len(captionContent) >= _maxCaptionLength:
+        captionContent = truncStr(captionContent, _maxCaptionLength)
     return captionContent
