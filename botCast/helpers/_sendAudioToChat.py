@@ -34,7 +34,7 @@ def sendAudioToChat(
     originalMessage: telebot.types.Message | None = None,
     audioFileName: str = '',
     cleanUp: bool = True,
-    maxAudioFileSize: int = MAX_AUDIO_FILE_SIZE,
+    maxAudioFileSize: int | None = MAX_AUDIO_FILE_SIZE,
     splitGap: int = 1,
     delimiter: str = '-',
 ):
@@ -50,7 +50,7 @@ def sendAudioToChat(
             originalMessage,
         )
         useSplit = True
-        isOversized = audioSize >= maxAudioFileSize
+        isOversized = audioSize >= maxAudioFileSize if maxAudioFileSize else False
         if useSplit:   # and isOversized:
             # File is too large, send it by pieces...
             piecesCount = getDesiredPiecesCount(audioSize, maxAudioFileSize)
