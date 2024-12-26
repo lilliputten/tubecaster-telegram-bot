@@ -73,8 +73,8 @@ def createVideoCaptionStr(
     #     'Resolution: %s' % videoInfo.get('resolution'),
     #     'FPS: %s' % videoInfo.get('fps'),
     #     'Language: %s' % videoInfo.get('language'),
-    #     #  'Tags: %s' % ', '.join(videoInfo['tags']) if videoInfo.get('tags') else None,  # [...]
-    #     #  'Categories: %s' % ', '.join(videoInfo['categories']) if videoInfo.get('categories') else None,  # [...]
+    #     #  'Tags: %s' % ', '.join(videoInfo.get('tags')) if videoInfo.get('tags') else None,  # [...]
+    #     #  'Categories: %s' % ', '.join(videoInfo.get('categories')) if videoInfo.get('categories') else None,  # [...]
     #     #  'Comments count: %s' % videoInfo.get('comment_count'),
     #     #  'Views count: %s' % videoInfo.get('view_count'),
     #     #  'Audio channels: %s' % videoInfo.get('audio_channels'),  # 2

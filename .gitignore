@@ -45,6 +45,7 @@ questions.yaml
 # Client files
 /test-*
 /temp*
+/.temp*
 
 # Linked or generated build
 /html-app*

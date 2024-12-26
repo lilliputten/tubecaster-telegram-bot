@@ -12,7 +12,8 @@ from telebot.states.sync.context import StateContext
 
 from botApp.botStates import BotStates
 from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.helpers.errors import errorToString
 from core.utils import debugObj
 
@@ -74,7 +75,7 @@ def startCast(query: telebot.types.CallbackQuery):
     if not isinstance(message, telebot.types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
-        _logger.error('startCast: Error: %s' % errMsg)
+        _logger.error(errorStyle('startCast: Error: %s' % errMsg))
         botApp.send_message(message.chat.id, errMsg)
         return
     startWaitingForCastUrl(message.chat, message)
@@ -147,7 +148,7 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
                 message.chat.id,
                 emojies.question
                 + ' '
-                + 'I didn\'t understand the command: %s\n\n' % message.text
+                + "I didn't understand the command: %s\n\n" % message.text
                 + "But I'm still here and look forward to your next command.\n\n"
                 + 'See /help for the reference of all the available commands.',
                 reply_markup=markup,
@@ -159,8 +160,8 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info(titleStyle('defaultCommand: Traceback for the following error:' + sTraceback))
-        _logger.error('defaultCommand: ' + errMsg)
+            _logger.warning(warningStyle(titleStyle('defaultCommand: Traceback for the following error:') + sTraceback))
+        _logger.error(errorStyle('defaultCommand: ' + errMsg))
         replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
 
 

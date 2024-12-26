@@ -1,15 +1,16 @@
 # -*- coding:utf-8 -*-
 
 import os
+import re
 import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.appConfig import LOCAL
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
-
 from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+from core.utils import debugObj
 
 from botApp import botApp
 from botCore.types import YtdlOptionsType
@@ -25,12 +26,10 @@ from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
 from ..helpers._sendAudioToChat import sendAudioToChat
 
+
 _logger = getDebugLogger()
 
 _timerDelay = 5
-
-# _maxAudioFileSize = 20000
-# _splitGap = 0
 
 
 def updateChatStatus(chatId: str | int):
@@ -57,7 +56,7 @@ def downloadAndSendAudioToChat(
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
-    - cleanUp: bool | None = False - Clean all the temporarily and generated files at the end (true by default).
+    - cleanUp: bool | None = False - Clean all the temporary and generated files at the end (true by default).
 
     For tests, use the command:
 
@@ -77,9 +76,6 @@ def downloadAndSendAudioToChat(
 
     # Start update timer
     timer = RepeatedTimer(_timerDelay, updateChatStatus, chatId)
-
-    #  # Future thumb urlopen handler
-    #  thumb = None
 
     # Future options, will be downloaded later
     options: YtdlOptionsType | None = None
@@ -110,9 +106,25 @@ def downloadAndSendAudioToChat(
             raise Exception('Audio file name has not been defined')
         audioSize = os.path.getsize(audioFileName)
         audioSizeFmt = sizeofFmt(audioSize)
-        _logger.info(
-            f'downloadAndSendAudioToChat: Audio file {audioFileName} (with size: {audioSizeFmt}) has been downloaded'
-        )
+        videoDuration = videoInfo.get('duration')
+        debugItems = {
+            'audioFileName': audioFileName,
+            'audioSizeFmt': audioSizeFmt,
+            'audioSize': audioSize,
+            'videoSize': videoInfo.get('filesize'),
+            'videoSizeFmt': sizeofFmt(videoInfo.get('filesize')),
+            'videoDuration': videoDuration,
+            # 'TEST': errorTitleStyle('videoDuration should be equal audioSize!'),
+        }
+        logItems = [
+            titleStyle('downloadAndSendAudioToChat: Audio file has been downloaded'),
+            secondaryStyle(debugObj(debugItems)),
+        ]
+        logContent = '\n'.join(logItems)
+        _logger.info(logContent)
+        # _logger.info(
+        #     f"downloadAndSendAudioToChat: Audio file {audioFileName} (with size: {audioSizeFmt}) has been downloaded"
+        # )
         sendAudioToChat(
             chatId=chatId,
             videoInfo=videoInfo,
@@ -122,14 +134,14 @@ def downloadAndSendAudioToChat(
             cleanUp=cleanUp,
         )
     except Exception as err:
-        errText = errorToString(err, show_stacktrace=False)
+        errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = emojies.error + ' Error download and send an audio: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
-        _logger.error('downloadAndSendAudioToChat: ' + errMsg)
+            _logger.warning(warningStyle('downloadAndSendAudioToChat: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('downloadAndSendAudioToChat: ' + errMsg))
         botApp.edit_message_text(
             chat_id=chatId,
             text=errMsg,
@@ -138,8 +150,6 @@ def downloadAndSendAudioToChat(
         #  raise Exception(errMsg)
     finally:
         timer.stop()
-        #  if thumb:
-        #      thumb.close()
         botApp.delete_message(chatId, rootSticker.id)
         # Remove temporary files and folders
         if options and cleanUp:

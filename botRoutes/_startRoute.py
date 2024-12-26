@@ -8,7 +8,8 @@ from core.appConfig import PROJECT_INFO
 from core.helpers.errors import errorToString
 
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.utils import debugObj
 
 from botApp import botApp
@@ -53,8 +54,8 @@ def startRoute():
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('startRoute: Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('startRoute: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
         return Response(errMsg, headers={'Content-type': 'text/plain'})
 
     debugItems = {

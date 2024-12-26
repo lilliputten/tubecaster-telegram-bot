@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from typing import Optional
 import telebot  # pyTelegramBotAPI
-from telebot.states.sync.context import StateContext
 
 from core.appConfig import (
     LOCAL,
@@ -13,6 +11,7 @@ from core.appConfig import (
     # TELEGRAM_OWNER_ID,
 )
 
+from core.helpers.strings import removeAnsiStyles
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.utils import debugObj
@@ -39,7 +38,7 @@ def notifyOwner(text: str, logInfo: str | None = None):
     if logInfo:
         logger.info(logInfo)
     if LOGGING_CHANNEL_ID and not LOCAL:
-        botApp.send_message(LOGGING_CHANNEL_ID, text)
+        botApp.send_message(LOGGING_CHANNEL_ID, removeAnsiStyles(text))
 
 
 def sendCommandInfo(message: telebot.types.Message, info: str | None = None):

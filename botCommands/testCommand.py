@@ -8,6 +8,7 @@ from telebot.states.sync.context import StateContext
 from core.helpers.errors import errorToString
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import appConfig, TELEGRAM_OWNER_ID
 from core.utils import debugObj
 
@@ -17,6 +18,8 @@ from botCore.helpers import getUserName
 
 
 _logger = getDebugLogger()
+
+_logTraceback = False
 
 
 def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, _state: StateContext):
@@ -67,6 +70,9 @@ def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, _state
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'Error: ' + errText
-        _logger.error('testCommand: ' + errMsg)
-        print(sTraceback)
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.warning(warningStyle(titleStyle('testCommand: Traceback for the following error:') + sTraceback))
+        _logger.error(errorStyle('testCommand: ' + errMsg))
         botApp.reply_to(message, errMsg)

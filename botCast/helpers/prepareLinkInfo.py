@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import re
 import traceback
 import posixpath
 import pathlib
@@ -7,7 +8,8 @@ import pathlib
 from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
 from core.utils import debugObj
 
@@ -56,12 +58,12 @@ def prepareLinkInfo(url: str, username: str):
 
         return options, videoInfo
     except Exception as err:
-        errText = errorToString(err, show_stacktrace=False)
+        errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Prepare audio file error: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('prepareLinkInfo: Traceback for the following error:' + sTraceback)
-        _logger.error('prepareLinkInfo: ' + errMsg)
+            _logger.warning(warningStyle('prepareLinkInfo: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('prepareLinkInfo: ' + errMsg))
         raise Exception(errMsg)

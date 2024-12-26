@@ -8,7 +8,8 @@ import os
 from botCore.helpers import replyOrSend
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 
 from core.appConfig import TELEGRAM_OWNER_ID
 
@@ -127,8 +128,8 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('downloadAudioTest: Traceback for the following error:' + sTraceback)
-        _logger.error('downloadAudioTest: ' + errMsg)
+            _logger.warning(warningStyle('downloadAudioTest: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('downloadAudioTest: ' + errMsg))
         # if chatId:
         #     replyOrSend(botApp, errMsg, chatId, message)
         #  raise Exception(errMsg)

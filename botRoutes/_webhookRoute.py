@@ -9,7 +9,8 @@ import telebot  # pyTelegramBotAPI
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.utils import debugObj
 
 # Prisma/db variables regex: \<\(dbTypes\|checkCommandExistsForMessageId\|addCommand\|deleteCommandById\|addTempMessage\)\>
@@ -212,8 +213,8 @@ def webhookRoute():
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('webhookRoute: Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('webhookRoute: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
         return Response(errMsg, headers={'Content-type': 'text/plain'})
     finally:
         # TODO: To reset the current action?
