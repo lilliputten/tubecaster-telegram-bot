@@ -37,7 +37,7 @@ nameFormat = '-' + str(nameWidth) + 's'
 showLoggerTime = True
 
 # Level (TODO: Make derived from a dev or prod environment?)
-loggingLevel = logging.DEBUG   # INFO, DEBUG, CRITICAL etc
+loggingLevel = logging.INFO   # INFO, DEBUG, CRITICAL etc
 
 formatStr = ' '.join(
     list(

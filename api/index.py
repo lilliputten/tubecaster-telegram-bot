@@ -75,4 +75,4 @@ __all__ = ['app']
 
 
 if __name__ == '__main__':
-    _logger.debug('PROJECT_INFO: %s' % PROJECT_INFO)
+    _logger.info('PROJECT_INFO: %s' % PROJECT_INFO)

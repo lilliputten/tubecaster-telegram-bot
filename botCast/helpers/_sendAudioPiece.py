@@ -7,7 +7,7 @@ from telebot.types import ReplyParameters
 import math
 from urllib.request import urlopen
 
-from core.ffmpeg import probe
+from core.ffmpeg import probeDuration, probe
 from core.helpers.errors import errorToString
 from core.helpers.files import getFormattedFileSize
 
@@ -39,34 +39,15 @@ def sendAudioPiece(
     piecesCount: int | None = None,
 ):
     # Get audio duration (via ffmpeg probe)...
-    probeData = probe(audioFileName)
-    format = probeData.get('format', {})
-    durationPrecise = float(format.get('duration', '0'))   # 1.811156
-    duration = round(durationPrecise)
-    durationFmt = str(timedelta(seconds=duration))
+    # probeData = probe(audioFileName)
+    # format = probeData.get('format', {})
+    # durationPrecise = float(format.get('duration', '0'))   # 1.811156
+    # duration = round(durationPrecise)
+    duration = probeDuration(audioFileName)
+    durationFmt = str(timedelta(seconds=round(duration)))
     # Video details...
     videoDetails = getVideoDetailsStr(videoInfo)
     pieceInfo = f' {pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount and piecesCount > 1 else None
-    #  # It's a copy of the message from `downloadAndSendAudioToChat`
-    #  infoContent = ''.join(
-    #      filter(
-    #          None,
-    #          [
-    #              emojies.waiting + ' Extracting an audio',
-    #              pieceInfo,
-    #              ' from the video',
-    #              f' ({videoDetails})' if videoDetails else '',
-    #              '...',
-    #          ],
-    #      )
-    #  )
-    #  _logger.info(infoContent)
-    #  if rootMessage:
-    #      botApp.edit_message_text(
-    #          chat_id=chatId,
-    #          message_id=rootMessage.id,
-    #          text=infoContent,
-    #      )
     audioSizeFmt = getFormattedFileSize(audioFileName)
     infoContent = ''.join(
         filter(
@@ -116,7 +97,7 @@ def sendAudioPiece(
                 caption=captionContent,
                 title=title,
                 performer=videoInfo.get('channel'),
-                duration=duration,  # videoInfo.get('duration'),
+                duration=int(duration),
                 thumbnail=thumb,
                 reply_parameters=(
                     ReplyParameters(chat_id=chatId, message_id=originalMessage.id) if originalMessage else None

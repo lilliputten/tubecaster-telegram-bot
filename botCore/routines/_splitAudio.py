@@ -11,7 +11,7 @@ from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, seconda
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.utils import debugObj
-from core.ffmpeg import probe, split
+from core.ffmpeg import split, probeDuration
 
 
 # The parameters to pass to a callback are:
@@ -49,42 +49,28 @@ def splitAudio(
     - gap: Add an overlapping gap (in seconds) at the place of pieces junction. 0 to no gaps.
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
     - duration: 'True' duration (in case if yt-downloaded audio has wrong duration; probably that;s a ytdl library bug? See Issue #34).
-
-    NOTE: The duration value returned by ffmepg's probe (see beloq) from the metadta could be incorrect.
-
-    According to a stack overflow' solution there is a way to determine a correct duration via ffprobe:
-
-    Link: [linux - How does ffprobe determine duration? - Stack Overflow](https://stackoverflow.com/questions/30582452/how-does-ffprobe-determine-duration)
-
-    One simple solution is to use `-show_packets` option
-
-    ```bash
-    ffprobe -i file.mp3 -show_packets > result.txt
-    ```
-
-    Now open a result file and go to the last packet and see `dts_time` value
-    that would be the accurate duration of file. If `dts_time` is not defined
-    check for the `pts_time` value.
     """
     try:
         _logger.info(f'splitAudio: Start creating pieces for file: {audioFileName}')
 
-        probeData = probe(audioFileName)
+        if not duration:
+            duration = probeDuration(audioFileName)
+            # probeData = probe(audioFileName)
+            # format = probeData.get('format', {})
+            # audioDuration = float(format.get('duration', '0'))
+            # usedDuration = duration if duration else audioDuration
 
-        format = probeData.get('format', {})
-        audioDuration = float(format.get('duration', '0'))
-        usedDuration = duration if duration else audioDuration
-        pieceDurationSec = usedDuration / piecesCount
+        pieceDurationSec = duration / piecesCount
 
         # Show debug info
         debugItems = {
             'audioFileName': audioFileName,
             'duration': duration,
-            'durationFmt': timedelta(seconds=float(duration)) if duration else None,
-            'usedDuration': usedDuration,
-            'usedDurationFmt': timedelta(seconds=float(usedDuration)) if usedDuration else None,
-            'audioDuration': audioDuration,
-            'audioDurationFmt': timedelta(seconds=float(audioDuration)) if audioDuration else None,
+            'durationFmt': timedelta(seconds=round(duration)) if duration else None,
+            # 'usedDuration': usedDuration,
+            # 'usedDurationFmt': timedelta(seconds=float(usedDuration)) if usedDuration else None,
+            # 'audioDuration': audioDuration,
+            # 'audioDurationFmt': timedelta(seconds=float(audioDuration)) if audioDuration else None,
             'pieceDurationSec': pieceDurationSec,
             'audioDurationSecFmt': timedelta(seconds=pieceDurationSec) if pieceDurationSec else None,
             'piecesCount': piecesCount,
@@ -97,7 +83,7 @@ def splitAudio(
             secondaryStyle(debugObj(debugItems)),
         ]
         logContent = '\n'.join(logItems)
-        _logger.debug(logContent)
+        _logger.info(logContent)
 
         hasPieces = piecesCount > 1
         pieces = range(piecesCount)

@@ -50,7 +50,7 @@ def showDebug():
         secondaryStyle(debugObj(debugItems)),
     ]
     logContent = '\n'.join(logItems)
-    _logger.debug(logContent)
+    _logger.info(logContent)
 
 
 def sendInfoToChatTest():

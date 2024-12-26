@@ -90,7 +90,7 @@ def sendAudioToChat(
             'videoSize': videoInfo.get('filesize'),
             'videoSizeFmt': sizeofFmt(videoInfo.get('filesize')),
             'videoDuration': videoDuration,
-            'videoDurationFmt': timedelta(seconds=float(videoDuration)) if videoDuration else None,
+            'videoDurationFmt': timedelta(seconds=int(videoDuration)) if videoDuration else None,
             'TEST': errorTitleStyle(
                 'Issue #34: videoDuration should be equal audioDuration (see next log output, from splitAudio)!'
             ),
@@ -100,7 +100,7 @@ def sendAudioToChat(
             secondaryStyle(debugObj(debugItems)),
         ]
         logContent = '\n'.join(logItems)
-        _logger.debug(logContent)
+        _logger.info(logContent)
 
         splitAudio(
             audioFileName=audioFileName,

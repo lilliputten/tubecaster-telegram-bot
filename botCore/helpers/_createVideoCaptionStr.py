@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-from core.ffmpeg import probe
+from core.ffmpeg import probe, probeDuration
 from core.helpers.files import getFormattedFileSize
 from core.helpers.strings import truncStr
 
@@ -26,11 +26,12 @@ def createVideoCaptionStr(
 ):
     pieceInfo = f'{pieceNo + 1}/{piecesCount}' if pieceNo != None and piecesCount and piecesCount > 1 else None
     # Get audio duration (via ffmpeg probe)...
-    probeData = probe(audioFileName)
-    format = probeData.get('format', {})
-    durationPrecise = float(format.get('duration', '0'))   # 1.811156
-    duration = round(durationPrecise)
-    durationFmt = str(timedelta(seconds=duration))
+    # probeData = probe(audioFileName)
+    # format = probeData.get('format', {})
+    # durationPrecise = float(format.get('duration', '0'))   # 1.811156
+    # duration = round(durationPrecise)
+    duration = probeDuration(audioFileName)
+    durationFmt = str(timedelta(seconds=round(duration)))
     # Audio file size...
     audioSizeFmt = getFormattedFileSize(audioFileName)
     # Video file size...
@@ -54,7 +55,7 @@ def createVideoCaptionStr(
         emojies.card,
         'The audio',
         #  pieceInfo,
-        f'({durationFmt}, {audioSizeFmt})' if audioSizeFmt else '',
+        f'({durationFmt}, {audioSizeFmt})',
         'has been extracted from the video',
         f'({videoDetails})' if videoDetails else '',
         #  videoInfo.get('webpage_url'),
