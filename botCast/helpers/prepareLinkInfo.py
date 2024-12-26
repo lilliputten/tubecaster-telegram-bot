@@ -7,7 +7,8 @@ import pathlib
 from core.helpers.errors import errorToString
 from core.helpers.files import getFileIdFromUrl, getIdFromName
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
 from core.utils import debugObj
 
@@ -62,6 +63,6 @@ def prepareLinkInfo(url: str, username: str):
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('prepareLinkInfo: Traceback for the following error:' + sTraceback)
-        _logger.error('prepareLinkInfo: ' + errMsg)
+            _logger.warning(warningStyle('prepareLinkInfo: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('prepareLinkInfo: ' + errMsg))
         raise Exception(errMsg)

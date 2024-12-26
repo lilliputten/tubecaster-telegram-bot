@@ -5,7 +5,8 @@ import traceback
 from core.appConfig import appConfig, LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, secondaryStyle, primaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle
 from core.helpers.time import formatTime
 from core.utils import debugObj
 
@@ -63,8 +64,8 @@ if isNormalRun:
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
         raise err
 
 

@@ -5,7 +5,8 @@ from flask.ctx import _AppCtxGlobals
 from prisma import Prisma, register, get_client
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 
 TGlobalCtx = _AppCtxGlobals
 
@@ -43,8 +44,8 @@ def closeDb(err: Optional[BaseException] = None):
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('closeDb: Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('closeDb: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
 
     try:
         client = get_client()
@@ -57,8 +58,8 @@ def closeDb(err: Optional[BaseException] = None):
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('closeDb: Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('closeDb: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
 
 
 def initDb(g: Optional[TGlobalCtx] = None):

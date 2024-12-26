@@ -13,7 +13,7 @@ audioFile = 'tests/test-audios/test-short.mp3'
 audioFile = 'tests/test-audios/test-medium.mp3'
 audioFileName = posixpath.join(PROJECT_PATH, audioFile)
 
-maxAudioFileSize = None # 30000
+maxAudioFileSize = None   # 30000
 
 
 def sendLocalAudioToChat():

@@ -3,7 +3,9 @@
 import traceback
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.helpers.strings import removeAnsiStyles
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.utils import debugObj
 
 from botCore.types import TVideoInfo, YtdlOptionsType
@@ -54,10 +56,12 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Audio download error: ' + errText
+        errMsg = 'Audio download error: ' + removeAnsiStyles(errText)
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('downloadAudioFile: Traceback for the following error:' + sTraceback)
-        _logger.error('downloadAudioFile: ' + errMsg)
+            _logger.warning(
+                warningStyle(warningStyle('downloadAudioFile: Traceback for the following error:')) + sTraceback
+            )
+        _logger.error(errorStyle('downloadAudioFile: ' + errMsg))
         raise Exception(errMsg)

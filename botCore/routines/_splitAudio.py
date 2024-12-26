@@ -5,7 +5,8 @@ import traceback
 from typing import Callable
 
 
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
 from core.ffmpeg import probe, split
@@ -99,6 +100,6 @@ def splitAudio(
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('splitAudio: Traceback for the following error:' + sTraceback)
-        _logger.error('splitAudio: ' + errMsg)
+            _logger.warning(warningStyle('splitAudio: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('splitAudio: ' + errMsg))
         raise Exception(errMsg)

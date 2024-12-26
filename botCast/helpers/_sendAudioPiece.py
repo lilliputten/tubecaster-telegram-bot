@@ -12,7 +12,8 @@ from core.helpers.errors import errorToString
 from core.helpers.files import getFormattedFileSize
 
 from core.helpers.strings import truncStr
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 
 from botApp import botApp
 from botCore.helpers import (
@@ -129,8 +130,8 @@ def sendAudioPiece(
             if logTraceback:
                 errMsg += sTraceback
             else:
-                _logger.info('logTraceback: Traceback for the following error:' + sTraceback)
-            _logger.error('logTraceback: ' + errMsg)
+                _logger.warning(warningStyle('logTraceback: Traceback for the following error:') + sTraceback)
+            _logger.error(errorStyle('logTraceback: ' + errMsg))
             raise Exception(errMsg)
         finally:
             if thumb:

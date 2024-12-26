@@ -6,7 +6,8 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 
 _logger = getDebugLogger()
 
@@ -42,8 +43,8 @@ def testPydantic():
         if _logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('TtestPydantic: raceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('TtestPydantic: raceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
 
 
 if __name__ == '__main__':

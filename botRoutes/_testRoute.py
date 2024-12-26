@@ -10,7 +10,8 @@ from core.helpers.errors import errorToString
 
 from core.helpers.strings import truncStr
 from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, loggerConfig, titleStyle, secondaryStyle
+from core.logger import getDebugLogger, loggerConfig
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.utils import debugObj
 from core.utils.generic import dictFromModule
 
@@ -71,6 +72,6 @@ def testRoute():
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('testRoute: Traceback for the following error:' + sTraceback)
-        _logger.error(errMsg)
+            _logger.warning(warningStyle('testRoute: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle(errMsg))
         return Response(errMsg, headers={'Content-type': 'text/plain'})

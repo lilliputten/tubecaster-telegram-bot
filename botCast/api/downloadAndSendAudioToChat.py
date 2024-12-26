@@ -4,12 +4,11 @@ import os
 import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.appConfig import LOCAL
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 
 from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
 
 from botApp import botApp
 from botCore.types import YtdlOptionsType
@@ -18,6 +17,7 @@ from botCore.helpers import (
     replyOrSend,
     getVideoDetailsStr,
 )
+from core.logger.utils import errorStyle, warningStyle
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
@@ -25,12 +25,10 @@ from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
 from ..helpers._sendAudioToChat import sendAudioToChat
 
+
 _logger = getDebugLogger()
 
 _timerDelay = 5
-
-# _maxAudioFileSize = 20000
-# _splitGap = 0
 
 
 def updateChatStatus(chatId: str | int):
@@ -57,7 +55,7 @@ def downloadAndSendAudioToChat(
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
-    - cleanUp: bool | None = False - Clean all the temporarily and generated files at the end (true by default).
+    - cleanUp: bool | None = False - Clean all the temporary and generated files at the end (true by default).
 
     For tests, use the command:
 
@@ -77,9 +75,6 @@ def downloadAndSendAudioToChat(
 
     # Start update timer
     timer = RepeatedTimer(_timerDelay, updateChatStatus, chatId)
-
-    #  # Future thumb urlopen handler
-    #  thumb = None
 
     # Future options, will be downloaded later
     options: YtdlOptionsType | None = None
@@ -128,8 +123,11 @@ def downloadAndSendAudioToChat(
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('downloadAndSendAudioToChat: Traceback for the following error:' + sTraceback)
-        _logger.error('downloadAndSendAudioToChat: ' + errMsg)
+            _logger.warning(
+                warningStyle(warningStyle('downloadAndSendAudioToChat: Traceback for the following error:'))
+                + sTraceback
+            )
+        _logger.error(errorStyle('downloadAndSendAudioToChat: ' + errMsg))
         botApp.edit_message_text(
             chat_id=chatId,
             text=errMsg,
@@ -138,8 +136,6 @@ def downloadAndSendAudioToChat(
         #  raise Exception(errMsg)
     finally:
         timer.stop()
-        #  if thumb:
-        #      thumb.close()
         botApp.delete_message(chatId, rootSticker.id)
         # Remove temporary files and folders
         if options and cleanUp:

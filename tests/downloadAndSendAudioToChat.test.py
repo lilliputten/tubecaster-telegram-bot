@@ -12,12 +12,19 @@ largeVideoUrl = 'https://www.youtube.com/watch?v=-K2AeSsBeoo'
 # About 5s, Audio size: ~22Kb
 smallVideoUrl = 'https://www.youtube.com/watch?v=EngW7tLk6R8'
 
+# ~2:47
+mediumVideoUrl = 'https://www.youtube.com/watch?v=UdaQRvVTIqU'
+
+# A video url to test
+testVideo = mediumVideoUrl
+
 
 def sendInfoToChatTest():
     downloadAndSendAudioToChat(
-        smallVideoUrl,
-        TELEGRAM_OWNER_ID,
-        'test',
+        url=testVideo,
+        chatId=TELEGRAM_OWNER_ID,
+        username='test',
+        cleanUp=False,
     )
 
 

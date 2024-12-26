@@ -10,7 +10,8 @@ from core.appConfig import AUDIO_FILE_EXT, MAX_AUDIO_FILE_SIZE
 from core.helpers.files import sizeofFmt
 from core.helpers.errors import errorToString
 
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 
 from botApp import botApp
 from botCore.types import TVideoInfo
@@ -42,7 +43,8 @@ def sendAudioToChat(
     try:
         audioSize = os.path.getsize(audioFileName)
         audioSizeFmt = sizeofFmt(audioSize)
-        pieceCallback = partial(
+        # Prepare a callback send an audio fragment
+        sendAudioPieceCallback = partial(
             sendAudioPiece,
             chatId,
             videoInfo,
@@ -77,14 +79,14 @@ def sendAudioToChat(
                 audioFileName=audioFileName,
                 outFilePrefix=outFilePrefix,
                 piecesCount=piecesCount,
-                pieceCallback=pieceCallback,
+                pieceCallback=sendAudioPieceCallback,
                 delimiter=delimiter,
                 gap=splitGap,
                 removeFiles=cleanUp,
             )
         else:
             # Send whole file...
-            pieceCallback(
+            sendAudioPieceCallback(
                 audioFileName=audioFileName,
             )
         if rootMessage:
@@ -96,8 +98,8 @@ def sendAudioToChat(
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.info('sendAudioToChat: Traceback for the following error:' + sTraceback)
-        _logger.error('sendAudioToChat: ' + errMsg)
+            _logger.warning(warningStyle('sendAudioToChat: Traceback for the following error:') + sTraceback)
+        _logger.error(errorStyle('sendAudioToChat: ' + errMsg))
         raise Exception(errMsg)
     finally:
         if newMessage:
