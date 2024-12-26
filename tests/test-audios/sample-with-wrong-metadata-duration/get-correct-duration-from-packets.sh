@@ -1,0 +1,1 @@
+ffprobe -i file.mp3  -show_packets 2>&1 | grep dts_time

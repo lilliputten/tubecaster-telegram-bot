@@ -49,6 +49,22 @@ def splitAudio(
     - gap: Add an overlapping gap (in seconds) at the place of pieces junction. 0 to no gaps.
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
     - duration: 'True' duration (in case if yt-downloaded audio has wrong duration; probably that;s a ytdl library bug? See Issue #34).
+
+    NOTE: The duration value returned by ffmepg's probe (see beloq) from the metadta could be incorrect.
+
+    According to a stack overflow' solution there is a way to determine a correct duration via ffprobe:
+
+    Link: [linux - How does ffprobe determine duration? - Stack Overflow](https://stackoverflow.com/questions/30582452/how-does-ffprobe-determine-duration)
+
+    One simple solution is to use `-show_packets` option
+
+    ```bash
+    ffprobe -i file.mp3 -show_packets > result.txt
+    ```
+
+    Now open a result file and go to the last packet and see `dts_time` value
+    that would be the accurate duration of file. If `dts_time` is not defined
+    check for the `pts_time` value.
     """
     try:
         _logger.info(f'splitAudio: Start creating pieces for file: {audioFileName}')
