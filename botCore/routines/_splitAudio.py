@@ -1,15 +1,18 @@
 # -*- coding:utf-8 -*-
 
+from datetime import timedelta
 import pathlib
+import re
 import traceback
 from typing import Callable
 
-
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import AUDIO_FILE_EXT
 from core.helpers.errors import errorToString
+from core.utils import debugObj
 from core.ffmpeg import probe, split
+
 
 # The parameters to pass to a callback are:
 # - audioFileName: str - Source audio file name (is already on the disk);
@@ -30,6 +33,7 @@ def splitAudio(
     delimiter: str = '-',
     gap: int = 0,
     removeFiles: bool = True,
+    duration: float | None = None,
 ):
     """
     Split large audio file into pieces via ffmpeg (should be installed in the system).
@@ -44,6 +48,7 @@ def splitAudio(
       written. The following parameteres will be passed: filename, piece number, total pieces count.
     - gap: Add an overlapping gap (in seconds) at the place of pieces junction. 0 to no gaps.
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
+    - duration: 'True' duration (in case if downloaded audio has wrong duration).
     """
     try:
         _logger.info(f'splitAudio: Start creating pieces for file: {audioFileName}')
@@ -51,22 +56,32 @@ def splitAudio(
         probeData = probe(audioFileName)
 
         format = probeData.get('format', {})
-        duration = float(format.get('duration', '0'))
-        pieceDurationSec = duration / piecesCount
+        audioDuration = float(format.get('duration', '0'))
+        usedDuration = duration if duration else audioDuration
+        pieceDurationSec = usedDuration / piecesCount
 
-        #  # DEBUG: Show debug info (keep this while developing)
-        #  durationSec = math.ceil(duration)
-        #  size = int(format.get('size', '0'))
-        #  streams = probeData.get('streams', [{}])
-        #  stream = streams[0]
-        #  codecName = stream.get('codec_name')
-        #  #  print('Probe data:', json.dumps(probeData, indent=2, ensure_ascii=False))
-        #  # print('Audio codec:', codecName)
-        #  print('Audio duration (secs):', duration)
-        #  # print('Audio duration (full secs):', durationSec)
-        #  # print('Audio size (bytes):', size)
-        #  print('Pieces count:', piecesCount)
-        #  print('Pieces duration (secs):', pieceDurationSec)
+        # Show debug info
+        debugItems = {
+            'audioFileName': audioFileName,
+            'duration': duration,
+            'durationFmt': timedelta(seconds=float(duration)) if duration else None,
+            'usedDuration': usedDuration,
+            'usedDurationFmt': timedelta(seconds=float(usedDuration)) if usedDuration else None,
+            'audioDuration': audioDuration,
+            'audioDurationFmt': timedelta(seconds=float(audioDuration)) if audioDuration else None,
+            'pieceDurationSec': pieceDurationSec,
+            'audioDurationSecFmt': timedelta(seconds=pieceDurationSec) if pieceDurationSec else None,
+            'piecesCount': piecesCount,
+            'TEST': errorTitleStyle(
+                'audioDuration should be equal videoDuration (see prev log output from sendAudioToChat)!'
+            ),
+        }
+        logItems = [
+            titleStyle('splitAudio: Audio file is going to be split'),
+            secondaryStyle(debugObj(debugItems)),
+        ]
+        logContent = '\n'.join(logItems)
+        _logger.debug(logContent)
 
         hasPieces = piecesCount > 1
         pieces = range(piecesCount)
@@ -94,7 +109,7 @@ def splitAudio(
         _logger.info(f'splitAudio: Already created all {piecesCount} piece(s)')
 
     except Exception as err:
-        errText = errorToString(err, show_stacktrace=False)
+        errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Audio splitting error: ' + errText
         if logTraceback:

@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import re
 import traceback
 
 from core.helpers.errors import errorToString
@@ -54,14 +55,12 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
             )
             return destFile
     except Exception as err:
-        errText = errorToString(err, show_stacktrace=False)
+        errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Audio download error: ' + removeAnsiStyles(errText)
         if logTraceback:
             errMsg += sTraceback
         else:
-            _logger.warning(
-                warningStyle(warningStyle('downloadAudioFile: Traceback for the following error:')) + sTraceback
-            )
+            _logger.warning(warningStyle('downloadAudioFile: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioFile: ' + errMsg))
         raise Exception(errMsg)

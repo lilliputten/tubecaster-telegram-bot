@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import re
 import traceback
 import posixpath
 import pathlib
@@ -57,7 +58,7 @@ def prepareLinkInfo(url: str, username: str):
 
         return options, videoInfo
     except Exception as err:
-        errText = errorToString(err, show_stacktrace=False)
+        errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Prepare audio file error: ' + errText
         if logTraceback:

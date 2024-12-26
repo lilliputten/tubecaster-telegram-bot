@@ -68,7 +68,7 @@ IS_VERCEL = True if VERCEL_URL else False
 CWD_PATH = pathlib.Path(os.getcwd()).as_posix()
 
 # Temp path: Use local 'temp' or vercel specific '/tmp' folders for temporary files
-TEMP_PATH = posixpath.join(CWD_PATH, 'temp') if LOCAL or not IS_VERCEL else '/tmp'
+TEMP_PATH = posixpath.join(CWD_PATH, '.temp') if LOCAL or not IS_VERCEL else '/tmp'
 
 # Audio...
 
