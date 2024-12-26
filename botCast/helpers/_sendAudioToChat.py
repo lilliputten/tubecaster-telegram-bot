@@ -92,7 +92,7 @@ def sendAudioToChat(
             'videoDuration': videoDuration,
             'videoDurationFmt': timedelta(seconds=float(videoDuration)) if videoDuration else None,
             'TEST': errorTitleStyle(
-                'videoDuration should be equal audioDuration (see next log output, from splitAudio)!'
+                'Issue #34: videoDuration should be equal audioDuration (see next log output, from splitAudio)!'
             ),
         }
         logItems = [
@@ -110,7 +110,7 @@ def sendAudioToChat(
             delimiter=delimiter,
             gap=splitGap,
             removeFiles=cleanUp,
-            duration=videoDuration,
+            duration=videoDuration,  # Issue #34: Pass an actual duration to split audio code
         )
 
         # else:

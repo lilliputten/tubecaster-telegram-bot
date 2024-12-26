@@ -48,7 +48,7 @@ def splitAudio(
       written. The following parameteres will be passed: filename, piece number, total pieces count.
     - gap: Add an overlapping gap (in seconds) at the place of pieces junction. 0 to no gaps.
     - removeFiles: Automatically remove piece files when done (after callback return, if specified).
-    - duration: 'True' duration (in case if downloaded audio has wrong duration).
+    - duration: 'True' duration (in case if yt-downloaded audio has wrong duration; probably that;s a ytdl library bug? See Issue #34).
     """
     try:
         _logger.info(f'splitAudio: Start creating pieces for file: {audioFileName}')
@@ -73,7 +73,7 @@ def splitAudio(
             'audioDurationSecFmt': timedelta(seconds=pieceDurationSec) if pieceDurationSec else None,
             'piecesCount': piecesCount,
             'TEST': errorTitleStyle(
-                'audioDuration should be equal videoDuration (see prev log output from sendAudioToChat)!'
+                'Issue #34: audioDuration should be equal videoDuration (see prev log output from sendAudioToChat)!'
             ),
         }
         logItems = [
@@ -85,7 +85,6 @@ def splitAudio(
 
         hasPieces = piecesCount > 1
         pieces = range(piecesCount)
-        # realPiecesCount = len(pieces)
         for n in pieces:
             no = n + 1
             start = n * pieceDurationSec
@@ -98,7 +97,6 @@ def splitAudio(
             if hasPieces:
                 outputFileName += delimiter + str(no)
             outputFileName += AUDIO_FILE_EXT
-            # outputFileName = f'{outFilePrefix}{delimiter}{no}{AUDIO_FILE_EXT}'
             _logger.info(f'splitAudio: Creating piece {no}/{piecesCount} ({start}-{end}) -> {outputFileName})')
             split(audioFileName, outputFileName, start=start, end=end)
             if pieceCallback:
