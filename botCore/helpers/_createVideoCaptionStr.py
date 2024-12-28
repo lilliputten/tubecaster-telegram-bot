@@ -58,6 +58,7 @@ def createVideoCaptionStr(
         f'({durationFmt}, {audioSizeFmt})',
         'has been extracted from the video',
         f'({videoDetails})' if videoDetails else '',
+        'by @TubeCasterBot',
         #  videoInfo.get('webpage_url'),
     ]))
     # fmt: on
