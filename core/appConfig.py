@@ -65,7 +65,7 @@ VERCEL_URL = str(appConfig.get('VERCEL_URL', ''))
 IS_VERCEL = True if VERCEL_URL else False
 
 # Current root project path
-CWD_PATH = pathlib.Path(os.getcwd()).as_posix()
+CWD_PATH = PROJECT_PATH  # pathlib.Path(os.getcwd()).as_posix()
 
 # Temp path: Use local 'temp' or vercel specific '/tmp' folders for temporary files
 TEMP_PATH = posixpath.join(CWD_PATH, '.temp') if LOCAL or not IS_VERCEL else '/tmp'

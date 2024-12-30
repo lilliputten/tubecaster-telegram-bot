@@ -5,7 +5,7 @@
 scriptsPath=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 rootPath=`dirname "$scriptsPath"`
 
-# Import config variables (expected variables `$DIST_REPO` and `$PUBLISH_FOLDER`)...
+# Import config variables...
 test -f "$scriptsPath/config.sh" && . "$scriptsPath/config.sh"
 test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 

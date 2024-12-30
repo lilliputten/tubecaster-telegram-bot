@@ -22,11 +22,11 @@ ARGS="$*"
 #   exit 1
 # fi
 
-# Check publish folder if parameter '--omit-publish-folder-check' isn't specified...
-if [ ! -d "$prjPath/$PUBLISH_FOLDER" ]; then
-  # if [ ! -z "${ARGS##*--omit-publish-folder-check*}" ]; then # NOTE: Doesn't work
-  if [[ ! "$ARGS" =~ .*--omit-publish-folder-check.* ]]; then
-    echo "No publish folder. Probably submodule was not initialized. Use script 'publish-init.sh'."
-    exit 1
-  fi
-fi
+# # Check publish folder if parameter '--omit-publish-folder-check' isn't specified...
+# if [ ! -d "$prjPath/$PUBLISH_FOLDER" ]; then
+#   # if [ ! -z "${ARGS##*--omit-publish-folder-check*}" ]; then # NOTE: Doesn't work
+#   if [[ ! "$ARGS" =~ .*--omit-publish-folder-check.* ]]; then
+#     echo "No publish folder. Probably submodule was not initialized. Use script 'publish-init.sh'."
+#     exit 1
+#   fi
+# fi
