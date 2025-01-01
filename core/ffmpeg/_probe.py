@@ -28,5 +28,5 @@ def probe(filename: str, **kwargs):
         errTitle = f'Error probing audio file ({cmd})'
         _logger.error(errTitle + ':\n' + err.decode('utf-8'))
         raise Exception(errTitle + ' (see error log output)')
-        #  raise Error(cmd, out, err)
+        #  raise FfmpegError(cmd, out, err)
     return json.loads(out.decode('utf-8'))

@@ -32,5 +32,5 @@ def split(filename: str, outFilename: str, start: float, end: float, format='mp4
         errTitle = f'Error splitting audio file ({cmd})'
         _logger.error(errTitle + ':\n' + err.decode('utf-8'))
         raise Exception(errTitle + ' (see error log output)')
-        #  raise Error(cmd, out, err)
+        #  raise FfmpegError(cmd, out, err)
     return out.decode('utf-8')

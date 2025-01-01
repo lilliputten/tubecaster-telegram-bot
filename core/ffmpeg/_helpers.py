@@ -1,6 +1,6 @@
-class Error(Exception):
+class FfmpegError(Exception):
     def __init__(self, cmd, stdout, stderr):
-        super(Error, self).__init__('{} error (see stderr output for detail)'.format(cmd))
+        super(FfmpegError, self).__init__('{} error (see stderr output for detail)'.format(cmd))
         self.stdout = stdout
         self.stderr = stderr
 
