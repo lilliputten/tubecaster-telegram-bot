@@ -45,6 +45,14 @@ _logTraceback = False
 # botApp.send_message(LOGGING_CHANNEL_ID, 'Test ' + timeStr)
 
 
+@botApp.message_handler(commands=['register'])
+def requestRegistration(message: telebot.types.Message):
+    sendCommandInfo(message, 'requestRegistration')
+    newUserId = message.from_user.id if message.from_user else message.chat.id
+    newUserStr = getUserName(message.from_user)
+    sendNewUserRequestMessage(message, newUserId, newUserStr)
+
+
 @botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
 def registerUserQuery(query: telebot.types.CallbackQuery):
     sendQueryInfo(query, query.data)

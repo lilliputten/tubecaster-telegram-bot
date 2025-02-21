@@ -9,6 +9,7 @@ _logger = getDebugLogger()
 commandsInfo = {
     'cast URL': 'Convert YouTube video to audio for listening.',
     'info URL': 'Show information about the YouTube video.',
+    'register': 'Request access reqistration.',
     'start': 'Gives information about the bot.',
     'help': 'Gives information about all of the available commands.',
 }
