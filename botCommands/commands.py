@@ -10,18 +10,23 @@ import traceback
 import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
 
-from botApp.botStates import BotStates
+from core.appConfig import LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
+from core.helpers.time import formatTime
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.helpers.errors import errorToString
 from core.utils import debugObj
 
-from botApp import botApp
 from botCore.constants import stickers, emojies
-from botCore.helpers import getUserName
+from botCore.helpers import addNewValidUser
+from botCore.helpers import checkValidUser, getUserName
 from botCore.helpers import replyOrSend
 from botCore.helpers import createCommonButtonsMarkup
+from botCore.helpers import showNewUserMessage, sendNewUserRequestMessage
+
+from botApp import botApp
+from botApp.botStates import BotStates
 
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .infoCommand import infoCommand, infoForUrlStep
@@ -36,17 +41,92 @@ _logger = getDebugLogger()
 
 _logTraceback = False
 
+# timeStr = formatTime()
+# botApp.send_message(LOGGING_CHANNEL_ID, 'Test ' + timeStr)
+
+
+@botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
+def registerUserQuery(query: telebot.types.CallbackQuery):
+    sendQueryInfo(query, query.data)
+    message = query.message
+    if not isinstance(message, telebot.types.Message):
+        # NOTE: A normal message is required to register next step handler
+        errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
+        _logger.error(errorStyle('registerUserQuery: Error: %s' % errMsg))
+        botApp.send_message(message.chat.id, errMsg)
+        return
+    if query.data is not None:
+        list = query.data.split(':')
+        newUserId = int(list[1])
+        newUserStr = str(list[2])
+        sendNewUserRequestMessage(message, newUserId, newUserStr)
+
+
+@botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
+def acceptUserQuery(query: telebot.types.CallbackQuery):
+    sendQueryInfo(query, query.data)
+    message = query.message
+    if not isinstance(message, telebot.types.Message):
+        # NOTE: A normal message is required to register next step handler
+        errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
+        _logger.error(errorStyle('acceptUserQuery: Error: %s' % errMsg))
+        botApp.send_message(message.chat.id, errMsg)
+        return
+    if query.data is not None:
+        list = query.data.split(':')
+        newUserId = int(list[1])
+        newUserStr = str(list[2])
+        addNewValidUser(newUserId, newUserStr, query)
+        botApp.send_message(
+            newUserId, emojies.success + " You've been successfully added to the registered users list!"
+        )
+
+
+@botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
+def rejectUserQuery(query: telebot.types.CallbackQuery):
+    sendQueryInfo(query, query.data)
+    message = query.message
+    if not isinstance(message, telebot.types.Message):
+        # NOTE: A normal message is required to register next step handler
+        errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
+        _logger.error(errorStyle('rejectUserQuery: Error: %s' % errMsg))
+        botApp.send_message(message.chat.id, errMsg)
+        return
+    if query.data is not None:
+        list = query.data.split(':')
+        newUserId = int(list[1])
+        # newUserStr = str(list[2])
+        botApp.send_message(
+            newUserId,
+            emojies.error
+            + ' Unfortunatelly, your registration has been declined. You cant try again or to reach the admin by direct message.',
+        )
+
 
 @botApp.message_handler(commands=['test'])
 def testReaction(message: telebot.types.Message, state: StateContext):
+    # DEBUG
     sendCommandInfo(message, 'testReaction')
-    testCommand(message.chat, message, state)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if userId != TELEGRAM_OWNER_ID:
+        replyOrSend(botApp, emojies.error + ' The command is not allowed!', message.chat.id, message)
+    else:
+        testCommand(message.chat, message, state)
+    # if not checkValidUser(userId):
+    #     newUserName = getUserName(message.from_user)
+    #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+    #     showNewUserMessage(message, userId, newUserName)
+    # else:
 
 
 @botApp.message_handler(commands=['castTest'])
 def castTestReaction(message: telebot.types.Message):
     sendCommandInfo(message, 'castTestReaction')
-    castTestCommand(message.chat, message)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if userId != TELEGRAM_OWNER_ID:
+        replyOrSend(botApp, emojies.error + ' The command is not allowed!', message.chat.id, message)
+    else:
+        castTestCommand(message.chat, message)
 
 
 @botApp.message_handler(commands=['help'])
@@ -91,7 +171,13 @@ def castForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 @botApp.message_handler(commands=['cast'])
 def castReaction(message: telebot.types.Message):
     sendCommandInfo(message, 'castReaction')
-    castCommand(message.chat, message)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if not checkValidUser(userId):
+        newUserName = getUserName(message.from_user)
+        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+        showNewUserMessage(message, userId, newUserName)
+    else:
+        castCommand(message.chat, message)
 
 
 @botApp.message_handler(state=BotStates.waitForInfoUrl)
@@ -104,10 +190,16 @@ def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 @botApp.message_handler(commands=['info'])
 def infoReaction(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, 'infoReaction')
-    infoCommand(message.chat, message, state)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if not checkValidUser(userId):
+        newUserName = getUserName(message.from_user)
+        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+        showNewUserMessage(message, userId, newUserName)
+    else:
+        infoCommand(message.chat, message, state)
 
 
-# Handle all other messages.
+# Handle all other messages
 @botApp.message_handler(
     # func=checkDefaultCommand,
     func=lambda _: True,

@@ -30,7 +30,7 @@ def deleteOutdatedTempMessages(outdatedDate: date | None = None):
         #     print('command.updatedAt:', command.updatedAt)
         return commandClient.delete_many(
             where={
-                'createdAt': {'lt': outdatedDate},
+                'createdAt': {'lt': outdatedDate},  # type: ignore
             },
         )
     except Exception as err:

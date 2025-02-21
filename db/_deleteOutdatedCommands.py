@@ -2,6 +2,7 @@ from datetime import date
 import datetime
 import traceback
 from prisma.models import Command
+from prisma.types import CommandWhereInput, DateTimeFilter
 
 from core.helpers.errors import errorToString
 
@@ -28,10 +29,12 @@ def deleteOutdatedCommands(outdatedDate: date | None = None):
         #     print('         outdatedDate:', outdatedDate)
         #     print('command.createdAt:', command.createdAt)
         #     print('command.updatedAt:', command.updatedAt)
+        createdAtFilter: DateTimeFilter = {'lt': outdatedDate}  # type: ignore
+        where: CommandWhereInput = {
+            'createdAt': createdAtFilter,
+        }
         return commandClient.delete_many(
-            where={
-                'createdAt': {'lt': outdatedDate},
-            },
+            where=where,
         )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

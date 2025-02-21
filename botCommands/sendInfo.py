@@ -37,7 +37,7 @@ commonInfoData = {
 def notifyOwner(text: str, logInfo: str | None = None):
     if logInfo:
         logger.info(logInfo)
-    if LOGGING_CHANNEL_ID and not LOCAL:
+    if LOGGING_CHANNEL_ID:   # and not LOCAL:
         botApp.send_message(LOGGING_CHANNEL_ID, removeAnsiStyles(text))
 
 

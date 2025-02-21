@@ -14,6 +14,8 @@ if not IS_TEST:
     from ._getTempMessagesForCommand import getTempMessagesForCommand
     from ._deleteOutdatedCommands import deleteOutdatedCommands
     from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
+    from ._findUser import findUser
+    from ._addActiveUser import addActiveUser
 
     __all__ = [
         'types',
@@ -27,4 +29,6 @@ if not IS_TEST:
         'getTempMessagesForCommand',
         'deleteOutdatedCommands',
         'deleteOutdatedTempMessages',
+        'findUser',
+        'addActiveUser',
     ]
