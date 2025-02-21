@@ -13,7 +13,6 @@ from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.utils import debugObj
 
-# Prisma/db variables regex: \<\(dbTypes\|checkCommandExistsForMessageId\|addCommand\|deleteCommandById\|addTempMessage\)\>
 from db import (
     types as dbTypes,
     checkCommandExistsForMessageId,
@@ -21,6 +20,8 @@ from db import (
     deleteCommandById,
     addTempMessage,
     getTempMessagesForCommand,
+    deleteOutdatedCommands,
+    deleteOutdatedTempMessages,
 )
 
 from botApp import botApp
@@ -111,6 +112,13 @@ def webhookRoute():
     # Remove previous message markup
     if callback_query and callback_query.message:
         botApp.edit_message_reply_markup(chat_id=chatId, message_id=callback_query.message.id, reply_markup=None)
+
+    # Check for active user (add this check into the restricted commands)...
+    # newMessage = botApp.send_message(
+    #     chatId,
+    #     'Test Message',
+    # )
+    # return Response('Test', headers={'Content-type': 'text/plain'})
 
     createdCommand: Optional[dbTypes.TPrismaCommand] = None
     try:
@@ -235,6 +243,9 @@ def webhookRoute():
                     botApp.delete_messages(chat_id=chatId, message_ids=tempMessageIds)
             # Delete all command data...
             deleteCommandById(createdCommand.id)
+            # Delete all outdated commands & messages...
+            deleteOutdatedCommands()
+            deleteOutdatedTempMessages()
         stateValue = botApp.get_state(userId, chatId)
         debugStr = debugObj(
             {

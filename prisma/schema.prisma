@@ -44,7 +44,7 @@ model Command {
   @@map("Commands")
 }
 
-model Users {
+model User {
   id        Int     @id @default(autoincrement())
   isActive  Boolean @default(false)
 
