@@ -48,6 +48,8 @@ def sendNewUserRequestMessage(message: telebot.types.Message, newUserId: int, ne
         ])))
         # fmt: on
         debugItems = {
+            'CONTROLLER_CHANNEL_ID': CONTROLLER_CHANNEL_ID,
+            'LOGGING_CHANNEL_ID': LOGGING_CHANNEL_ID,
             'newUserId': newUserId,
             'commandHash': commandHash,
             'contentType': contentType,

@@ -166,7 +166,13 @@ def startCast(query: telebot.types.CallbackQuery):
         _logger.error(errorStyle('startCast: Error: %s' % errMsg))
         botApp.send_message(message.chat.id, errMsg)
         return
-    startWaitingForCastUrl(message.chat, message)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if not checkValidUser(userId):
+        newUserName = getUserName(message.from_user)
+        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+        showNewUserMessage(message, userId, newUserName)
+    else:
+        startWaitingForCastUrl(message.chat, message)
 
 
 @botApp.message_handler(state=BotStates.waitForCastUrl)
@@ -219,6 +225,7 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
     chat = message.chat
     chatId = chat.id
     stateValue = state.get()
+    userId = message.from_user.id if message.from_user else message.chat.id
     try:
         contentType = message.content_type
         text = message.text
@@ -231,14 +238,24 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
         elif stateValue == BotStates.waitForInfoUrl:
             _logger.info(titleStyle('defaultCommand: Forcibly invoke info command as the state has been set'))
             state.delete()
-            infoForUrlStep(chat, message)
-            # infoCommand(chat, message)
+            if not checkValidUser(userId):
+                newUserName = getUserName(message.from_user)
+                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+                showNewUserMessage(message, userId, newUserName)
+            else:
+                infoForUrlStep(chat, message)
+                # infoCommand(chat, message)
         # Forcibly invoke cast command if the state has been set
         elif stateValue == BotStates.waitForCastUrl:
             _logger.info(titleStyle('defaultCommand: Forcibly invoke cast command as the state has been set'))
             state.delete()
-            castForUrlStep(chat, message)
-            # castCommand(chat, message)
+            if not checkValidUser(userId):
+                newUserName = getUserName(message.from_user)
+                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+                showNewUserMessage(message, userId, newUserName)
+            else:
+                castForUrlStep(chat, message)
+                # castCommand(chat, message)
         # Else show a perplexing message
         else:
             _logger.info(titleStyle('defaultCommand: Show a perplexing message'))
