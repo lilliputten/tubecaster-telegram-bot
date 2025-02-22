@@ -36,7 +36,7 @@ def initWebhook():
     )
 
 
-@botRoutes.route('/start')
+@botRoutes.route('/-start')
 def startRoute():
     """
     Root page:
