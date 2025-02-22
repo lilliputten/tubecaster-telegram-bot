@@ -22,7 +22,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def sendNewUserRequestMessage(message: telebot.types.Message, newUserId: int, newUserStr: str):
+def sendNewUserRequestToController(message: telebot.types.Message, newUserId: int, newUserStr: str):
     chatId = message.chat.id
     try:
         text = message.text
@@ -71,7 +71,7 @@ def sendNewUserRequestMessage(message: telebot.types.Message, newUserId: int, ne
         }
         debugStr = debugObj(debugItems)
         logItems = [
-            titleStyle('sendNewUserRequestMessage: %s' % commandHash),
+            titleStyle('sendNewUserRequestToController: %s' % commandHash),
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
@@ -87,6 +87,9 @@ def sendNewUserRequestMessage(message: telebot.types.Message, newUserId: int, ne
             content,
             reply_markup=markup,
         )
+        botApp.send_message(
+            newUserId, emojies.success + " Your request has been sent. Please wait for a response or contact the administrator @lilliputen."
+        )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -95,5 +98,5 @@ def sendNewUserRequestMessage(message: telebot.types.Message, newUserId: int, ne
             errMsg += sTraceback
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
-        _logger.error(errorStyle('sendNewUserRequestMessage: ' + errMsg))
+        _logger.error(errorStyle('sendNewUserRequestToController: ' + errMsg))
         replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)

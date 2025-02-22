@@ -23,7 +23,7 @@ from botCore.helpers import addNewValidUser
 from botCore.helpers import checkValidUser, getUserName
 from botCore.helpers import replyOrSend
 from botCore.helpers import createCommonButtonsMarkup
-from botCore.helpers import showNewUserMessage, sendNewUserRequestMessage
+from botCore.helpers import showNewUserMessage, sendNewUserRequestToController
 
 from botApp import botApp
 from botApp.botStates import BotStates
@@ -41,16 +41,13 @@ _logger = getDebugLogger()
 
 _logTraceback = False
 
-# timeStr = formatTime()
-# botApp.send_message(LOGGING_CHANNEL_ID, 'Test ' + timeStr)
-
 
 @botApp.message_handler(commands=['register'])
 def requestRegistration(message: telebot.types.Message):
     sendCommandInfo(message, 'requestRegistration')
     newUserId = message.from_user.id if message.from_user else message.chat.id
     newUserStr = getUserName(message.from_user)
-    sendNewUserRequestMessage(message, newUserId, newUserStr)
+    sendNewUserRequestToController(message, newUserId, newUserStr)
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
@@ -67,7 +64,7 @@ def registerUserQuery(query: telebot.types.CallbackQuery):
         list = query.data.split(':')
         newUserId = int(list[1])
         newUserStr = str(list[2])
-        sendNewUserRequestMessage(message, newUserId, newUserStr)
+        sendNewUserRequestToController(message, newUserId, newUserStr)
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
@@ -107,7 +104,7 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
         botApp.send_message(
             newUserId,
             emojies.error
-            + ' Unfortunatelly, your registration has been declined. You cant try again or to reach the admin by direct message.',
+            + ' Unfortunatelly, your registration has been declined. You cant try again or to reach the administrator @lilliputten.',
         )
 
 
@@ -203,9 +200,10 @@ def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 
 @botApp.message_handler(commands=['info'])
 def infoReaction(message: telebot.types.Message, state: StateContext):
-    sendCommandInfo(message, 'infoReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
-    if not checkValidUser(userId):
+    isValidUser = checkValidUser(userId)
+    sendCommandInfo(message, f'infoReaction userId={userId} isValidUser={isValidUser}')
+    if not isValidUser:
         newUserName = getUserName(message.from_user)
         _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
         showNewUserMessage(message, userId, newUserName)

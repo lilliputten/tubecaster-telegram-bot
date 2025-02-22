@@ -13,7 +13,7 @@ from ._replyOrSend import replyOrSend
 
 from ._checkValidUser import checkValidUser
 from ._showNewUserMessage import showNewUserMessage
-from ._sendNewUserRequestMessage import sendNewUserRequestMessage
+from ._sendNewUserRequestToController import sendNewUserRequestToController
 
 from ._addNewValidUser import addNewValidUser
 
@@ -31,6 +31,6 @@ __all__ = [
     'replyOrSend',
     'checkValidUser',
     'showNewUserMessage',
-    'sendNewUserRequestMessage',
+    'sendNewUserRequestToController',
     'addNewValidUser',
 ]
