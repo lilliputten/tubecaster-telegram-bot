@@ -233,7 +233,12 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
         # The command text seems to be an youtube video link, so try to cast it...
         if contentType == 'text' and text and isYoutubeLink(text):
             _logger.info(titleStyle('defaultCommand: Processing as a cast command'))
-            castForUrlStep(chat, message)
+            if not checkValidUser(userId):
+                newUserName = getUserName(message.from_user)
+                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+                showNewUserMessage(message, userId, newUserName)
+            else:
+                castForUrlStep(chat, message)
         # Forcibly invoke info command if the state has been set
         elif stateValue == BotStates.waitForInfoUrl:
             _logger.info(titleStyle('defaultCommand: Forcibly invoke info command as the state has been set'))
