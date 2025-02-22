@@ -45,7 +45,7 @@ model Command {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        BigInt     @id @default(autoincrement())
   isActive  Boolean @default(false)
   userStr   String  @default("")
 
