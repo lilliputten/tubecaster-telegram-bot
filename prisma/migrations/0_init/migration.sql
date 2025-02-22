@@ -1,0 +1,29 @@
+-- CreateTable
+CREATE TABLE "TempMessages" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "messageId" BIGINT NOT NULL,
+    "commandId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "TempMessages_commandId_fkey" FOREIGN KEY ("commandId") REFERENCES "Commands" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Commands" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "messageId" BIGINT NOT NULL,
+    "updateId" BIGINT NOT NULL,
+    "userId" BIGINT NOT NULL,
+    "userStr" TEXT NOT NULL,
+    "repeated" INTEGER NOT NULL DEFAULT 1,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Users" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "isActive" BOOLEAN NOT NULL DEFAULT false
+);
+

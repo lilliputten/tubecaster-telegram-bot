@@ -22,7 +22,7 @@ model TempMessage {
   command   Command @relation(fields: [commandId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 
   @@map("TempMessages")
 }
@@ -32,14 +32,25 @@ model Command {
   messageId BigInt
   updateId  BigInt
   userId    BigInt
-  userStr   String
+  userStr   String  @default("")
   repeated  Int     @default(1)
   isActive  Boolean @default(true)
 
   tempMessages TempMessage[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
 
   @@map("Commands")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  isActive  Boolean @default(false)
+  userStr   String  @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@map("Users")
 }

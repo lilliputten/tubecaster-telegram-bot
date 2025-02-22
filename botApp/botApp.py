@@ -9,10 +9,6 @@ from telebot.storage import (
     StateMemoryStorage,
 )
 
-# from telebot.handler_backends import State, StatesGroup #States
-# from telebot.states import State, StatesGroup
-# from telebot.states.sync.context import StateContext
-
 from core.appConfig import TELEGRAM_TOKEN
 from core.logger import getDebugLogger, secondaryStyle, errorStyle, titleStyle
 from core.utils import debugObj

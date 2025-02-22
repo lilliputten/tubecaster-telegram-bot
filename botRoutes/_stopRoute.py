@@ -17,7 +17,7 @@ _logger = getDebugLogger()
 logTraceback = False
 
 
-@botRoutes.route('/stop')
+@botRoutes.route('/-stop')
 def stopRoute():
     """
     Remove recent webhook from the telegram bot.
