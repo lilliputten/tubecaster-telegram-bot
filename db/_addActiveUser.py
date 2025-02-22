@@ -11,7 +11,7 @@ def addActiveUser(id: int, userStr: str):
             data={
                 'id': id,
                 'isActive': True,
-                # 'userStr': userStr,
+                'userStr': userStr,
             },
         )
         return user
