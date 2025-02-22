@@ -200,10 +200,9 @@ def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 
 @botApp.message_handler(commands=['info'])
 def infoReaction(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, f'infoReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
-    isValidUser = checkValidUser(userId)
-    sendCommandInfo(message, f'infoReaction userId={userId} isValidUser={isValidUser}')
-    if not isValidUser:
+    if not checkValidUser(userId):
         newUserName = getUserName(message.from_user)
         _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
         showNewUserMessage(message, userId, newUserName)
