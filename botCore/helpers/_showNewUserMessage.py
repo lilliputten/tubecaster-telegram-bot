@@ -76,7 +76,7 @@ def showNewUserMessage(message: telebot.types.Message, newUserId: int, newUserNa
         logContent = '\n'.join(logItems)
         msgItems = [
             emojies.warning
-            + ' Sorry, only registered users are allowed to run this command. Do you want to send a registration requiest?',
+            + ' Sorry, only registered users are allowed to run this command. Do you want to send a registration request?',
             # secondaryStyle(debugStr),
         ]
         content = '\n\n'.join(msgItems)
