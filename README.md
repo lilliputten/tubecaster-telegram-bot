@@ -1,6 +1,6 @@
 <!--
  @since 2024.11.20, 02:55
- @changed 2024.12.01, 02:26
+ @changed 2025.03.20, 11:38
 -->
 
 
@@ -21,7 +21,7 @@ Repository: https://github.com/lilliputten/tubecaster-telegram-bot
 
 Vercel panel: https://vercel.com/lilliputtens-projects/tubecaster-telegram-bot
 
-Vercel hosted application: https://tubecaster-telegram-bot.vercel.app/
+Landing with basic info: https://tubecasterlilliputten.com/
 
 
 ## Updating and deploying
@@ -33,5 +33,5 @@ Keep in mind that deploy on the dedicated VDS server is actually proceeded only 
 
 ## See also
 
-- [Vercel deployment](README.vercel-deployment.md)
+- [Vercel deployment](README.vercel-deployment.md) -- Unused as it's turned out that video and audio related operation require some disk space which is absent on vercel service.
 - [Youtube downloader library notes](README.ytdl.md)
