@@ -27,6 +27,6 @@
   "python.linting.pylintEnabled": false,
   "python.linting.flake8Enabled": true,
   "python.linting.enabled": true,
-  "python.pythonPath": "d:\\Work\\RPi\\210725-flask-socket\\flask-socket-2107\\.venv\\Scripts\\python.exe",
+  "python.pythonPath": "d:\\Work\\Me\\241118-tg-bot\\tubecaster-telegram-bot\\.venv\\Scripts\\python.exe",
   "terminal.integrated.shellArgs.windows": ["-ExecutionPolicy", "Bypass"]
 }

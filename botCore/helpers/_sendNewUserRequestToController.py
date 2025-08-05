@@ -88,7 +88,9 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
             reply_markup=markup,
         )
         botApp.send_message(
-            newUserId, emojies.success + " Your request has been sent. Please wait for a response or contact the administrator @lilliputten."
+            newUserId,
+            emojies.success
+            + ' Your request has been sent. Please wait for a response or contact the administrator @lilliputten.',
         )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

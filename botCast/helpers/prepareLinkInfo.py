@@ -44,6 +44,7 @@ def prepareLinkInfo(url: str, username: str):
         videoInfo: TVideoInfo | None = YTDL.YoutubeDL(options).extract_info(url=url, download=False)
         if not videoInfo:
             raise Exception('No video info has been returned')
+        _logger.info('prepareLinkInfo: Got video info: %s' % debugObj(dict(videoInfo)))
 
         # Create file url:
         title = videoInfo.get('title')

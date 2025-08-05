@@ -28,7 +28,7 @@ colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
-pyright = "^1.1"
+pyright = "^1.1.403"
 poetry-plugin-export = "^1.8.0"
 
 [build-system]

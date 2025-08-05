@@ -30,11 +30,13 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
         #  addCookieToOptions(options)
 
         # Extend options for download:
+        # TODO: Analyze videoInfo['formats'] (got with `listformats` option, see an example in `tests/yt-dlp-listformats.py`, and related artifacts)
         options = {
             **options,
             # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
-            'format': 'worstaudio/worst',
-            #  'format': 'bestaudio/best',
+            # 'format': 'worstaudio/worst',
+            # 'format': 'bestaudio/best',
+            'format': 'bestaudio[format_note*=original]/bestaudio',  # Trying to get an original audio track
             'keepvideo': False,
             'verbose': True,
             #  'outtmpl': destFIle,

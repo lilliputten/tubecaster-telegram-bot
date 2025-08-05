@@ -20,8 +20,8 @@ def getFileIdFromName(name: str):
 
 
 def run():
-    # url = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Small test fragment
-    url = 'https://www.youtube.com/watch?v=VgyQ-1tzFaY'   # Autodubbed
+    # url = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Mini test
+    url = 'https://www.youtube.com/watch?v=VgyQ-1tzFaY'   # Autodubbed test
     try:
         #  url = input("please enter youtube video url:")
         video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
@@ -30,12 +30,14 @@ def run():
         title = video_info['title']
         webpage_url = video_info['webpage_url']
         fileid = getFileIdFromName(title)
-        filename = 'temp-' + fileid + '.mp3'
+        # filename = 'temp-' + fileid + '.mp3'
+        filename = 'temp.mp3'
         cwd = pathlib.Path(os.getcwd()).as_posix()
         filepath = posixpath.join(cwd, filename)
         print('run: filepath: %s' % filepath)
         options = {
-            'format': 'bestaudio/best',
+            # 'format': 'bestaudio/best',
+            'format': 'worstaudio/worst',
             'keepvideo': False,
             'outtmpl': filepath,
         }
