@@ -23,7 +23,7 @@ def getYtdlBaseOptions():
         '_destFile': None,
         'cookiefile': None,
         'format': None,
-        'listformats': True,
+        # 'listformats': True,
         #  'debug_printtraffic': None,
     }
 
