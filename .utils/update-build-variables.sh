@@ -14,9 +14,10 @@ test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 # test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh" --omit-publish-folder-check
 
 # Read (and derive) variables from changed files...
-VERSION=`cat $rootPath/VERSION`
-TIMESTAMP=`date -r $rootPath/VERSION "+%Y.%m.%d %H:%M:%S %z"`
-TIMETAG=`date -r $rootPath/VERSION "+%y%m%d-%H%M"`
+VERSION_FILE="$rootPath/project-version.txt"
+VERSION=`cat $VERSION_FILE`
+TIMESTAMP=`date -r $VERSION_FILE "+%Y.%m.%d %H:%M:%S %z"`
+TIMETAG=`date -r $VERSION_FILE "+%y%m%d-%H%M"`
 PROJECT_INFO="v.$VERSION / $TIMESTAMP"
 PROJECT_INFO_REP=`echo "$PROJECT_INFO" | sed 's,/,\\\\/,g'` # Quoted for replace, see below
 

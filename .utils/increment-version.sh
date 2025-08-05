@@ -13,7 +13,7 @@ test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh" --omit-publish-folder-check
 
 # Read version from file...
-VERSION_FILE="$rootPath/VERSION"
+VERSION_FILE="$rootPath/project-version.txt"
 BACKUP="$VERSION_FILE.bak"
 
 # PATCH_NUMBER=`cat "$VERSION_FILE"`

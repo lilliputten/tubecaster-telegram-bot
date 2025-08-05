@@ -12,9 +12,10 @@ test -f "$scriptsPath/config-local.sh" && . "$scriptsPath/config-local.sh"
 # Check basic required variables...
 test -f "$rootPath/config-check.sh" && . "$rootPath/config-check.sh" --omit-publish-folder-check
 
-VERSION=`cat $rootPath/VERSION`
-TIMESTAMP=`date -r $rootPath/VERSION "+%Y.%m.%d %H:%M:%S %z"`
-TIMETAG=`date -r $rootPath/VERSION "+%y%m%d-%H%M"`
+VERSION_FILE="$rootPath/project-version.txt"
+VERSION=`cat $VERSION_FILE`
+TIMESTAMP=`date -r $VERSION_FILE "+%Y.%m.%d %H:%M:%S %z"`
+TIMETAG=`date -r $VERSION_FILE "+%y%m%d-%H%M"`
 PROJECT_INFO="v.$VERSION / $TIMESTAMP"
 
 echo "Publishing source code $PROJECT_INFO..."
