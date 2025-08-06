@@ -90,7 +90,7 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         botApp.send_message(
             newUserId,
             emojies.success
-            + ' Your request has been sent. Please wait for a response or contact the administrator @lilliputten.',
+            + ' Your request has been sent. But also, it would be very helpful if you would send a brief information about yourself and why you decided to use this bot to the administrator contact (@lilliputten). Most silent requests are treated as spam.',
         )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
