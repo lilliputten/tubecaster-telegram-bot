@@ -78,6 +78,10 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
         botApp.send_message(
             newUserId, emojies.success + " You've been successfully added to the registered users list!"
         )
+        message = query.message
+        if isinstance(message, telebot.types.Message):
+            newUserName = getUserName(query.from_user)
+            botApp.reply_to(message, emojies.success + f' User request from {newUserName} has been accepted')
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
@@ -89,8 +93,12 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
         botApp.send_message(
             newUserId,
             emojies.error
-            + ' Unfortunatelly, your registration has been declined. You cant try again or to reach the administrator @lilliputten.',
+            + ' Unfortunatelly, your registration has been declined. You can try again or better reach the administrator (@lilliputten).',
         )
+        message = query.message
+        if isinstance(message, telebot.types.Message):
+            newUserName = getUserName(query.from_user)
+            botApp.reply_to(message, emojies.error + f' User request from {newUserName} has been rejected.')
 
 
 @botApp.message_handler(commands=['test'])

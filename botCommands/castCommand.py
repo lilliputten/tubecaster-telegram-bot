@@ -74,7 +74,6 @@ def castCommand(
     `URL`
     """
     chatId = chat.id
-    userId = message.from_user.id if message.from_user else chatId
     username = getUserName(message.from_user)
     text = message.text if message and message.text else ''
     args = text.strip().split()

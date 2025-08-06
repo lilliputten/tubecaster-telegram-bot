@@ -28,7 +28,7 @@ def addNewValidUser(newUserId: int, newUserStr: str, query: telebot.types.Callba
     message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
     chatId = message.chat.id
     try:
-        addActiveUser(newUserId, newUserStr)
+        return addActiveUser(newUserId, newUserStr)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
