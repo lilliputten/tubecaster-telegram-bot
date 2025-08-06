@@ -60,7 +60,8 @@ def startBotApp():
 
     # XXX: This line causes an error:
     # AttributeError: partially initialized module 'botApp.botApp' has no attribute 'message_handler' (most likely due to a circular import)
-    botApp.load_next_step_handlers()
+    # Solution: Moved to `botCommands/commands.py`
+    # botApp.load_next_step_handlers()
 
     # @see https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.enable_saving_states
     # Default file name is `.state-save/states.pkl`

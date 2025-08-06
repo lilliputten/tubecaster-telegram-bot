@@ -265,4 +265,4 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
 
 
 def registerCommands():
-    pass
+    botApp.load_next_step_handlers()

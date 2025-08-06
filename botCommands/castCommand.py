@@ -58,7 +58,7 @@ def startWaitingForCastUrl(
     replyOrSend(botApp, replyMsg, chat.id, message)
     _logger.info('startWaitingForCastUrl: Setting state to waitForCastUrl')
     # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
-    botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
+    # botApp.register_next_step_handler(message, partial(castForUrlStep, chat))
     # state.set(BotStates.waitForCastUrl)
     botApp.set_state(userId, BotStates.waitForCastUrl)
 
