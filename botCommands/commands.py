@@ -70,13 +70,6 @@ def registerUserQuery(query: telebot.types.CallbackQuery):
 @botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
 def acceptUserQuery(query: telebot.types.CallbackQuery):
     sendQueryInfo(query, query.data)
-    message = query.message
-    if not isinstance(message, telebot.types.Message):
-        # NOTE: A normal message is required to register next step handler
-        errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
-        _logger.error(errorStyle('acceptUserQuery: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, errMsg)
-        return
     if query.data is not None:
         list = query.data.split(':')
         newUserId = int(list[1])
@@ -90,17 +83,9 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
 @botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
 def rejectUserQuery(query: telebot.types.CallbackQuery):
     sendQueryInfo(query, query.data)
-    message = query.message
-    if not isinstance(message, telebot.types.Message):
-        # NOTE: A normal message is required to register next step handler
-        errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
-        _logger.error(errorStyle('rejectUserQuery: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, errMsg)
-        return
     if query.data is not None:
         list = query.data.split(':')
         newUserId = int(list[1])
-        # newUserStr = str(list[2])
         botApp.send_message(
             newUserId,
             emojies.error
@@ -117,11 +102,6 @@ def testReaction(message: telebot.types.Message, state: StateContext):
         replyOrSend(botApp, emojies.error + ' The command is not allowed!', message.chat.id, message)
     else:
         testCommand(message.chat, message, state)
-    # if not checkValidUser(userId):
-    #     newUserName = getUserName(message.from_user)
-    #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-    #     showNewUserMessage(message, userId, newUserName)
-    # else:
 
 
 @botApp.message_handler(commands=['castTest'])
@@ -163,9 +143,9 @@ def startCast(query: telebot.types.CallbackQuery):
         _logger.error(errorStyle('startCast: Error: %s' % errMsg))
         botApp.send_message(message.chat.id, errMsg)
         return
-    userId = message.from_user.id if message.from_user else message.chat.id
+    userId = query.from_user.id if query.from_user else message.chat.id
     if not checkValidUser(userId):
-        newUserName = getUserName(message.from_user)
+        newUserName = getUserName(query.from_user)
         _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
         showNewUserMessage(message, userId, newUserName)
     else:

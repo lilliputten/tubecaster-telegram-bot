@@ -9,7 +9,7 @@ def createCommonButtonsMarkup():
         row_width=2,
     )
     # See https://core.telegram.org/bots/api#inlinekeyboardbutton
-    castItem = telebot.types.InlineKeyboardButton('Cast video', callback_data='startCast')
+    castItem = telebot.types.InlineKeyboardButton('Get audio', callback_data='startCast')
     helpItem = telebot.types.InlineKeyboardButton('Show help', callback_data='startHelp')
     markup.add(castItem, helpItem)
     return markup
