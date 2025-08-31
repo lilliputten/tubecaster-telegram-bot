@@ -40,6 +40,7 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         'The bot version is: %s.' % PROJECT_INFO,
         'Use /cast to get an audio from the youtube video url or just send me its url as a message. Type /help to find all commands.',
         'Do not hesitate to reach the administrator (@lilliputten) in case of troubles.',
+        'Take a look at thw small reference at https://tubecaster.lilliputten.com/',
         ' '.join(
             [
                 'ATTENTION: Sorry, but at the moment the bot works in the LOCAL mode!',

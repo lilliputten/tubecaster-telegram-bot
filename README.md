@@ -7,9 +7,11 @@
 
 [TubeCasterBot](https://t.me/tubecasterbot) is a simple telegram bot aimed to convert youtube videos into audio podcasts for later listening (even in offline mode) inside the Telegram app.
 
+![Project banner](./static/img/bot-cover-640x360.jpg)
+
 ## Build info (auto-generated)
 
-- Project info: v.0.0.15 / 2025.08.06 16:12:31 +0300
+- Project info: v.0.0.15 / 2025.08.31 20:18:22 +0300
 
 ## Key User Features
 

@@ -76,7 +76,8 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         ]
         logContent = '\n'.join(logItems)
         msgItems = [
-            emojies.question + f' New user requested a registration: {newUserStr}, id {newUserId}',
+            emojies.question
+            + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}',
             # secondaryStyle(debugStr),
         ]
         content = '\n\n'.join(msgItems)

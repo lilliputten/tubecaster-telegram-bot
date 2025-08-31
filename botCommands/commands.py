@@ -80,8 +80,11 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
         )
         message = query.message
         if isinstance(message, telebot.types.Message):
-            newUserName = getUserName(query.from_user)
-            botApp.reply_to(message, emojies.success + f' User request from {newUserName} has been accepted')
+            botApp.reply_to(
+                message,
+                emojies.success
+                + f' User request from {newUserStr} has been accepted. Id: {newUserId}, tg://user?id={newUserId}',
+            )
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
@@ -90,6 +93,7 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
     if query.data is not None:
         list = query.data.split(':')
         newUserId = int(list[1])
+        newUserStr = str(list[2])
         botApp.send_message(
             newUserId,
             emojies.error
@@ -97,8 +101,11 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
         )
         message = query.message
         if isinstance(message, telebot.types.Message):
-            newUserName = getUserName(query.from_user)
-            botApp.reply_to(message, emojies.error + f' User request from {newUserName} has been rejected.')
+            botApp.reply_to(
+                message,
+                emojies.error
+                + f' User request from {newUserStr} has been rejected. Id: {newUserId}, tg://user?id={newUserId}',
+            )
 
 
 @botApp.message_handler(commands=['test'])
