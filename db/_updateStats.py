@@ -5,8 +5,6 @@ from datetime import date
 from ._init import initDb
 
 
-# New signature:
-# def updateStats(userId: int, volume: int):
 def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures: int = 0, volume: int = 0):
     current_date = date.today()
     year = current_date.year

@@ -6,8 +6,10 @@ if not IS_TEST:
 
     from .downloadAndSendAudioToChat import downloadAndSendAudioToChat
     from .sendInfoToChat import sendInfoToChat
+    from .sendStatsToChat import sendStatsToChat
 
     __all__ = [
         'downloadAndSendAudioToChat',
         'sendInfoToChat',
+        'sendStatsToChat',
     ]

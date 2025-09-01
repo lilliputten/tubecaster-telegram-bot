@@ -25,3 +25,13 @@ User other methods there as examples. See `addCommand` and its test: `_addComman
 Use the similar variable namings, like in provided examples (eg, camel case form for prisma clients, like `commandClient = Command.prisma()`).
 
 Use a transaction for data update.
+
+---
+
+Create a funciton to collect monthly and total stats for the specified user.
+
+Put it into the `db/_collectStats.py` funciton.
+
+The function should accept the `userId` parameter, collect the data from `TotalStats` and from `MonthlyStats` (all available records sorted by year and month).
+
+As in the previous case, add exports and test cases.

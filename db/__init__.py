@@ -17,6 +17,7 @@ if not IS_TEST:
     from ._findUser import findUser
     from ._addActiveUser import addActiveUser
     from ._updateStats import updateStats
+    from ._collectStats import collectStats
 
     __all__ = [
         'types',
@@ -33,4 +34,5 @@ if not IS_TEST:
         'findUser',
         'addActiveUser',
         'updateStats',
+        'collectStats',
     ]

@@ -14,11 +14,12 @@ from core.helpers.errors import errorToString
 
 from ._init import closeDb, initDb
 from ._testDbConfig import testEnv
+from ._collectStats import collectStats
 from ._updateStats import updateStats
 
 
 @mock.patch.dict(os.environ, testEnv)
-class Test_updateStats(TestCase):
+class Test_collectStats(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
@@ -50,9 +51,9 @@ class Test_updateStats(TestCase):
             )
             self.user = None
 
-    def test_updateStats_should_create_and_update_total_and_monthly_stats(self):
+    def test_collectStats_should_return_total_and_monthly_stats(self):
         totalStats: Optional[TotalStats] = None
-        monthlyStats: Optional[MonthlyStats] = None
+        monthlyStats: Optional[list[MonthlyStats]] = None
         current_date = date.today()
         year = current_date.year
         month = current_date.month
@@ -63,56 +64,29 @@ class Test_updateStats(TestCase):
             userId = self.user.id
             volume = 500
 
-            # First update
+            # Update stats twice
+            updateStats(userId, requests=1, volume=volume)
             updateStats(userId, requests=1, volume=volume)
 
-            # Check TotalStats
-            totalStatsClient = TotalStats.prisma()
-            totalStats = totalStatsClient.find_unique(where={'userId': userId})
-            self.assertIsNotNone(totalStats)
-            if totalStats:
-                self.assertEqual(totalStats.requests, 1)
-                self.assertEqual(totalStats.volume, volume)
+            # Collect stats
+            (totalStats, monthlyStats) = collectStats(userId)
 
-            # Check MonthlyStats
-            monthlyStatsClient = MonthlyStats.prisma()
-            monthlyStats = monthlyStatsClient.find_unique(
-                where={
-                    'userId_year_month': {
-                        'userId': userId,
-                        'year': year,
-                        'month': month,
-                    }
-                }
-            )
-            self.assertIsNotNone(monthlyStats)
-            if monthlyStats:
-                self.assertEqual(monthlyStats.requests, 1)
-                self.assertEqual(monthlyStats.volume, volume)
-
-            # Second update
-            updateStats(userId, requests=1, volume=volume)
-
-            # Check updated values
-            totalStats = totalStatsClient.find_unique(where={'userId': userId})
+            # Check total
             self.assertIsNotNone(totalStats)
             if totalStats:
                 self.assertEqual(totalStats.requests, 2)
                 self.assertEqual(totalStats.volume, volume * 2)
 
-            monthlyStats = monthlyStatsClient.find_unique(
-                where={
-                    'userId_year_month': {
-                        'userId': userId,
-                        'year': year,
-                        'month': month,
-                    }
-                }
-            )
-            self.assertIsNotNone(monthlyStats)
+            # Check monthly
+            self.assertIsInstance(monthlyStats, list)
+            self.assertEqual(len(monthlyStats), 1)
+            monthlyStats = monthlyStats
             if monthlyStats:
-                self.assertEqual(monthlyStats.requests, 2)
-                self.assertEqual(monthlyStats.volume, volume * 2)
+                monthly = monthlyStats[0]
+                self.assertEqual(monthly.requests, 2)
+                self.assertEqual(monthly.volume, volume * 2)
+                self.assertEqual(monthly.year, year)
+                self.assertEqual(monthly.month, month)
         except Exception as err:
             errText = errorToString(err, show_stacktrace=False)
             sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -126,15 +100,16 @@ class Test_updateStats(TestCase):
                 totalStatsClient.delete(where={'userId': totalStats.userId})
             if monthlyStats:
                 monthlyStatsClient = MonthlyStats.prisma()
-                monthlyStatsClient.delete(
-                    where={
-                        'userId_year_month': {
-                            'userId': monthlyStats.userId,
-                            'year': year,
-                            'month': month,
+                for monthly in monthlyStats:
+                    monthlyStatsClient.delete(
+                        where={
+                            'userId_year_month': {
+                                'userId': monthly.userId,
+                                'year': monthly.year,
+                                'month': monthly.month,
+                            }
                         }
-                    }
-                )
+                    )
 
 
 if __name__ == '__main__':
