@@ -51,7 +51,7 @@ class Test_deleteOutdatedTempMessages_test(TestCase):
             messageId = randrange(1, 9999)
             userId = randrange(1, 9999)
             userStr = 'Test user'
-            createdAt = createdAt
+            # createdAt = createdAt
             command = commandClient.create(
                 data={
                     'updateId': updateId,

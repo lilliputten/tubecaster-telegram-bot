@@ -22,7 +22,7 @@ model TempMessage {
   command   Command @relation(fields: [commandId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("TempMessages")
 }
@@ -39,18 +39,56 @@ model Command {
   tempMessages TempMessage[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("Commands")
 }
 
 model User {
-  id        BigInt     @id @default(autoincrement())
-  isActive  Boolean @default(false)
-  userStr   String  @default("")
+  id       BigInt  @id @default(autoincrement())
+  isActive Boolean @default(false)
+  userStr  String  @default("")
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  totalStats   TotalStats[]
+  monthlyStats MonthlyStats[]
 
   @@map("Users")
+}
+
+model TotalStats {
+  userId BigInt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Requests count
+  requests BigInt @default(0)
+  // Total downloaded volume (in KBs)
+  volume   BigInt @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([userId])
+  @@map("TotalStats")
+}
+
+model MonthlyStats {
+  userId BigInt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Year-month key in format 'YYYY-MM', see `yearMonthFormat` format template in `core/helpers/time.py`
+  year  Int
+  month Int
+
+  // Requests count
+  requests BigInt @default(0)
+  // Total downloaded volume (in KBs)
+  volume   BigInt @default(0)
+
+  @@unique([userId, year, month])
+  @@index([userId])
+  @@index([userId, year])
+  @@map("MonthlyStats")
 }

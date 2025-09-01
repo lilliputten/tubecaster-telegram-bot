@@ -13,6 +13,15 @@ deactivate
 """
 
 
+def validate():
+    print('Primsa: validate...')
+    cmd = [
+        'prisma',
+        'validate',
+    ]
+    subprocess.run(cmd)
+
+
 def format():
     print('Primsa: format...')
     cmd = [
@@ -22,13 +31,17 @@ def format():
     subprocess.run(cmd)
 
 
+def format_and_validate():
+    format()
+    validate()
+
+
 def db_push():
     print('Primsa: db push...')
     cmd = [
         'prisma',
         'db',
         'push',
-        '--accept-data-loss',
     ]
     subprocess.run(cmd)
 
@@ -40,5 +53,11 @@ def db_push_test():
         'prisma',
         'db',
         'push',
+        '--accept-data-loss',
     ]
     subprocess.run(cmd)
+
+
+def db_push_all():
+    db_push()
+    db_push_test()
