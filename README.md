@@ -1,6 +1,6 @@
 <!--
  @since 2024.11.20, 02:55
- @changed 2025.03.24, 22:05
+ @changed 2025.09.02, 02:57
 -->
 
 # TubeCaster Telegram Bot
@@ -69,3 +69,4 @@ This bot using a disk space for audio file operations (downloading, splitting et
 
 - [Vercel deployment](README.vercel-deployment.md) -- Unused as it's turned out that video and audio related operation require some disk space which is absent on vercel service.
 - [Youtube downloader library notes](README.ytdl.md)
+- [Changelog](CHANGELOG.md)

@@ -1,6 +1,6 @@
 <!--
  @since 2025.09.02
- @changed 2025.09.02, 02:52
+ @changed 2025.09.02, 02:58
 -->
 
 # CHANGELOG
@@ -15,4 +15,4 @@
 See also:
 
 - [Issue #39: Record and display users usage statistics](https://github.com/lilliputten/tubecaster-telegram-bot/issues/39)
-- [Compare](https://github.com/lilliputten/tubecaster-telegram-bot/compare/v.0.0.15...v.0.0.16)
+- [Compare with the previous version](https://github.com/lilliputten/tubecaster-telegram-bot/compare/v.0.0.15...v.0.0.16)
