@@ -35,6 +35,7 @@ from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
 from .startCommand import startCommand
 from .testCommand import testCommand
+from .statsCommand import statsCommand
 
 
 _logger = getDebugLogger()
@@ -203,6 +204,18 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
         showNewUserMessage(message, userId, newUserName)
     else:
         infoCommand(message.chat, message, state)
+
+
+@botApp.message_handler(commands=['stats'])
+def statsReaction(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, f'statsReaction')
+    userId = message.from_user.id if message.from_user else message.chat.id
+    if not checkValidUser(userId):
+        newUserName = getUserName(message.from_user)
+        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+        showNewUserMessage(message, userId, newUserName)
+    else:
+        statsCommand(message.chat, message, state)
 
 
 # Handle all other messages

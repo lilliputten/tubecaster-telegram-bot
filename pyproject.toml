@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.0.15"
+version = "0.0.16"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
@@ -28,7 +28,8 @@ colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
-pyright = "^1.1.403"
+# Don't use newer versions if pyright: they bring a lot of false typings' errors
+pyright = "==1.1.403"
 poetry-plugin-export = "^1.8.0"
 
 [build-system]
@@ -56,5 +57,7 @@ format = "poetry-scripts:format"
 check_all = "poetry-scripts:check_all"
 # test = "poetry-scripts:test"
 prisma_format = "poetry-scripts.prisma:format"
+prisma_format_and_validate = "poetry-scripts.prisma:format_and_validate"
 prisma_db_push = "poetry-scripts.prisma:db_push"
 prisma_db_push_test = "poetry-scripts.prisma:db_push_test"
+prisma_db_push_all = "poetry-scripts.prisma:db_push_all"

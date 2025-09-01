@@ -8,6 +8,7 @@ from core.appConfig import TZ_HOURS
 
 # TODO: Move these to constants/config?
 idTimeFormat = '%Y-%m-%d-%H-%M-%S'
+yearMonthFormat = '%Y-%m'
 shortTimeFormat = '%Y-%m-%d %H:%M'
 shortTzTimeFormat = '%Y-%m-%d %H:%M %z'
 withSecondsTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -20,12 +21,14 @@ tzObject = timezone(timedelta(hours=int(TZ_HOURS))) if TZ_HOURS != None else Non
 # TODO: blue error: Cannot parse: type Precise = bool | str
 TPrecise = bool | str
 
-TDateLike = datetime | int
+TDateLike = datetime | int | float
 
 
 def getTimeFormat(precise: TPrecise | None = None):
     if precise == True or precise == 'precise':
         return preciseTimeFormat
+    if precise == 'yearMonth':
+        return yearMonthFormat
     if precise == 'shortTz':
         return shortTzTimeFormat
     if precise == 'short':
@@ -42,10 +45,10 @@ def getTimeFormat(precise: TPrecise | None = None):
 def formatTime(precise: TPrecise | None = None, date: TDateLike | None = None):
     format = getTimeFormat(precise)
     dateVal: datetime
-    if type(date) is int:   # isinstance(date, int):
+    if type(date) is int or type(date) is float:   # isinstance(date, int):
         dateFloat = float(date)
         dateVal = datetime.fromtimestamp(dateFloat)
-    elif type(date) is datetime and date:
+    elif date and type(date) is datetime:
         dateVal = date
     else:
         dateVal = datetime.now(tzObject)

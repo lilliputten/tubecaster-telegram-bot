@@ -10,8 +10,8 @@ import os
 import sys
 import pathlib
 
-from typing import Optional
-from unittest import TestCase, main, mock
+# from typing import Optional
+from unittest import TestCase, main
 
 # from prisma import Prisma
 # from prisma.models import Command

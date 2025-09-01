@@ -1,4 +1,3 @@
-# import sys
 import traceback
 from typing import Optional
 from flask.ctx import _AppCtxGlobals
@@ -69,6 +68,3 @@ def initDb(g: Optional[TGlobalCtx] = None):
         _hasBeenRegistered = True
     # flaskApp.teardown_appcontext(closeDb)
     return openDb(g)
-
-
-# def registerDbForFlaskApp(flaskApp: )
