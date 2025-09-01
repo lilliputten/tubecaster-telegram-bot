@@ -28,7 +28,8 @@ colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
-pyright = "^1.1.403"
+# Don't use newer versions if pyright: they bring a lot of false typings' errors
+pyright = "==1.1.403"
 poetry-plugin-export = "^1.8.0"
 
 [build-system]

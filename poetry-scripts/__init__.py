@@ -1,13 +1,17 @@
+import os
 import subprocess
 
 
 def lint():
     print('Running pyright linter...')
+    # Disable version check (is that a correct way?)
+    env = os.environ.copy()
+    env['PYRIGHT_PYTHON_FORCE_VERSION'] = '1.1.403'
     cmd = [
         'pyright',
         '.',
     ]
-    subprocess.run(cmd)
+    subprocess.run(cmd, env=env)
 
 
 def format():

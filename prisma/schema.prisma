@@ -46,13 +46,14 @@ model Command {
 
 model User {
   id       BigInt  @id @default(autoincrement())
-  isActive Boolean @default(false)
   userStr  String  @default("")
+
+  isActive Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  totalStats   TotalStats[]
+  totalStats   TotalStats?
   monthlyStats MonthlyStats[]
 
   @@map("Users")
@@ -78,7 +79,6 @@ model MonthlyStats {
   userId BigInt
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Year-month key in format 'YYYY-MM', see `yearMonthFormat` format template in `core/helpers/time.py`
   year  Int
   month Int
 
@@ -88,7 +88,8 @@ model MonthlyStats {
   volume   BigInt @default(0)
 
   @@unique([userId, year, month])
-  @@index([userId])
+  @@index([year, month])
   @@index([userId, year])
+  @@index([userId])
   @@map("MonthlyStats")
 }

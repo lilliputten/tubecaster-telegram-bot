@@ -24,7 +24,9 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
         webpageUrl = videoInfo.get('webpage_url')
         _logger.info('downloadAudioFile: Trying to fetch a video via the url: %s' % webpageUrl)
 
-        destFile = options['_destFile']
+        destFile = options.get('_destFile')
+        if not destFile:
+            raise ValueError("'_destFile' option is required")
 
         # NOTE 2024.12.10, 07:30: This code produces an error: Requested format is not available. Use --list-formats for a list of available formats
         #  addCookieToOptions(options)
