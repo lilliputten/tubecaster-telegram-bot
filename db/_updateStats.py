@@ -5,7 +5,9 @@ from datetime import date
 from ._init import initDb
 
 
-def updateStats(userId: int, volume: int):
+# New signature:
+# def updateStats(userId: int, volume: int):
+def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures: int = 0, volume: int = 0):
     current_date = date.today()
     year = current_date.year
     month = current_date.month
@@ -21,12 +23,20 @@ def updateStats(userId: int, volume: int):
             data={
                 'create': {
                     'userId': userId,
-                    'requests': 1,
+                    'requests': requests,
+                    'infoRequests': infoRequests,
+                    'failures': failures,
                     'volume': volume,
                 },
                 'update': {
                     'requests': {
-                        'increment': 1,
+                        'increment': requests,
+                    },
+                    'infoRequests': {
+                        'increment': infoRequests,
+                    },
+                    'failures': {
+                        'increment': failures,
                     },
                     'volume': {
                         'increment': volume,
@@ -48,12 +58,20 @@ def updateStats(userId: int, volume: int):
                     'userId': userId,
                     'year': year,
                     'month': month,
-                    'requests': 1,
+                    'requests': requests,
+                    'infoRequests': infoRequests,
+                    'failures': failures,
                     'volume': volume,
                 },
                 'update': {
                     'requests': {
-                        'increment': 1,
+                        'increment': requests,
+                    },
+                    'infoRequests': {
+                        'increment': infoRequests,
+                    },
+                    'failures': {
+                        'increment': failures,
                     },
                     'volume': {
                         'increment': volume,

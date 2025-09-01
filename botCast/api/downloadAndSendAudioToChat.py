@@ -19,6 +19,7 @@ from botCore.helpers import (
     replyOrSend,
     getVideoDetailsStr,
 )
+from db._updateStats import updateStats
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
@@ -133,6 +134,8 @@ def downloadAndSendAudioToChat(
             audioFileName=audioFileName,
             cleanUp=cleanUp,
         )
+        # Update stats
+        updateStats(int(chatId), requests=1, volume=audioSize)
     except Exception as err:
         errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -147,6 +150,8 @@ def downloadAndSendAudioToChat(
             text=errMsg,
             message_id=rootMessage.id,
         )
+        # Update stats
+        updateStats(int(chatId), failures=1)
         #  raise Exception(errMsg)
     finally:
         timer.stop()

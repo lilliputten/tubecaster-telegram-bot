@@ -54,14 +54,15 @@ class Test_updateStats(TestCase):
         volume = 500
 
         # First update
-        updateStats(userId, volume)
+        updateStats(userId, requests=1, volume=volume)
 
         # Check TotalStats
         totalStatsClient = TotalStats.prisma()
         totalStats = totalStatsClient.find_unique(where={'userId': userId})
         self.assertIsNotNone(totalStats)
-        self.assertEqual(totalStats.requests, 1)  # type: ignore
-        self.assertEqual(totalStats.volume, volume)  # type: ignore
+        if totalStats:
+            self.assertEqual(totalStats.requests, 1)
+            self.assertEqual(totalStats.volume, volume)
 
         # Check MonthlyStats
         current_date = date.today()
@@ -76,11 +77,12 @@ class Test_updateStats(TestCase):
             }
         )
         self.assertIsNotNone(monthlyStats)
-        self.assertEqual(monthlyStats.requests if monthlyStats else None, 1)
-        self.assertEqual(monthlyStats.volume if monthlyStats else None, volume)
+        if monthlyStats:
+            self.assertEqual(monthlyStats.requests, 1)
+            self.assertEqual(monthlyStats.volume, volume)
 
         # Second update
-        updateStats(userId, volume)
+        updateStats(userId, requests=1, volume=volume)
 
         # Check updated values
         totalStats = totalStatsClient.find_unique(where={'userId': userId})

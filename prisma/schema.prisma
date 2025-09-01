@@ -45,8 +45,8 @@ model Command {
 }
 
 model User {
-  id       BigInt  @id @default(autoincrement())
-  userStr  String  @default("")
+  id      BigInt @id @default(autoincrement())
+  userStr String @default("")
 
   isActive Boolean @default(false)
 
@@ -64,9 +64,13 @@ model TotalStats {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Requests count
-  requests BigInt @default(0)
-  // Total downloaded volume (in KBs)
-  volume   BigInt @default(0)
+  requests     BigInt @default(0)
+  // Info requests count
+  infoRequests BigInt @default(0)
+  // Failures count
+  failures     BigInt @default(0)
+  // Total downloaded volume (in bytes)
+  volume       BigInt @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -83,9 +87,13 @@ model MonthlyStats {
   month Int
 
   // Requests count
-  requests BigInt @default(0)
-  // Total downloaded volume (in KBs)
-  volume   BigInt @default(0)
+  requests     BigInt @default(0)
+  // Info requests count
+  infoRequests BigInt @default(0)
+  // Failures count
+  failures     BigInt @default(0)
+  // Total downloaded volume (in bytes)
+  volume       BigInt @default(0)
 
   @@unique([userId, year, month])
   @@index([year, month])
