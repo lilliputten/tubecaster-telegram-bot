@@ -15,6 +15,8 @@ from botCore.constants import stickers, emojies
 from botCore.helpers import getVideoTags, replyOrSend, prepareYoutubeDate
 from botCore.types import YtdlOptionsType
 
+from db._updateStats import updateStats
+
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadInfo import downloadInfo
@@ -149,8 +151,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
             text=infoContent,
             message_id=rootMessage.id,
         )
-        if options:
-            cleanFiles(options)
+        updateStats(int(chatId), infoRequests=1)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -167,6 +168,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
             text=errMsg,
             message_id=rootMessage.id,
         )
+        updateStats(int(chatId), failures=1)
         #  raise Exception(errMsg)
     finally:
         timer.stop()

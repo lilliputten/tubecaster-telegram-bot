@@ -33,10 +33,10 @@ def formatStatsEntry(title: str, stats: TotalStats | MonthlyStats | None):
         'volume': volume,
     }
     infoData = {
-        'Downloaded Audios': stats.requests,
-        'Info Requests': stats.infoRequests,
+        'Downloaded audios': stats.requests,
+        'Info requests': stats.infoRequests,
         'Failures': stats.failures,
-        'Downloaded Volume': volumeFmt,
+        'Downloaded volume': volumeFmt,
     }
     debugStr = debugObj(debugData)
     infoStr = debugObj(infoData)
@@ -66,10 +66,6 @@ def sendStatsToChat(
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
-
-    Or the test module:
-
-    ~~tests/sendStatsToChat.test.py~~
     """
 
     try:
