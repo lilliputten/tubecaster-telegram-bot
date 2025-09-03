@@ -3,8 +3,8 @@
 from datetime import timedelta
 
 from ..types import TVideoInfo
-from ._prepareYoutubeDate import prepareYoutubeDate
 from ._getFormattedVideoFileSize import getFormattedVideoFileSize
+from ._prepareYoutubeDate import prepareYoutubeDate
 
 
 def getVideoDetailsStr(videoInfo: TVideoInfo):

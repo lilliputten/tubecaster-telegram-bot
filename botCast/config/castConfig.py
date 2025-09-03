@@ -2,7 +2,6 @@
 # import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
 import yt_dlp  # @see https://github.com/yt-dlp/yt-dlp
 
-
 YTDL = yt_dlp
 
 logTraceback = False

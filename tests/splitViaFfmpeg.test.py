@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 
-import time
+import os
 import pathlib
 import posixpath
-import os
 import sys
+import time
 
 from botCore.helpers import getDesiredPiecesCount
 from botCore.routines import splitAudio

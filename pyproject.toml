@@ -32,6 +32,7 @@ blue = "^0.9.1"
 # Don't use newer versions if pyright: they bring a lot of false typings' errors
 pyright = "==1.1.403"
 poetry-plugin-export = "^1.8.0"
+isort = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]

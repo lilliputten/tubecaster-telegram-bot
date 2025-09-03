@@ -4,15 +4,8 @@ IS_TEST = 'unittest' in sys.modules.keys()
 
 if not IS_TEST:
 
+    from . import _rootRoute, _startRoute, _stopRoute, _testRoute, _webhookRoute
     from .botRoutes import botRoutes
-
-    from . import (
-        _webhookRoute,
-        _rootRoute,
-        _testRoute,
-        _startRoute,
-        _stopRoute,
-    )
 
     __all__ = [
         'botRoutes',

@@ -1,10 +1,9 @@
 # -*- coding:utf-8 -*-
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Timer
 
 from core.appConfig import TZ_HOURS
-
 
 # TODO: Move these to constants/config?
 idTimeFormat = '%Y-%m-%d-%H-%M-%S'

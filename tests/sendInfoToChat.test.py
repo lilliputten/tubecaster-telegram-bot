@@ -1,10 +1,8 @@
 # -*- coding:utf-8 -*-
 
-from core.appConfig import TELEGRAM_OWNER_ID
-
-from botCast.config.castConfig import demoVideo
-
 from botCast.api import sendInfoToChat
+from botCast.config.castConfig import demoVideo
+from core.appConfig import TELEGRAM_OWNER_ID
 
 
 def sendInfoToChatTest():

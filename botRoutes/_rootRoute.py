@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 
 import traceback
+
 from flask import Response
 
 from core.appConfig import PROJECT_INFO
 from core.helpers.errors import errorToString
-
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
-
 
 from .botRoutes import botRoutes
 

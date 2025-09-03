@@ -1,8 +1,8 @@
 from datetime import date
 
-# from prisma import Prisma
-
 from .._init import initDb
+
+# from prisma import Prisma
 
 
 def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures: int = 0, volume: int = 0):

@@ -1,13 +1,12 @@
+import os
 import pathlib
 import posixpath
 import re
-import os
 import traceback
 
 # Youtube download libraries
 # import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
-import yt_dlp   # @see https://github.com/yt-dlp/yt-dlp
-
+import yt_dlp  # @see https://github.com/yt-dlp/yt-dlp
 
 YTDL = yt_dlp
 

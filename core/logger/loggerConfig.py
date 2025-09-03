@@ -5,7 +5,6 @@ import logging.handlers
 
 from core.appConfig import appConfig
 
-
 LOCAL = appConfig.get('LOCAL')
 
 USE_LOGS_SERVER = bool(appConfig.get('USE_LOGS_SERVER', False))

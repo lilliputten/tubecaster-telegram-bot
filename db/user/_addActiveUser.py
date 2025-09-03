@@ -1,9 +1,8 @@
-from datetime import datetime
 import traceback
+from datetime import datetime
 
 from core.helpers import errorToString
-from core.logger import getDebugLogger, titleStyle, secondaryStyle, errorStyle, warningStyle
-
+from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, warningStyle
 from db import initDb
 
 _logger = getDebugLogger()

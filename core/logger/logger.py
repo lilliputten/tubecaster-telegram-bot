@@ -1,22 +1,21 @@
 # -*- coding:utf-8 -*-
 
-import os
 import logging
 import logging.handlers
+import os
 import pathlib
 import posixpath
 
-from core.appConfig import IS_VERCEL
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 
+from core.appConfig import IS_VERCEL
 from core.helpers.runtime import getModulePath
 from core.helpers.time import getTimeStamp
 from core.logger import loggerConfig
 from core.logger.CustomHttpHandler import CustomHttpHandler, customHttpHandlerFormatter
-from concurrent_log_handler import ConcurrentRotatingFileHandler
-
-from .NoColorFormatter import NoColorFormatter
 
 from . import loggerConfig
+from .NoColorFormatter import NoColorFormatter
 
 # @see https://habr.com/ru/companies/wunderfund/articles/683880/
 # @see https://docs.python.org/3/library/logging

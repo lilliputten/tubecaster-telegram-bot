@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 
-from core.appConfig import appConfig, TEMP_PATH
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
-
 from botCore.types import YtdlOptionsType
+from core.appConfig import TEMP_PATH, appConfig
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 
 _logger = getDebugLogger()
 

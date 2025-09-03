@@ -12,6 +12,10 @@ link = '🔗'
 card = '🪪'
 tag = '🏷️'
 video = '🎬'
+star = '⭐️'
+memo = '📝'
+pencil = '✏️'
+hmm = '🤔'
 
 numbers = [
     '0️⃣',

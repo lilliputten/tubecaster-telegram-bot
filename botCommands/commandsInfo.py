@@ -2,7 +2,6 @@
 
 from core.logger import getDebugLogger, tretiaryStyle
 
-
 _logger = getDebugLogger()
 
 

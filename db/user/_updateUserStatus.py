@@ -1,4 +1,5 @@
 import traceback
+
 from prisma.models import UserStatus
 
 from botCore.types._TUserMode import TUserMode

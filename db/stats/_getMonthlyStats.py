@@ -1,5 +1,6 @@
-from datetime import date
 import traceback
+from datetime import date
+
 from prisma.models import MonthlyStats
 
 from core.helpers import errorToString

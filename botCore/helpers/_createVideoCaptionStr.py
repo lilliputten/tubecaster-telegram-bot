@@ -6,11 +6,10 @@ from core.ffmpeg import probe, probeDuration
 from core.helpers.files import getFormattedFileSize
 from core.helpers.strings import truncStr
 
-from ..types import TVideoInfo
 from ..constants import emojies
-
-from ._getVideoTags import getVideoTags
+from ..types import TVideoInfo
 from ._getVideoDetailsStr import getVideoDetailsStr
+from ._getVideoTags import getVideoTags
 
 #  from ._getFormattedVideoFileSize import getFormattedVideoFileSize
 #  from ._prepareYoutubeDate import prepareYoutubeDate

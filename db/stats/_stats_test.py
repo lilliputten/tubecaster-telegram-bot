@@ -7,13 +7,13 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _addTempMessage_test`
 
 import os
-from random import randrange
-from datetime import date
 import traceback
+from datetime import date
+from random import randrange
 from typing import Optional
-from prisma.models import User, TotalStats, MonthlyStats
-
 from unittest import TestCase, main, mock
+
+from prisma.models import MonthlyStats, TotalStats, User
 
 from core.helpers.errors import errorToString
 

@@ -7,10 +7,10 @@
 
 # NOTE: Don't use the name of 'index.wsgi' for this file due to effects with vercel server (it returns it as a plain response on any request)
 
-#  import pathlib
-import sys  # noqa
 import os  # noqa
 
+#  import pathlib
+import sys  # noqa
 
 # Server only params (start locally with dev-mode flask command, or `pnpm run dev`)...
 venvRoot = '/var/www'

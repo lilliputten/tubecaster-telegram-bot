@@ -2,35 +2,31 @@
 
 import traceback
 from typing import Optional
-from flask import Response
-from flask import request
-import telebot  # pyTelegramBotAPI
 
+import telebot  # pyTelegramBotAPI
+from flask import Response, request
+
+from botApp import botApp
+from botCore.constants import emojies
+from botCore.helpers import getUserName
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
 from core.helpers.time import formatTime
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from db import (
-    types as dbTypes,
-    checkCommandExistsForMessageId,
     addCommand,
-    deleteCommandById,
     addTempMessage,
-    getTempMessagesForCommand,
+    checkCommandExistsForMessageId,
+    deleteCommandById,
     deleteOutdatedCommands,
     deleteOutdatedTempMessages,
-    wipeOutDeletedUsers,
+    getTempMessagesForCommand,
 )
-
-from botApp import botApp
-
-from botCore.constants import emojies
-from botCore.helpers import getUserName
+from db import types as dbTypes
+from db import wipeOutDeletedUsers
 
 from .botRoutes import botRoutes
-
 
 startTimeStr = formatTime()
 
@@ -42,7 +38,7 @@ logTraceback = False
 @botRoutes.route('/webhook', methods=['POST'])
 def webhookRoute():
     """
-    Process the telegram bot webhook.
+    Core access point: Process the telegram bot webhook.
     """
     requestStream = request.stream.read().decode('utf-8')
     update = telebot.types.Update.de_json(requestStream)
@@ -247,6 +243,7 @@ def webhookRoute():
             # Delete all outdated commands & messages...
             deleteOutdatedCommands()
             deleteOutdatedTempMessages()
+            # Check and clean well outdated deleted accounts (removed alder than mpnth ago)
             wipeOutDeletedUsers()
         # # DEBUG
         # stateValue = botApp.get_state(userId, chatId)

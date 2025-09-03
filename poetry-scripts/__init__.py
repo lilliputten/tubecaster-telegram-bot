@@ -2,6 +2,16 @@ import os
 import subprocess
 
 
+def isort():
+    print('Running imports sorter...')
+    cmd = [
+        'isort',
+        '--only-modified',
+        '.',
+    ]
+    subprocess.run(cmd)
+
+
 def lint():
     print('Running pyright linter...')
     # Disable version check (is that a correct way?)
@@ -24,6 +34,7 @@ def format():
 
 
 def check_all():
+    isort()
     format()
     lint()
 

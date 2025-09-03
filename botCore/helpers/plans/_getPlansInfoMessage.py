@@ -18,7 +18,7 @@ def getPlansInfoMessage(userId: int):
 
     paidPlanItems = [
         emojies.numbers[3] + ' PAID PLAN allows you to make an unlimited number of downloads and info requests.',
-        f'The monthly cost of the paid usage plan is ⭐️ {limits.paidPlanPriceStars}.',
+        f'The monthly cost of the paid usage plan is {emojies.star} {limits.paidPlanPriceStars}.',
         'You can start it right now via the /get_full_access command.',
     ]
 

@@ -7,8 +7,8 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _prisma_test`
 
 import os
-import sys
 import pathlib
+import sys
 
 # from typing import Optional
 from unittest import TestCase, main

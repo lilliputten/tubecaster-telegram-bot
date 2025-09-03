@@ -8,22 +8,20 @@
 
 import datetime
 import os
-from random import randrange
 import time
 import traceback
+from random import randrange
 from typing import Optional
-from prisma.models import Command
-from prisma.models import TempMessage
-
 from unittest import TestCase, main, mock
+
+from prisma.models import Command, TempMessage
 
 from core.helpers.errors import errorToString
 
+from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
 from ._init import closeDb, initDb
-
 from ._testDbConfig import testEnv
 from ._types import TPrismaCommand, TTempMessage
-from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
 
 
 @mock.patch.dict(os.environ, testEnv)

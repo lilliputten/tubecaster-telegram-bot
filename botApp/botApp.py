@@ -1,18 +1,16 @@
 # -*- coding:utf-8 -*-
 
 import sys
-import telebot  # pyTelegramBotAPI
 
+import telebot  # pyTelegramBotAPI
 from telebot import custom_filters
 from telebot.storage import (
-    # TODO: To use production-ready storage, like StateDataContext, StateStorageBase, etc?
     StateMemoryStorage,
-)
+)  # TODO: To use production-ready storage, like StateDataContext, StateStorageBase, etc?
 
 from core.appConfig import TELEGRAM_TOKEN
-from core.logger import getDebugLogger, secondaryStyle, errorStyle, titleStyle
+from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
-
 
 IS_TEST = 'unittest' in sys.modules.keys()
 

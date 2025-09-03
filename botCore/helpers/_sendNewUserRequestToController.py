@@ -1,26 +1,28 @@
 import traceback
-import telebot  # pyTelegramBotAPI
 
+import telebot  # pyTelegramBotAPI
+from telebot.states.sync.context import StateContext
+
+from botApp import botApp
+from botApp.botStates import BotStates
+from botCore.constants import emojies
+from botCore.helpers import createAcceptNewUserButtonsMarkup, getUserName
+from botCore.helpers._replyOrSend import replyOrSend
 from core.appConfig import CONTROLLER_CHANNEL_ID, LOCAL, LOGGING_CHANNEL_ID, PROJECT_INFO, PROJECT_PATH
 from core.helpers.errors import errorToString
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.logger.utils import errorStyle, warningStyle
 from core.utils import debugObj
-
-from botCore.constants import emojies
-from botCore.helpers import createAcceptNewUserButtonsMarkup
-from botCore.helpers._replyOrSend import replyOrSend
-from botCore.helpers import getUserName
-
-from botApp import botApp
 
 _logger = getDebugLogger()
 
 _logTraceback = False
 
 
-def sendNewUserRequestToController(message: telebot.types.Message, newUserId: int, newUserStr: str):
+def sendNewUserRequestToController(
+    message: telebot.types.Message, newUserId: int, newUserStr: str, state: StateContext
+):
     chatId = message.chat.id
     try:
         text = message.text
@@ -73,12 +75,12 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
-        msgItems = [
+        contentItems = [
             emojies.question
             + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}, language: {languageCode}',
             # secondaryStyle(debugStr),
         ]
-        content = '\n\n'.join(msgItems)
+        content = '\n\n'.join(contentItems)
         _logger.info(logContent)
         markup = createAcceptNewUserButtonsMarkup(newUserId, newUserStr, languageCode)
         botApp.send_message(
@@ -99,9 +101,11 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
                     'Alternatively, you can obtain a paid usbcription via /get_full_access command.',
                     'See /plans for the detailed information on all the available plans',
                     'Thanks for understanding.',
+                    'Now please enter the message below if you wish (or enter /no otherwise):',
                 ]
             ),
         )
+        state.set(BotStates.waitForRegistrationInfo)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

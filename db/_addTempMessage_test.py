@@ -7,21 +7,19 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _addTempMessage_test`
 
 import os
-from random import randrange
 import traceback
+from random import randrange
 from typing import Optional
-from prisma.models import Command, TempMessage
-
 from unittest import TestCase, main, mock
+
+from prisma.models import Command, TempMessage
 
 from core.helpers.errors import errorToString
 
+from ._addTempMessage import addTempMessage
 from ._init import closeDb, initDb
-
 from ._testDbConfig import testEnv
 from ._types import TTempMessage
-
-from ._addTempMessage import addTempMessage
 
 
 @mock.patch.dict(os.environ, testEnv)

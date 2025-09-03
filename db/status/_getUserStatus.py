@@ -1,4 +1,5 @@
 import traceback
+
 from prisma.models import UserStatus
 
 from core.helpers import errorToString

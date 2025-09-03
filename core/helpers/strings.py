@@ -1,7 +1,6 @@
 import os
 import re
 
-
 # Enable ansi colors for console output, see `ansiStyle`
 _logAddStyle = True
 

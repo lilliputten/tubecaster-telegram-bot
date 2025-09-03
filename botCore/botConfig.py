@@ -2,7 +2,7 @@
 
 import posixpath
 
-from core.appConfig import appConfig, STATIC_PATH, VERCEL_URL
+from core.appConfig import STATIC_PATH, VERCEL_URL, appConfig
 
 # Should be vds remote host name an ngrok relay link (for the local mode)
 WEBHOOK_HOST = str(appConfig.get('WEBHOOK_HOST', '127.0.0.1'))

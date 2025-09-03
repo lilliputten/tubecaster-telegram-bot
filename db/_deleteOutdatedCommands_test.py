@@ -11,17 +11,16 @@ import os
 import time
 import traceback
 from typing import Optional
-from prisma.models import Command
-
 from unittest import TestCase, main, mock
+
+from prisma.models import Command
 
 from core.helpers.errors import errorToString
 
+from ._deleteOutdatedCommands import deleteOutdatedCommands
 from ._init import closeDb, initDb
-
 from ._testDbConfig import testEnv
 from ._types import TPrismaCommand
-from ._deleteOutdatedCommands import deleteOutdatedCommands
 
 
 @mock.patch.dict(os.environ, testEnv)
