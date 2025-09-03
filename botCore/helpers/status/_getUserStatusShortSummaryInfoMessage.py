@@ -1,15 +1,15 @@
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from typing import cast
 
+from dateutil.relativedelta import relativedelta
 from prisma.models import MonthlyStats, TotalStats, UserStatus
+
 from botCore.constants import limits
 from botCore.types import TUserMode
-
-from core.helpers.time import formatTime
-from db.user import findUser
-from db.status import getUserStatus
+from core.helpers.time import ensureCorrectDateTime, formatTime, getCurrentDateTime
 from db.stats import getCurrentMonthStats, getTotalStats
-from typing import cast
+from db.status import getUserStatus
+from db.user import findUser
 
 
 def getUserStatusShortSummaryInfoMessage(userId: int):
@@ -30,43 +30,73 @@ def getUserStatusShortSummaryInfoMessage(userId: int):
     currentCastRequests = currentStats.requests if currentStats else 0
     currentInfoRequests = currentStats.infoRequests if currentStats else 0
 
+    limitsItems = []
+
+    if userMode == 'PAID':
+        if userStatus:
+            paidAt = userStatus.paidAt
+            if paidAt:
+                validUntil = ensureCorrectDateTime(paidAt) + relativedelta(months=+1)
+                now = getCurrentDateTime()
+                if now < validUntil:
+                    limitsItems.append(
+                        '\n\n'.join(
+                            [
+                                f"You're on a {userMode} usage plan.",
+                                f'Your paid subscription is valid until {formatTime("onlyDate", validUntil)}.',
+                                'You have unlimited requests amount.',
+                            ]
+                        )
+                    )
+                else:
+                    limitsItems.append(
+                        '\n\n'.join(
+                            [
+                                f'You had a PAID usage plan, but your subscription has already ended on {formatTime("onlyDate", validUntil)}.',
+                                # 'Instead, a FREE data plan is used.',
+                            ]
+                        )
+                    )
+                    userMode = 'FREE'
+
     isGuest = userMode == 'GUEST'
     isFree = userMode == 'FREE'
-    isPaid = userMode == 'PAID'
-    # isDenied = userMode == 'DENIED'
 
-    limitsItems = []
     if isGuest or isFree:
-        limitsItems.append(f"You're on the {userMode} usage plan.")
         castRequestsLimit = limits.guestCastRequests if isGuest else limits.freeCastRequests
         infoRequestsLimit = limits.guestInfoRequests if isGuest else limits.freeInfoRequests
         castRequestsCount = totalCastRequests if isGuest else currentCastRequests
         infoRequestsCount = totalInfoRequests if isGuest else currentInfoRequests
         castRequestsAvailable = max(0, castRequestsLimit - castRequestsCount)
         infoRequestsAvailable = max(0, infoRequestsLimit - infoRequestsCount)
-        limitsItems.append(f'You have: {castRequestsAvailable} (of {castRequestsLimit}) download')
-        limitsItems.append(f'and {infoRequestsAvailable} (of {infoRequestsLimit}) info')
-        limitsItems.append('requests available.')
-        limitsItems.append('You can upgrade your plan if you need more')
-        if isGuest:
-            limitsItems.append('via /become_user or /get_full_access commands.')
-        else:
-            limitsItems.append('via /get_full_access command.')
+        limitsItems.append(f"You're on a {userMode} usage plan.")
+        limitsItems.append('You have:')
+        limitsItems.append(
+            '\n'.join(
+                [
+                    f'- {castRequestsAvailable} of {castRequestsLimit} download requests;',
+                    f'- {infoRequestsAvailable} of {infoRequestsLimit} info requests.',
+                ]
+            )
+        )
+        limitsItems.append(
+            'You can upgrade your plan if you need more via '
+            + ('/become_user or /get_full_access commands.' if isGuest else '/get_full_access command.')
+        )
         limitsItems.append('See available /plans info.')
-    elif isPaid:
-        pass
-        # limitsItems.append("You have unlimited download and info requests amount.")
-    else:
+    elif userMode != 'PAID':
         limitsItems.append("You're in the restricted mode.")
-        limitsItems.append('See /plans info to upgrade your account or ask an administrator at @lilliputten.')
+        limitsItems.append('See /plans info for options to upgrade your account.')
 
     if user and user.isDeleted:
         deletedAt = user.deletedAt or datetime.now()
-        willBeDeletedAt = deletedAt + relativedelta(months=+1)
+        willBeDeletedAt = deletedAt + relativedelta(months=1)
         limitsItems.append(
             f'Your account has been marked to deletion on {formatTime("onlyDate", deletedAt)} (and will be wiped out on {formatTime("onlyDate", willBeDeletedAt)}). You can restore the account via /restore_account command.'
         )
 
-    content = ' '.join(list(filter(None, limitsItems)))
+    limitsItems.append('Ask any questions to the administrator (@lilliputten).')
+
+    content = '\n\n'.join(list(filter(None, limitsItems)))
 
     return content

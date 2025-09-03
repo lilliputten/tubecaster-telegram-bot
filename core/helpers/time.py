@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from threading import Timer
 
-from core.appConfig import TZ_HOURS
+from core.appConfig import TZ_HOURS_OFFSET
 
 # TODO: Move these to constants/config?
 idTimeFormat = '%Y-%m-%d-%H-%M-%S'
@@ -16,12 +16,29 @@ withSecondsTzTimeFormat = '%Y-%m-%d %H:%M:%S %z'
 shortTimeFormatWithSeconds = '%Y-%m-%d %H:%M:%S'
 preciseTimeFormat = shortTimeFormatWithSeconds + ',%f'
 
-tzObject = timezone(timedelta(hours=int(TZ_HOURS))) if TZ_HOURS != None else None
+tzObject = timezone(timedelta(hours=int(TZ_HOURS_OFFSET) or 0))  # if TZ_HOURS != None else None
 
-# TODO: blue error: Cannot parse: type Precise = bool | str
 TPrecise = bool | str
 
 TDateLike = datetime | int | float
+
+
+def ensureCorrectDateTime(date: TDateLike | None = None):
+    dateVal: datetime
+    if type(date) is int or type(date) is float:   # isinstance(date, int):
+        dateFloat = float(date)
+        dateVal = datetime.fromtimestamp(dateFloat)
+    elif date and type(date) is datetime:
+        dateVal = date
+    else:
+        dateVal = datetime.now(tzObject)
+    if dateVal.tzinfo is None:
+        dateVal = dateVal.replace(tzinfo=tzObject)
+    return dateVal
+
+
+def getCurrentDateTime():
+    return datetime.now(tzObject)
 
 
 def getTimeFormat(precise: TPrecise | None = None):
@@ -46,14 +63,7 @@ def getTimeFormat(precise: TPrecise | None = None):
 
 def formatTime(precise: TPrecise | None = None, date: TDateLike | None = None):
     format = getTimeFormat(precise)
-    dateVal: datetime
-    if type(date) is int or type(date) is float:   # isinstance(date, int):
-        dateFloat = float(date)
-        dateVal = datetime.fromtimestamp(dateFloat)
-    elif date and type(date) is datetime:
-        dateVal = date
-    else:
-        dateVal = datetime.now(tzObject)
+    dateVal = ensureCorrectDateTime(date)
     stamp = dateVal.strftime(format).strip()
     if precise == True or precise == 'precise':
         stamp = stamp[:-3]

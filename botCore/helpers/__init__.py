@@ -1,5 +1,4 @@
 from ._addNewValidUser import addNewValidUser
-from ._checkValidUser import checkValidUser
 from ._createAcceptNewUserButtonsMarkup import createAcceptNewUserButtonsMarkup
 from ._createCommonButtonsMarkup import createCommonButtonsMarkup
 from ._createRemoveAccountButtonsMarkup import createRemoveAccountButtonsMarkup
@@ -13,9 +12,11 @@ from ._getVideoTags import getVideoTags
 from ._prepareYoutubeDate import prepareYoutubeDate
 from ._replyOrSend import replyOrSend
 from ._sendNewUserRequestToController import sendNewUserRequestToController
-from ._showNewUserMessage import showNewUserMessage
 from .plans import getPlansInfoMessage
-from .status import checkUserLimitations, getUserStatusShortSummaryInfoMessage
+from .status import checkUserLimitations, getUserStatusShortSummaryInfoMessage, showOutOfLimitsMessage
+
+# from ._checkValidUser import checkValidUser # UNUSED
+# from ._showNewUserMessage import showNewUserMessage # UNUSED
 
 __all__ = [
     'createCommonButtonsMarkup',
@@ -30,8 +31,8 @@ __all__ = [
     'getVideoTags',
     'prepareYoutubeDate',
     'replyOrSend',
-    'checkValidUser',
-    'showNewUserMessage',
+    # 'checkValidUser', # UNUSED
+    # 'showNewUserMessage', # UNUSED
     'sendNewUserRequestToController',
     'addNewValidUser',
     # plans
@@ -39,4 +40,5 @@ __all__ = [
     # status
     'checkUserLimitations',
     'getUserStatusShortSummaryInfoMessage',
+    'showOutOfLimitsMessage',
 ]

@@ -14,3 +14,4 @@ from telebot.states import State, StatesGroup
 class BotStates(StatesGroup):
     waitForCastUrl = State()
     waitForInfoUrl = State()
+    waitForRegistrationInfo = State()

@@ -6,41 +6,41 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
-from datetime import datetime
 import traceback
+from datetime import datetime
+
 import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
 
-from botCore.helpers.plans import getPlansInfoMessage
-from botCore.helpers.status import getUserStatusShortSummaryInfoMessage
-from core.appConfig import LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
-from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-from core.helpers.errors import errorToString
-
-from botCore.constants import stickers, emojies
-from botCore.helpers import addNewValidUser
-from botCore.helpers import checkValidUser, getUserName
-from botCore.helpers import replyOrSend
-from botCore.helpers import createCommonButtonsMarkup
-from botCore.helpers import showNewUserMessage, sendNewUserRequestToController
-
 from botApp import botApp
 from botApp.botStates import BotStates
+from botCore.constants import emojies, stickers
+from botCore.helpers import (
+    addNewValidUser,
+    createCommonButtonsMarkup,
+    getUserName,
+    replyOrSend,
+    sendNewUserRequestToController,
+)
+from botCore.helpers.plans import getPlansInfoMessage
+from botCore.helpers.status import checkUserLimitations, getUserStatusShortSummaryInfoMessage, showOutOfLimitsMessage
+from core.appConfig import CONTROLLER_CHANNEL_ID, LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
+from core.helpers.errors import errorToString
+from core.helpers.urls import isYoutubeLink
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.utils import debugObj
+from db import initDb
 
-from db import initDb, getActiveUser
-
-from .sendInfo import sendCommandInfo, sendQueryInfo
-from .infoCommand import infoCommand, infoForUrlStep
-from .castCommand import castCommand, startWaitingForCastUrl, castForUrlStep
+from .castCommand import castCommand, castForUrlStep, startWaitingForCastUrl
 from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
-from .startCommand import startCommand
-from .testCommand import testCommand
-from .statsCommand import statsCommand
+from .infoCommand import infoCommand, infoForUrlStep
+from .sendInfo import sendCommandInfo, sendQueryInfo
 from .showRemoveAccountDialog import showRemoveAccountDialog
-
+from .startCommand import startCommand
+from .statsCommand import statsCommand
+from .testCommand import testCommand
 
 _logger = getDebugLogger()
 
@@ -52,7 +52,6 @@ def requestFullAccess(message: telebot.types.Message):
     sendCommandInfo(message, 'requestFullAccess')
     userId = message.from_user.id if message.from_user else message.chat.id
     userStr = getUserName(message.from_user)
-    # sendNewUserRequestToController(message, userId, userStr)
     botApp.reply_to(
         message,
         emojies.info + f' Here will be a payment form for user {userStr} (id: {userId}).',
@@ -60,15 +59,15 @@ def requestFullAccess(message: telebot.types.Message):
 
 
 @botApp.message_handler(commands=['become_user'])
-def requestRegistration(message: telebot.types.Message):
+def requestRegistration(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, 'requestRegistration')
     userId = message.from_user.id if message.from_user else message.chat.id
     userStr = getUserName(message.from_user)
-    sendNewUserRequestToController(message, userId, userStr)
+    sendNewUserRequestToController(message, userId, userStr, state)
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
-def registerUserQuery(query: telebot.types.CallbackQuery):
+def registerUserQuery(query: telebot.types.CallbackQuery, state: StateContext):
     sendQueryInfo(query, query.data)
     message = query.message
     if not isinstance(message, telebot.types.Message):
@@ -81,7 +80,59 @@ def registerUserQuery(query: telebot.types.CallbackQuery):
         list = query.data.split(':')
         userId = int(list[1])
         userStr = str(list[2])
-        sendNewUserRequestToController(message, userId, userStr)
+        sendNewUserRequestToController(message, userId, userStr, state)
+
+
+@botApp.message_handler(state=BotStates.waitForRegistrationInfo)
+def sendRegistrationInfoStep(message: telebot.types.Message, state: StateContext):
+    sendCommandInfo(message, 'sendRegistrationInfoStep')
+    state.delete()
+    chat = message.chat
+    text = message.text
+    chatId = chat.id
+    userId = message.from_user.id if message.from_user else message.chat.id
+    username = getUserName(message.from_user, True)
+    if not text:
+        botApp.reply_to(message, 'Message text or /no is expected.')
+        return
+    if text == '/no':
+        botApp.reply_to(
+            message, emojies.success + ' Ok, you can always drop a line to the administrator (@lilliputten), anytime.'
+        )
+        return
+    obj = {
+        'text': text,
+        'chatId': chatId,
+        'userId': userId,
+        'username': username,
+    }
+    debugStr = debugObj(obj)
+    logItems = [
+        titleStyle('sendRegistrationInfoStep'),
+        secondaryStyle(debugStr),
+    ]
+    _logger.info('\n'.join(logItems))
+    contentItems = [
+        emojies.memo + f' The user {username} sent a registration message:',
+        text,
+    ]
+    content = '\n\n'.join(contentItems)
+    botApp.send_message(
+        CONTROLLER_CHANNEL_ID,
+        content,
+    )
+    botApp.reply_to(
+        message,
+        emojies.success
+        + ' '
+        + '\n\n'.join(
+            [
+                'Ok. Your message has been sent to the administrator.',
+                'This should speed up the registration process.',
+                'If there is no response for a long time, you can request the reqistration again, or (better) drop a message to the administrator (@lilliputten).',
+            ]
+        ),
+    )
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
@@ -264,10 +315,12 @@ def startCast(query: telebot.types.CallbackQuery):
         botApp.send_message(message.chat.id, errMsg)
         return
     userId = query.from_user.id if query.from_user else message.chat.id
-    if not checkValidUser(userId):
-        newUserName = getUserName(query.from_user)
-        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-        showNewUserMessage(message, userId, newUserName)
+    # if not checkValidUser(userId):
+    #     newUserName = getUserName(query.from_user)
+    #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+    #     showNewUserMessage(message, userId, newUserName)
+    if not checkUserLimitations(message, userId, 'CAST'):
+        showOutOfLimitsMessage(message)
     else:
         startWaitingForCastUrl(message.chat, message)
 
@@ -283,10 +336,8 @@ def castForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 def castReaction(message: telebot.types.Message):
     sendCommandInfo(message, 'castReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
-    if not checkValidUser(userId):
-        newUserName = getUserName(message.from_user)
-        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-        showNewUserMessage(message, userId, newUserName)
+    if not checkUserLimitations(message, userId, 'CAST'):
+        showOutOfLimitsMessage(message)
     else:
         castCommand(message.chat, message)
 
@@ -302,10 +353,12 @@ def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
 def infoReaction(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, f'infoReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
-    if not checkValidUser(userId):
-        newUserName = getUserName(message.from_user)
-        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-        showNewUserMessage(message, userId, newUserName)
+    # if not checkValidUser(userId):
+    #     newUserName = getUserName(message.from_user)
+    #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+    #     showNewUserMessage(message, userId, newUserName)
+    if not checkUserLimitations(message, userId, 'INFO'):
+        showOutOfLimitsMessage(message)
     else:
         infoCommand(message.chat, message, state)
 
@@ -360,37 +413,47 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
         contentType = message.content_type
         text = message.text
 
-        # The command text seems to be an youtube video link, so try to cast it...
-        if contentType == 'text' and text and isYoutubeLink(text):
-            _logger.info(titleStyle('defaultCommand: Processing as a cast command'))
-            if not checkValidUser(userId):
-                newUserName = getUserName(message.from_user)
-                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-                showNewUserMessage(message, userId, newUserName)
-            else:
-                castForUrlStep(chat, message)
+        # Check states and default commands...
+
+        # Forcibly invoke info command if the state has been set
+        if stateValue == BotStates.waitForRegistrationInfo:
+            _logger.info(titleStyle('defaultCommand: Forcibly invoke registration message sending'))
+            sendRegistrationInfoStep(message, state)
         # Forcibly invoke info command if the state has been set
         elif stateValue == BotStates.waitForInfoUrl:
             _logger.info(titleStyle('defaultCommand: Forcibly invoke info command as the state has been set'))
             state.delete()
-            if not checkValidUser(userId):
-                newUserName = getUserName(message.from_user)
-                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-                showNewUserMessage(message, userId, newUserName)
+            # if not checkValidUser(userId):
+            #     newUserName = getUserName(message.from_user)
+            #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+            #     showNewUserMessage(message, userId, newUserName)
+            if not checkUserLimitations(message, userId, 'INFO'):
+                showOutOfLimitsMessage(message)
             else:
                 infoForUrlStep(chat, message)
-                # infoCommand(chat, message)
         # Forcibly invoke cast command if the state has been set
         elif stateValue == BotStates.waitForCastUrl:
             _logger.info(titleStyle('defaultCommand: Forcibly invoke cast command as the state has been set'))
             state.delete()
-            if not checkValidUser(userId):
-                newUserName = getUserName(message.from_user)
-                _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-                showNewUserMessage(message, userId, newUserName)
+            # if not checkValidUser(userId):
+            #     newUserName = getUserName(message.from_user)
+            #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+            #     showNewUserMessage(message, userId, newUserName)
+            if not checkUserLimitations(message, userId, 'CAST'):
+                showOutOfLimitsMessage(message)
             else:
                 castForUrlStep(chat, message)
-                # castCommand(chat, message)
+        # The command text seems to be an youtube video link, so try to cast it...
+        elif contentType == 'text' and text and isYoutubeLink(text):
+            _logger.info(titleStyle('defaultCommand: Processing as a cast command'))
+            # if not checkValidUser(userId):
+            #     newUserName = getUserName(message.from_user)
+            #     _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
+            #     showNewUserMessage(message, userId, newUserName)
+            if not checkUserLimitations(message, userId, 'CAST'):
+                showOutOfLimitsMessage(message)
+            else:
+                castForUrlStep(chat, message)
         # Else show a perplexing message
         else:
             _logger.info(titleStyle('defaultCommand: Show a perplexing message'))
@@ -398,11 +461,16 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
             markup = createCommonButtonsMarkup()
             botApp.send_message(
                 message.chat.id,
-                emojies.question
+                emojies.hmm
                 + ' '
-                + "I didn't understand the command: %s\n\n" % message.text
-                + "But I'm still here and look forward to your next command.\n\n"
-                + 'See /help for the reference of all the available commands.',
+                + '\n\n'.join(
+                    [
+                        "I didn't understand the command: %s" % message.text,
+                        "But I'm still here and look forward to your next command.",
+                        'Just post a YouTube url or enter one of the available commands.',
+                        'See /help for the reference of all the commands.',
+                    ]
+                ),
                 reply_markup=markup,
             )
     except Exception as err:

@@ -52,8 +52,8 @@ isNormalRun = not LOCAL or WERKZEUG_RUN_MAIN
 
 AUDIO_FILE_EXT = str(appConfig.get('AUDIO_FILE_EXT', '.mp3'))
 
-# Timezone (set `TZ_HOURS` to hours value to adjust date representation to corresponding timezone)
-TZ_HOURS = appConfig.get('TZ_HOURS_OFFSET')
+# Timezone (set `TZ_HOURS_OFFSET` to hours value to adjust date representation to corresponding timezone, also see a global `TZ` environment variable)
+TZ_HOURS_OFFSET = int(appConfig.get('TZ_HOURS_OFFSET', '0'))
 
 # Tg params...
 TELEGRAM_TOKEN = str(appConfig.get('TELEGRAM_TOKEN', ''))
