@@ -30,7 +30,7 @@ def check_all():
 
 # def test():
 #     # NOTE: It doesn't work as poetry hasn't invoked it under the venv environment
-#     # TODO: Run in a less com;ex way?
+#     # TODO: Run in a less complex way? Run from the cli: poetry run python -m unittest discover -v -p "*_test.py"
 #     print('Running unittest tests...')
 #     cmd = [
 #         'python',

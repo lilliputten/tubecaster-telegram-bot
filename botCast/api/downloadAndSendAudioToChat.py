@@ -19,7 +19,7 @@ from botCore.helpers import (
     replyOrSend,
     getVideoDetailsStr,
 )
-from db._updateStats import updateStats
+from db import updateStats
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles

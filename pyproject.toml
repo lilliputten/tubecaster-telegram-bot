@@ -25,6 +25,7 @@ concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # ffmpeg-python = "^0.2.0" # @see https://kkroening.github.io/ffmpeg-python/
 prisma = "^0.15.0"
 colorama = "^0.4.6"
+python-dateutil = "^2.9.0.post0"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"

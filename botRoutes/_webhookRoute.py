@@ -8,10 +8,9 @@ import telebot  # pyTelegramBotAPI
 
 from core.appConfig import LOCAL
 from core.helpers.errors import errorToString
-from core.helpers.time import formatTime, getTimeStamp
+from core.helpers.time import formatTime
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-from core.utils import debugObj
 
 from db import (
     types as dbTypes,
@@ -22,18 +21,18 @@ from db import (
     getTempMessagesForCommand,
     deleteOutdatedCommands,
     deleteOutdatedTempMessages,
+    wipeOutDeletedUsers,
 )
 
 from botApp import botApp
 
 from botCore.constants import emojies
 from botCore.helpers import getUserName
-from botCore.botConfig import WEBHOOK_URL
 
 from .botRoutes import botRoutes
 
 
-startTimeStr = getTimeStamp()
+startTimeStr = formatTime()
 
 _logger = getDebugLogger()
 
@@ -45,7 +44,6 @@ def webhookRoute():
     """
     Process the telegram bot webhook.
     """
-    timeStr = getTimeStamp()
     requestStream = request.stream.read().decode('utf-8')
     update = telebot.types.Update.de_json(requestStream)
     #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
@@ -73,41 +71,43 @@ def webhookRoute():
         message = callback_query.message
     messageText = message.text if message else None
     messageId = message.id if message else 0
-    messageContentType = message.content_type if message else None
     messageChat = message.chat if message else None
-    messageDate = formatTime(None, message.date) if message else None
     user = message.from_user if message else None
     userId = user.id if user else 0
     usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
-    stateValue = botApp.get_state(userId, chatId)
-    debugData = {
-        'startTimeStr': startTimeStr,
-        'timeStr': timeStr,
-        'WEBHOOK_URL': WEBHOOK_URL,
-        'LOCAL': LOCAL,
-        'update': repr(update),
-        'message': repr(message),
-        'callback_query': repr(callback_query),
-        'messageChat': repr(messageChat),
-        'user': repr(user),
-        'updateId': updateId,
-        'messageText': messageText,
-        'messageId': messageId,
-        'messageContentType': messageContentType,
-        'messageDate': messageDate,
-        'userId': userId,
-        'usernameStr': usernameStr,
-        'chatId': chatId,
-        'stateValue': stateValue,
-    }
-    debugStr = debugObj(debugData)
-    logItems = [
-        titleStyle('webhookRoute: Update %d for message %d started' % (updateId, messageId)),
-        secondaryStyle(debugStr),
-    ]
-    logContent = '\n'.join(logItems)
-    _logger.info(logContent)
+    # # DEBUG
+    # # messageContentType = message.content_type if message else None
+    # # messageDate = formatTime(None, message.date) if message else None
+    # timeStr = formatTime()
+    # stateValue = botApp.get_state(userId, chatId)
+    # debugData = {
+    #     'startTimeStr': startTimeStr,
+    #     'timeStr': timeStr,
+    #     # 'WEBHOOK_URL': WEBHOOK_URL,
+    #     'LOCAL': LOCAL,
+    #     'update': repr(update),
+    #     'message': repr(message),
+    #     'callback_query': repr(callback_query),
+    #     'messageChat': repr(messageChat),
+    #     'user': repr(user),
+    #     'updateId': updateId,
+    #     'messageText': messageText,
+    #     'messageId': messageId,
+    #     # 'messageContentType': messageContentType,
+    #     # 'messageDate': messageDate,
+    #     'userId': userId,
+    #     'usernameStr': usernameStr,
+    #     'chatId': chatId,
+    #     'stateValue': stateValue,
+    # }
+    # debugStr = debugObj(debugData)
+    # logItems = [
+    #     titleStyle('webhookRoute: Update %d for message %d started' % (updateId, messageId)),
+    #     secondaryStyle(debugStr),
+    # ]
+    # logContent = '\n'.join(logItems)
+    # _logger.info(logContent)
 
     # Remove previous message markup
     if callback_query and callback_query.message:
@@ -130,30 +130,30 @@ def webhookRoute():
         existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
         if existedCommand:
             # Command already exists, do nothing, but notify user
-            debugData = {
-                'commandId': existedCommand.id,
-                'repeated': existedCommand.repeated,
-                'createdAtStr': formatTime(None, existedCommand.createdAt),
-                'updatedAtStr': formatTime(None, existedCommand.updatedAt),
-                'timeStr': timeStr,
-                'messageChat': repr(messageChat),
-                'updateId': updateId,
-                'messageText': messageText,
-                'messageId': messageId,
-                'messageContentType': messageContentType,
-                'messageDate': messageDate,
-                'userId': userId,
-                'usernameStr': usernameStr,
-                'chatId': chatId,
-            }
-            debugStr = debugObj(debugData)
-            logItems = [
-                titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
-                secondaryStyle(debugStr),
-            ]
-            logContent = '\n'.join(logItems)
-            _logger.info(logContent)
-            # TODO: Update message: Find first temp message and
+            # # DEBUG
+            # debugData = {
+            #     'commandId': existedCommand.id,
+            #     'repeated': existedCommand.repeated,
+            #     'createdAtStr': formatTime(None, existedCommand.createdAt),
+            #     'updatedAtStr': formatTime(None, existedCommand.updatedAt),
+            #     'timeStr': timeStr,
+            #     'messageChat': repr(messageChat),
+            #     'updateId': updateId,
+            #     'messageText': messageText,
+            #     'messageId': messageId,
+            #     'messageContentType': messageContentType,
+            #     'messageDate': messageDate,
+            #     'userId': userId,
+            #     'usernameStr': usernameStr,
+            #     'chatId': chatId,
+            # }
+            # debugStr = debugObj(debugData)
+            # logItems = [
+            #     titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
+            #     secondaryStyle(debugStr),
+            # ]
+            # logContent = '\n'.join(logItems)
+            # _logger.info(logContent)
             if chatId:
                 # fmt: off
                 infoStr = ' '.join(filter(None, [
@@ -190,30 +190,31 @@ def webhookRoute():
                 )
                 addTempMessage(commandId=createdCommand.id, messageId=newMessage.id)
 
-            stateValue = botApp.get_state(userId, chatId)
-            debugData = {
-                'commandId': createdCommand.id,
-                'createdAtStr': formatTime(None, createdCommand.createdAt),
-                'updatedAtStr': formatTime(None, createdCommand.updatedAt),
-                'timeStr': timeStr,
-                'messageChat': repr(messageChat),
-                'updateId': updateId,
-                'messageText': messageText,
-                'messageId': messageId,
-                'messageContentType': messageContentType,
-                'messageDate': messageDate,
-                'userId': userId,
-                'usernameStr': usernameStr,
-                'chatId': chatId,
-                'stateValue': stateValue,
-            }
-            debugStr = debugObj(debugData)
-            logItems = [
-                titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
-                secondaryStyle(debugStr),
-            ]
-            logContent = '\n'.join(logItems)
-            _logger.info(logContent)
+            # # DEBUG
+            # stateValue = botApp.get_state(userId, chatId)
+            # debugData = {
+            #     'commandId': createdCommand.id,
+            #     'createdAtStr': formatTime(None, createdCommand.createdAt),
+            #     'updatedAtStr': formatTime(None, createdCommand.updatedAt),
+            #     'timeStr': timeStr,
+            #     'messageChat': repr(messageChat),
+            #     'updateId': updateId,
+            #     'messageText': messageText,
+            #     'messageId': messageId,
+            #     'messageContentType': messageContentType,
+            #     'messageDate': messageDate,
+            #     'userId': userId,
+            #     'usernameStr': usernameStr,
+            #     'chatId': chatId,
+            #     'stateValue': stateValue,
+            # }
+            # debugStr = debugObj(debugData)
+            # logItems = [
+            #     titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
+            #     secondaryStyle(debugStr),
+            # ]
+            # logContent = '\n'.join(logItems)
+            # _logger.info(logContent)
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
@@ -246,18 +247,15 @@ def webhookRoute():
             # Delete all outdated commands & messages...
             deleteOutdatedCommands()
             deleteOutdatedTempMessages()
-        stateValue = botApp.get_state(userId, chatId)
-        debugStr = debugObj(
-            {
-                **debugData,
-                'stateValue': stateValue,
-            }
-        )
-        logItems = [
-            titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
-            secondaryStyle(debugStr),
-        ]
-        logContent = '\n'.join(logItems)
-        _logger.info(logContent)
+            wipeOutDeletedUsers()
+        # # DEBUG
+        # stateValue = botApp.get_state(userId, chatId)
+        # debugStr = debugObj({**debugData, 'stateValue': stateValue })
+        # logItems = [
+        #     titleStyle('webhookRoute: Update %d for message %d finished' % (updateId, messageId)),
+        #     secondaryStyle(debugStr),
+        # ]
+        # logContent = '\n'.join(logItems)
+        # _logger.info(logContent)
 
     return Response('OK', headers={'Content-type': 'text/plain'})

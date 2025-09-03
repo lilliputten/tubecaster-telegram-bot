@@ -12,8 +12,9 @@ from unittest import TestCase, main, mock
 
 from core.helpers.errors import errorToString
 
-from ._init import closeDb, initDb
-from ._testDbConfig import testEnv
+from .._init import closeDb, initDb
+from .._testDbConfig import testEnv
+
 from ._updateStats import updateStats
 
 
@@ -36,7 +37,7 @@ class Test_updateStats(TestCase):
             data={
                 'id': userId,
                 'userStr': f'Test {userId}',
-                'isActive': True,
+                # 'isActive': True,
             },
         )
 

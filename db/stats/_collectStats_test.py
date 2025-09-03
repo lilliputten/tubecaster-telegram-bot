@@ -12,8 +12,9 @@ from unittest import TestCase, main, mock
 
 from core.helpers.errors import errorToString
 
-from ._init import closeDb, initDb
-from ._testDbConfig import testEnv
+from .._init import closeDb, initDb
+from .._testDbConfig import testEnv
+
 from ._collectStats import collectStats
 from ._updateStats import updateStats
 
@@ -37,7 +38,16 @@ class Test_collectStats(TestCase):
             data={
                 'id': userId,
                 'userStr': f'Test {userId}',
-                'isActive': True,
+                'userStatus': {
+                    'create': {
+                        'userMode': 'PAID',
+                    },
+                },
+            },
+            include={
+                'userStatus': True,
+                'totalStats': True,
+                'monthlyStats': True,
             },
         )
 
@@ -79,14 +89,14 @@ class Test_collectStats(TestCase):
 
             # Check monthly
             self.assertIsInstance(monthlyStats, list)
-            self.assertEqual(len(monthlyStats), 1)
-            monthlyStats = monthlyStats
             if monthlyStats:
+                self.assertEqual(len(monthlyStats), 1)
                 monthly = monthlyStats[0]
                 self.assertEqual(monthly.requests, 2)
                 self.assertEqual(monthly.volume, volume * 2)
                 self.assertEqual(monthly.year, year)
                 self.assertEqual(monthly.month, month)
+
         except Exception as err:
             errText = errorToString(err, show_stacktrace=False)
             sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

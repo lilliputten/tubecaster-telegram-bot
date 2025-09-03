@@ -1,17 +1,23 @@
 import traceback
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from prisma.models import User
 
-from core.helpers.errors import errorToString
+from core.helpers import errorToString
 
 
-def addActiveUser(id: int, userStr: str):
+def wipeOutDeletedUsers():
+    """
+    Remove all user records marked for deletion earlier than a month ago
+    """
+    deletedAt = datetime.now() - relativedelta(months=1)
     userClient = User.prisma()
     try:
-        user = userClient.create(
-            data={
-                'id': id,
-                'isActive': True,
-                'userStr': userStr,
+        user = userClient.delete_many(
+            where={
+                'deletedAt': {
+                    'lt': deletedAt,
+                },
             },
         )
         return user
@@ -22,5 +28,3 @@ def addActiveUser(id: int, userStr: str):
         print('Traceback for the following error:' + sTraceback)
         print('Error: ' + errMsg)
         raise Exception(errMsg)
-    finally:
-        pass

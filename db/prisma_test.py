@@ -19,8 +19,6 @@ from unittest import TestCase, main
 # Inject project path to allow server-side tests
 sys.path.insert(1, pathlib.Path(os.getcwd()).as_posix())
 
-# from db._testDbConfig import testEnv
-
 
 # @mock.patch.dict(os.environ, testEnv)
 class Test_prisma(TestCase):

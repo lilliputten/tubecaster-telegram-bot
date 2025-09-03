@@ -17,12 +17,8 @@ from unittest import TestCase, main, mock
 
 from core.helpers.errors import errorToString
 
-from ._init import closeDb, initDb
-
-from ._testDbConfig import testEnv
-from ._types import TTempMessage
-
-from ._addTempMessage import addTempMessage
+from .._init import closeDb, initDb
+from .._testDbConfig import testEnv
 
 
 @mock.patch.dict(os.environ, testEnv)
@@ -44,7 +40,7 @@ class Test_addTempMessage_test(TestCase):
             data={
                 'id': userId,
                 'userStr': f'Test {userId}',
-                'isActive': True,
+                # 'isActive': True,
             },
         )
 
@@ -112,16 +108,6 @@ class Test_addTempMessage_test(TestCase):
                         'volume': 100,
                     },
                 )
-                # userClient = User.prisma()
-                # user = userClient.find_unique(
-                #     where={
-                #         'id': self.user.id,
-                #     },
-                #     include={
-                #         'totalStats': True,
-                #         'monthlyStats': True,
-                #     },
-                # )
             self.assertIsInstance(totalStats, TotalStats)
             if totalStats:
                 self.assertIsInstance(totalStats.userId, int)

@@ -48,15 +48,43 @@ model User {
   id      BigInt @id @default(autoincrement())
   userStr String @default("")
 
-  isActive Boolean @default(false)
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  languageCode String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
+  userStatus   UserStatus?
   totalStats   TotalStats?
   monthlyStats MonthlyStats[]
 
+  @@index([isDeleted])
   @@map("Users")
+}
+
+model UserStatus {
+  userId BigInt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Usage plan (see `TUserMode` type): GUEST, FREE, PAID, DENIED
+  userMode String @default("GUEST") // GUEST is the default
+
+  // Date of the last payment (if has been paid)
+  statusChangedAt DateTime @default(now())
+
+  // Date of the last payment (if has been paid)
+  paidAt DateTime?
+
+  // Payment valid until the date
+  paymentValidUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([userId])
+  @@map("UserStatus")
 }
 
 model TotalStats {

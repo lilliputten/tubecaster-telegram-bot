@@ -53,7 +53,7 @@ def db_push_test():
         'prisma',
         'db',
         'push',
-        '--accept-data-loss',
+        # '--accept-data-loss',
     ]
     subprocess.run(cmd)
 

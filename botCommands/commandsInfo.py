@@ -11,13 +11,18 @@ commandsInfo = {
     'cast URL': 'Convert YouTube video to audio for listening.',
     'info URL': 'Show information about the YouTube video.',
     'stats': 'Display your statistics (request and failure counts, overall downloaded audio files size, total and monthly).',
-    'register': 'Request a registration to gain access to the full bot functionality.',
+    'status': 'Show your status (membership, registration, etc).',
+    'plans': 'Show details on available usage plans (guest, free, paid).',
+    'become_user': 'Request a registration to gain access to the free bot functionality.',
+    'get_full_access': 'Obtain a full (paid) access mode. See /plans for detailed information about available plans.',
+    'remove_account': 'Remove your user account and all the data completely.',
+    'restore_account': 'Restore removed account, if less than a month has passed since the deletion.',
     'start': 'Gives generic information about the bot.',
     'help': 'Gives information about all of the available commands.',
 }
 
 hiddenCommands = [
-    'castTest',
+    'cast_test',
     'test',
 ]
 

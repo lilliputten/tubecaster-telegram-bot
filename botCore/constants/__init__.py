@@ -1,7 +1,9 @@
-from . import _emojies as emojies
-from . import _stickers as stickers
+from . import emojies
+from . import stickers
+from . import limits
 
 __all__ = [
     'emojies',
     'stickers',
+    'limits',
 ]

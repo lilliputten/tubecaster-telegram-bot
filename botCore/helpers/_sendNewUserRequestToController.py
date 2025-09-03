@@ -1,16 +1,14 @@
 import traceback
 import telebot  # pyTelegramBotAPI
-from telebot.states.sync.context import StateContext
 
 from core.appConfig import CONTROLLER_CHANNEL_ID, LOCAL, LOGGING_CHANNEL_ID, PROJECT_INFO, PROJECT_PATH
 from core.helpers.errors import errorToString
-from core.helpers.strings import removeAnsiStyles
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger, titleStyle, secondaryStyle
 from core.logger.utils import errorStyle, warningStyle
 from core.utils import debugObj
 
-from botCore.constants import stickers, emojies
+from botCore.constants import emojies
 from botCore.helpers import createAcceptNewUserButtonsMarkup
 from botCore.helpers._replyOrSend import replyOrSend
 from botCore.helpers import getUserName
@@ -77,12 +75,12 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         logContent = '\n'.join(logItems)
         msgItems = [
             emojies.question
-            + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}',
+            + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}, language: {languageCode}',
             # secondaryStyle(debugStr),
         ]
         content = '\n\n'.join(msgItems)
         _logger.info(logContent)
-        markup = createAcceptNewUserButtonsMarkup(newUserId, newUserStr)
+        markup = createAcceptNewUserButtonsMarkup(newUserId, newUserStr, languageCode)
         botApp.send_message(
             CONTROLLER_CHANNEL_ID,
             content,
@@ -91,7 +89,18 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         botApp.send_message(
             newUserId,
             emojies.success
-            + ' Your request has been sent. But also, it would be very helpful if you would send a brief information about yourself and why you decided to use this bot to the administrator contact (@lilliputten). Most silent requests are treated as spam.',
+            + ' '
+            + '\n\n'.join(
+                [
+                    "YOU'VE JUST REQUESTED A FREE MEMBEERSHIP.",
+                    "Your request will be reviewed soon. You'll receive a notification if it is accepted.",
+                    'But, it would be very helpful if you sent a brief information about yourself and why you decided to use this bot. Contact the administrator via @lilliputten in this case.',
+                    'There are a lot of spam requests and we are trying to accept real and motivated humans for the free tier.',
+                    'Alternatively, you can obtain a paid usbcription via /get_full_access command.',
+                    'See /plans for the detailed information on all the available plans',
+                    'Thanks for understanding.',
+                ]
+            ),
         )
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

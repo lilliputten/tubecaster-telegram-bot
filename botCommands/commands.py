@@ -6,17 +6,18 @@ Define all the bot commands.
 See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 """
 
+from datetime import datetime
 import traceback
 import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
 
+from botCore.helpers.plans import getPlansInfoMessage
+from botCore.helpers.status import getUserStatusShortSummaryInfoMessage
 from core.appConfig import LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
-from core.helpers.time import formatTime
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.helpers.errors import errorToString
-from core.utils import debugObj
 
 from botCore.constants import stickers, emojies
 from botCore.helpers import addNewValidUser
@@ -28,6 +29,8 @@ from botCore.helpers import showNewUserMessage, sendNewUserRequestToController
 from botApp import botApp
 from botApp.botStates import BotStates
 
+from db import initDb, getActiveUser
+
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .infoCommand import infoCommand, infoForUrlStep
 from .castCommand import castCommand, startWaitingForCastUrl, castForUrlStep
@@ -36,6 +39,7 @@ from .helpCommand import helpCommand
 from .startCommand import startCommand
 from .testCommand import testCommand
 from .statsCommand import statsCommand
+from .showRemoveAccountDialog import showRemoveAccountDialog
 
 
 _logger = getDebugLogger()
@@ -43,12 +47,24 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-@botApp.message_handler(commands=['register'])
+@botApp.message_handler(commands=['get_full_access'])
+def requestFullAccess(message: telebot.types.Message):
+    sendCommandInfo(message, 'requestFullAccess')
+    userId = message.from_user.id if message.from_user else message.chat.id
+    userStr = getUserName(message.from_user)
+    # sendNewUserRequestToController(message, userId, userStr)
+    botApp.reply_to(
+        message,
+        emojies.info + f' Here will be a payment form for user {userStr} (id: {userId}).',
+    )
+
+
+@botApp.message_handler(commands=['become_user'])
 def requestRegistration(message: telebot.types.Message):
     sendCommandInfo(message, 'requestRegistration')
-    newUserId = message.from_user.id if message.from_user else message.chat.id
-    newUserStr = getUserName(message.from_user)
-    sendNewUserRequestToController(message, newUserId, newUserStr)
+    userId = message.from_user.id if message.from_user else message.chat.id
+    userStr = getUserName(message.from_user)
+    sendNewUserRequestToController(message, userId, userStr)
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
@@ -63,40 +79,49 @@ def registerUserQuery(query: telebot.types.CallbackQuery):
         return
     if query.data is not None:
         list = query.data.split(':')
-        newUserId = int(list[1])
-        newUserStr = str(list[2])
-        sendNewUserRequestToController(message, newUserId, newUserStr)
+        userId = int(list[1])
+        userStr = str(list[2])
+        sendNewUserRequestToController(message, userId, userStr)
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
 def acceptUserQuery(query: telebot.types.CallbackQuery):
+    """
+    Creation of the user when it has been accepted by the admin
+    """
     sendQueryInfo(query, query.data)
     if query.data is not None:
         list = query.data.split(':')
-        newUserId = int(list[1])
-        newUserStr = str(list[2])
-        addNewValidUser(newUserId, newUserStr, query)
-        botApp.send_message(
-            newUserId, emojies.success + " You've been successfully added to the registered users list!"
-        )
+        userId = int(list[1])
+        userStr = str(list[2])
+        languageCode = str(list[3])
+        addNewValidUser(userId, userStr, languageCode, query)
+        contentItems = [
+            "You've been successfully added to the registered users list!",
+            getUserStatusShortSummaryInfoMessage(userId),
+        ]
+        botApp.send_message(userId, emojies.success + ' ' + '\n\n'.join(filter(None, contentItems)))
         message = query.message
         if isinstance(message, telebot.types.Message):
             botApp.reply_to(
                 message,
                 emojies.success
-                + f' User request from {newUserStr} has been accepted. Id: {newUserId}, tg://user?id={newUserId}',
+                + f' User request from {userStr} has been accepted. Id: {userId}, tg://user?id={userId}',
             )
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
 def rejectUserQuery(query: telebot.types.CallbackQuery):
+    """
+    Rejection of the user when it has been accepted by the admin
+    """
     sendQueryInfo(query, query.data)
     if query.data is not None:
         list = query.data.split(':')
-        newUserId = int(list[1])
-        newUserStr = str(list[2])
+        userId = int(list[1])
+        userStr = str(list[2])
         botApp.send_message(
-            newUserId,
+            userId,
             emojies.error
             + ' Unfortunatelly, your registration has been declined. You can try again or better reach the administrator (@lilliputten).',
         )
@@ -104,9 +129,88 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
         if isinstance(message, telebot.types.Message):
             botApp.reply_to(
                 message,
-                emojies.error
-                + f' User request from {newUserStr} has been rejected. Id: {newUserId}, tg://user?id={newUserId}',
+                emojies.error + f' User request from {userStr} has been rejected. Id: {userId}, tg://user?id={userId}',
             )
+
+
+@botApp.message_handler(commands=['restore_account'])
+def restoreAccount(message: telebot.types.Message):
+    sendCommandInfo(message, 'restoreAccount')
+    userId = message.from_user.id if message.from_user else message.chat.id
+    prisma = initDb()
+    try:
+        user = prisma.user.find_first(where={'id': userId, 'isDeleted': True})
+        if not user:
+            botApp.reply_to(
+                message,
+                emojies.error + ' ' + 'No such deleted account found.'
+                " You either don't have an account at all yet, or it's not deleted.",
+            )
+            return
+        prisma.user.update(where={'id': userId}, data={'isDeleted': False})
+        contentItems = [
+            'Your account has been already restored.',
+        ]
+        botApp.reply_to(message, emojies.success + ' ' + '\n\n'.join(filter(None, contentItems)))
+    except Exception as err:
+        errText = errorToString(err, show_stacktrace=False)
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+        errMsg = 'Error deleting user: ' + errText
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
+        _logger.error(errorStyle('removeAccountYes: ' + errMsg))
+        botApp.reply_to(message, emojies.error + ' ' + errMsg)
+
+
+@botApp.message_handler(commands=['remove_account'])
+def removeAccount(message: telebot.types.Message):
+    sendCommandInfo(message, 'removeAccount')
+    showRemoveAccountDialog(message)
+
+
+@botApp.callback_query_handler(lambda query: query.data == 'removeAccountYes')
+def removeAccountYes(query: telebot.types.CallbackQuery):
+    sendQueryInfo(query, 'removeAccountYes')
+    message = query.message
+    if not isinstance(message, telebot.types.Message):
+        # NOTE: A normal message is required to register next step handler
+        errMsg = 'Inaccessible message recieved!'
+        _logger.error(errorStyle('removeAccountYes: Error: %s' % errMsg))
+        botApp.send_message(message.chat.id, emojies.error + ' ' + errMsg)
+        return
+    userId = query.from_user.id if query.from_user else message.chat.id
+    prisma = initDb()
+    try:
+        user = prisma.user.find_first(where={'id': userId, 'isDeleted': False})
+        if not user or user.isDeleted:
+            botApp.reply_to(message, emojies.error + ' ' + 'No such account found!')
+            return
+        prisma.user.update(where={'id': userId}, data={'isDeleted': True, 'deletedAt': datetime.now()})
+        contentItems = [
+            'Your account has been marked to deletion and will be completely wiped out in a month.',
+            'You can restore the account during this time via /restore_account command.',
+        ]
+        botApp.reply_to(message, emojies.success + ' ' + '\n\n'.join(filter(None, contentItems)))
+    except Exception as err:
+        errText = errorToString(err, show_stacktrace=False)
+        sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
+        errMsg = 'Error deleting user: ' + errText
+        if _logTraceback:
+            errMsg += sTraceback
+        else:
+            _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
+        _logger.error(errorStyle('removeAccountYes: ' + errMsg))
+        botApp.reply_to(message, emojies.error + ' ' + errMsg)
+
+
+@botApp.callback_query_handler(lambda query: query.data == 'removeAccountNo')
+def removeAccountNo(query: telebot.types.CallbackQuery):
+    sendQueryInfo(query, 'removeAccountNo')
+    message = query.message
+    if isinstance(message, telebot.types.Message):
+        botApp.delete_message(message.chat.id, message.id)
 
 
 @botApp.message_handler(commands=['test'])
@@ -120,7 +224,7 @@ def testReaction(message: telebot.types.Message, state: StateContext):
         testCommand(message.chat, message, state)
 
 
-@botApp.message_handler(commands=['castTest'])
+@botApp.message_handler(commands=['cast_test'])
 def castTestReaction(message: telebot.types.Message):
     sendCommandInfo(message, 'castTestReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
@@ -209,13 +313,34 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
 @botApp.message_handler(commands=['stats'])
 def statsReaction(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, f'statsReaction')
+    statsCommand(message.chat, message, state)
+
+
+@botApp.message_handler(commands=['status'])
+def statusReaction(message: telebot.types.Message):
+    sendCommandInfo(message, f'statusReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
-    if not checkValidUser(userId):
-        newUserName = getUserName(message.from_user)
-        _logger.info(titleStyle(f'Invalid user: {newUserName} ({userId})'))
-        showNewUserMessage(message, userId, newUserName)
-    else:
-        statsCommand(message.chat, message, state)
+    # user = getActiveUser(userId)
+    # userStr = getUserName(message.from_user)
+    content = getUserStatusShortSummaryInfoMessage(userId)
+    botApp.reply_to(
+        message,
+        emojies.info + ' ' + content,
+        # parse_mode='Markdown',
+    )
+
+
+@botApp.message_handler(commands=['plans'])
+def plansReaction(message: telebot.types.Message):
+    sendCommandInfo(message, f'plansReaction')
+    userId = message.from_user.id if message.from_user else message.chat.id
+    # userStr = getUserName(message.from_user)
+    content = getPlansInfoMessage(userId)
+    botApp.reply_to(
+        message,
+        emojies.info + ' ' + content,
+        # parse_mode='Markdown',
+    )
 
 
 # Handle all other messages

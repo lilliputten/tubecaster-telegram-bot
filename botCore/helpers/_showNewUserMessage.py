@@ -81,7 +81,7 @@ def showNewUserMessage(message: telebot.types.Message, newUserId: int, newUserNa
         ]
         content = '\n\n'.join(msgItems)
         _logger.info(logContent)
-        markup = createSendRegistrationReguestButtonsMarkup(newUserId, newUserName)
+        markup = createSendRegistrationReguestButtonsMarkup(newUserId, newUserName, languageCode)
         botApp.send_message(
             chatId,
             removeAnsiStyles(content),

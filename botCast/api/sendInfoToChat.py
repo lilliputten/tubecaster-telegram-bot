@@ -15,7 +15,7 @@ from botCore.constants import stickers, emojies
 from botCore.helpers import getVideoTags, replyOrSend, prepareYoutubeDate
 from botCore.types import YtdlOptionsType
 
-from db._updateStats import updateStats
+from db import updateStats
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
@@ -125,25 +125,19 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         debugStr = debugObj(debugData)
         infoStr = debugObj(infoData)
         tagsContent = getVideoTags(videoInfo)
-        infoContent = '\n\n'.join(
-            list(
-                filter(
-                    None,
-                    [
-                        emojies.success + ' Video details:',
-                        'Title: %s' % videoInfo.get('title'),
-                        'Link: %s' % videoInfo.get('webpage_url'),
-                        'Channel: %s' % videoInfo.get('channel'),
-                        'Channel link: %s'
-                        % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
-                        #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
-                        'Other parameters:',
-                        infoStr,
-                        tagsContent,
-                    ],
-                )
-            )
-        )
+        infoItems = [
+            emojies.success + ' Video details:',
+            'Title: %s' % videoInfo.get('title'),
+            'Link: %s' % videoInfo.get('webpage_url'),
+            'Channel: %s' % videoInfo.get('channel'),
+            'Channel link: %s'
+            % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+            #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
+            'Other parameters:',
+            infoStr,
+            tagsContent,
+        ]
+        infoContent = '\n\n'.join(list(filter(None, infoItems)))
         logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
         botApp.edit_message_text(
