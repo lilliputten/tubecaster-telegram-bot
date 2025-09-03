@@ -23,7 +23,12 @@ from botCore.helpers import (
     sendNewUserRequestToController,
 )
 from botCore.helpers.plans import getPlansInfoMessage
-from botCore.helpers.status import checkUserLimitations, getUserStatusShortSummaryInfoMessage, showOutOfLimitsMessage
+from botCore.helpers.status import (
+    checkIfUserDeleted,
+    checkUserLimitations,
+    getUserStatusShortSummaryInfoMessage,
+    showOutOfLimitsMessage,
+)
 from core.appConfig import CONTROLLER_CHANNEL_ID, LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
 from core.helpers.errors import errorToString
 from core.helpers.urls import isYoutubeLink
@@ -36,27 +41,23 @@ from .castCommand import castCommand, castForUrlStep, startWaitingForCastUrl
 from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
 from .infoCommand import infoCommand, infoForUrlStep
+from .requestFullAccessPayment import requestFullAccessPayment
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .showRemoveAccountDialog import showRemoveAccountDialog
+from .showRequestFullAccessDialog import showRequestFullAccessDialog
 from .startCommand import startCommand
 from .statsCommand import statsCommand
 from .testCommand import testCommand
+from .requestFullAccessDialog import requestFullAccessDialog
 
 _logger = getDebugLogger()
 
 _logTraceback = False
 
-
-@botApp.message_handler(commands=['get_full_access'])
-def requestFullAccess(message: telebot.types.Message):
-    sendCommandInfo(message, 'requestFullAccess')
-    userId = message.from_user.id if message.from_user else message.chat.id
-    userStr = getUserName(message.from_user)
-    botApp.reply_to(
-        message,
-        emojies.info + f' Here will be a payment form for user {userStr} (id: {userId}).',
-    )
-
+# List some externally registered handlers
+__all__ = [
+    'requestFullAccessDialog',
+]
 
 @botApp.message_handler(commands=['become_user'])
 def requestRegistration(message: telebot.types.Message, state: StateContext):
@@ -211,7 +212,7 @@ def restoreAccount(message: telebot.types.Message):
             errMsg += sTraceback
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
-        _logger.error(errorStyle('removeAccountYes: ' + errMsg))
+        _logger.error(errorStyle('restoreAccount: ' + errMsg))
         botApp.reply_to(message, emojies.error + ' ' + errMsg)
 
 
@@ -270,7 +271,7 @@ def testReaction(message: telebot.types.Message, state: StateContext):
     sendCommandInfo(message, 'testReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     if userId != TELEGRAM_OWNER_ID:
-        replyOrSend(botApp, emojies.error + ' The command is not allowed!', message.chat.id, message)
+        replyOrSend(emojies.error + ' The command is not allowed!', message.chat.id, message)
     else:
         testCommand(message.chat, message, state)
 
@@ -280,7 +281,7 @@ def castTestReaction(message: telebot.types.Message):
     sendCommandInfo(message, 'castTestReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     if userId != TELEGRAM_OWNER_ID:
-        replyOrSend(botApp, emojies.error + ' The command is not allowed!', message.chat.id, message)
+        replyOrSend(emojies.error + ' The command is not allowed!', message.chat.id, message)
     else:
         castTestCommand(message.chat, message)
 
@@ -482,7 +483,7 @@ def defaultCommand(message: telebot.types.Message, state: StateContext):
         else:
             _logger.warning(warningStyle(titleStyle('defaultCommand: Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('defaultCommand: ' + errMsg))
-        replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
+        replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)
 
 
 def registerCommands():

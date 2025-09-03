@@ -89,7 +89,7 @@ def getUserStatusShortSummaryInfoMessage(userId: int):
         limitsItems.append('See /plans info for options to upgrade your account.')
 
     if user and user.isDeleted:
-        deletedAt = user.deletedAt or datetime.now()
+        deletedAt = user.deletedAt or getCurrentDateTime()
         willBeDeletedAt = deletedAt + relativedelta(months=1)
         limitsItems.append(
             f'Your account has been marked to deletion on {formatTime("onlyDate", deletedAt)} (and will be wiped out on {formatTime("onlyDate", willBeDeletedAt)}). You can restore the account via /restore_account command.'
