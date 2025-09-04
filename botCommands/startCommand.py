@@ -15,7 +15,7 @@ _logger = getDebugLogger()
 
 
 def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
-    userId = message.from_user.id if message.from_user else message.chat.id
+    # userId = message.from_user.id if message.from_user else message.chat.id
     chatId = chat.id
     username = chat.username
     first_name = chat.first_name
@@ -47,14 +47,15 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     _logger.info(logContent)
     # Show menu
     markup = createCommonButtonsMarkup()
-    # # Send content and menu with a banner
-    # with open(botConfig.visualImagePath, 'rb') as fh:
-    #     botApp.send_photo(
-    #         chatId,
-    #         photo=fh,
-    #         caption=content,
-    #         # parse_mode='Markdown',
-    #     )
+    # Send content and menu with a banner
+    with open(botConfig.visualImagePath, 'rb') as fh:
+        botApp.send_photo(
+            chatId,
+            photo=fh,
+            caption=content,
+            # parse_mode='Markdown',
+        )
+    # Prepare and send extra content (the limit for photo captions is 1024B)
     logContent = '\n'.join(logItems)
     msgItems = [
         'ADDITIONAL INFO:',
@@ -73,9 +74,9 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
                 ]
             )
         )
-        # botApp.reply_to(msg
-        botApp.send_message(
-            userId,
-            emojies.info + ' ' + '\n\n'.join(filter(None, msgItems)),
-            reply_markup=markup,
-        )
+    # botApp.reply_to(msg
+    botApp.send_message(
+        chatId,
+        emojies.info + ' ' + '\n\n'.join(filter(None, msgItems)),
+        reply_markup=markup,
+    )
