@@ -15,6 +15,7 @@ _logger = getDebugLogger()
 
 
 def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+    userId = message.from_user.id if message.from_user else message.chat.id
     chatId = chat.id
     username = chat.username
     first_name = chat.first_name
@@ -74,7 +75,7 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         )
         # botApp.reply_to(msg
         botApp.send_message(
-            chatId,
+            userId,
             emojies.info + ' ' + '\n\n'.join(filter(None, msgItems)),
             reply_markup=markup,
         )
