@@ -12,8 +12,8 @@ from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
 from ._getTempMessagesForCommand import getTempMessagesForCommand
 from ._init import closeDb, initDb, openDb
 from .stats import collectStats, getCurrentMonthStats, getMonthlyStats, getTotalStats, updateStats
-from .status import getUserStatus
-from .user import addActiveUser, findUser, getActiveUser, updateUserStatus, wipeOutDeletedUsers
+from .status import getUserStatus, updateUserStatus
+from .user import ensureValidUser, findUser, getActiveUser, updateUser, wipeOutDeletedUsers
 
 __all__ = [
     # core
@@ -38,10 +38,11 @@ __all__ = [
     'updateStats',
     # status
     'getUserStatus',
+    'updateUserStatus',
     # user
-    'addActiveUser',
+    'ensureValidUser',
+    'updateUser',
     'findUser',
     'getActiveUser',
-    'updateUserStatus',
     'wipeOutDeletedUsers',
 ]

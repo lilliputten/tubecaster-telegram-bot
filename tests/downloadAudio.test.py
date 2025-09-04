@@ -28,7 +28,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
     options: YtdlOptionsType | None = None
 
     try:
-        rootMessage = replyOrSend(botApp, 'Fetching the video details...', chatId, message) if chatId else None
+        rootMessage = replyOrSend('Fetching the video details...', chatId, message) if chatId else None
         options, videoInfo = downloadInfo(url, chatId, username)
 
         filesize = videoInfo.get('filesize')
@@ -63,7 +63,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             )
         )
         _logger.info(f'downloadAudioTest: Message: ' + infoMsg)
-        #  replyOrSend(botApp, infoMsg, chatId, message)
+        #  replyOrSend(infoMsg, chatId, message)
 
         # Load audio from url...
         audioFile = downloadAudioFile(options, videoInfo)
@@ -85,7 +85,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             )
         )
         _logger.info(f'downloadAudioTest: Message: ' + infoMsg)
-        #  replyOrSend(botApp, infoMsg, chatId, message)
+        #  replyOrSend(infoMsg, chatId, message)
         #  with open(audioFile, 'rb') as audio:
         #      # send_audio params:
         #      #  chat_id: int | str,
@@ -126,7 +126,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             _logger.warning(warningStyle('downloadAudioTest: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioTest: ' + errMsg))
         # if chatId:
-        #     replyOrSend(botApp, errMsg, chatId, message)
+        #     replyOrSend(errMsg, chatId, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

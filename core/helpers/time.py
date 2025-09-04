@@ -23,6 +23,10 @@ TPrecise = bool | str
 TDateLike = datetime | int | float
 
 
+def getCurrentDateTime():
+    return datetime.now(tzObject)
+
+
 def ensureCorrectDateTime(date: TDateLike | None = None):
     dateVal: datetime
     if type(date) is int or type(date) is float:   # isinstance(date, int):
@@ -35,10 +39,6 @@ def ensureCorrectDateTime(date: TDateLike | None = None):
     if dateVal.tzinfo is None:
         dateVal = dateVal.replace(tzinfo=tzObject)
     return dateVal
-
-
-def getCurrentDateTime():
-    return datetime.now(tzObject)
 
 
 def getTimeFormat(precise: TPrecise | None = None):

@@ -53,7 +53,7 @@ def startWaitingForCastUrl(
     chatId = chat.id
     userId = message.from_user.id if message.from_user else chatId
     replyMsg = emojies.question + ' Ok, now send the video address:'
-    replyOrSend(botApp, replyMsg, chat.id, message)
+    replyOrSend(replyMsg, chat.id, message)
     _logger.info('startWaitingForCastUrl: Setting state to waitForCastUrl')
     # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
     # botApp.register_next_step_handler(message, partial(castForUrlStep, chat))

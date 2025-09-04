@@ -68,7 +68,7 @@ model UserStatus {
   userId BigInt
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Usage plan (see `TUserMode` type): GUEST, FREE, PAID, DENIED
+  // Usage plan (see `TUserMode` type): GUEST, FREE, PAID, PREMIUM, DENIED
   userMode String @default("GUEST") // GUEST is the default
 
   // Date of the last payment (if has been paid)
@@ -79,6 +79,9 @@ model UserStatus {
 
   // Payment valid until the date
   paymentValidUntil DateTime?
+
+  // Telegram payment id (chargeId)
+  paymentId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

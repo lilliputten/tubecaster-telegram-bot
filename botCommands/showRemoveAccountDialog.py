@@ -1,15 +1,13 @@
 # -*- coding:utf-8 -*-
 
-from datetime import datetime
-
 import telebot  # pyTelegramBotAPI
 from dateutil.relativedelta import relativedelta
 
 from botApp import botApp
 from botCore.constants import emojies
 from botCore.helpers import createRemoveAccountButtonsMarkup, getUserName
-from core.appConfig import LOCAL, PROJECT_INFO, appConfig
-from core.helpers.time import formatTime, getTimeStamp
+from core.appConfig import LOCAL
+from core.helpers.time import formatTime, getCurrentDateTime
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
 from db import findUser
@@ -18,10 +16,6 @@ _logger = getDebugLogger()
 
 
 def showRemoveAccountDialog(message: telebot.types.Message):
-    chat = message.chat
-    chatId = chat.id
-    username = chat.username
-    first_name = chat.first_name
     # name = first_name if first_name else username
     userId = message.from_user.id if message.from_user else message.chat.id
     user = findUser({'id': userId})   # , 'isDeleted': False})
@@ -32,7 +26,7 @@ def showRemoveAccountDialog(message: telebot.types.Message):
         )
         return
     if user.isDeleted:
-        deletedAt = user.deletedAt or datetime.now()
+        deletedAt = user.deletedAt or getCurrentDateTime()
         willBeDeletedAt = deletedAt + relativedelta(months=+1)
         botApp.reply_to(
             message,
@@ -41,13 +35,10 @@ def showRemoveAccountDialog(message: telebot.types.Message):
         )
         return
     debugItems = {
-        'timeStr': getTimeStamp(),
+        'timeStr': formatTime(),
         'userId': userId,
-        'chatId': chatId,
-        'username': username,
         'usernameStr': getUserName(message.from_user),
-        'first_name': first_name,
-        'LOCAL': appConfig.get('LOCAL'),
+        'LOCAL': LOCAL,
     }
     logItems = [
         titleStyle('showRemoveAccountDialog'),

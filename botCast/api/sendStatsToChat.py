@@ -91,7 +91,7 @@ def sendStatsToChat(
             infoContent = emojies.info + ' ' + 'You do not have any usage statistics yet.'
         logContent = '\n'.join([titleStyle('sendStatsToChat'), debugStr, infoContent])
         _logger.info(logContent)
-        replyOrSend(botApp, infoContent, chatId, originalMessage)
+        replyOrSend(infoContent, chatId, originalMessage)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -103,5 +103,5 @@ def sendStatsToChat(
                 warningTitleStyle('sendStatsToChat: Traceback for the following error:') + tretiaryStyle(sTraceback)
             )
         _logger.error(errorStyle('sendStatsToChat: ' + errMsg))
-        replyOrSend(botApp, errMsg, chatId, originalMessage)
+        replyOrSend(errMsg, chatId, originalMessage)
         #  raise Exception(errMsg)

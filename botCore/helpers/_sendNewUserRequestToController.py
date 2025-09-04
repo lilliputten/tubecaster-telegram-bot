@@ -115,4 +115,4 @@ def sendNewUserRequestToController(
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('sendNewUserRequestToController: ' + errMsg))
-        replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
+        replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)

@@ -85,7 +85,7 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
     isInfoCommand = args[0] == '/info' if argsCount > 0 else False
     if not argsCount or (isInfoCommand and argsCount == 1):
         replyMsg = emojies.question + ' Ok, now send the video address:'
-        replyOrSend(botApp, replyMsg, chat.id, message)
+        replyOrSend(replyMsg, chat.id, message)
         _logger.info('infoCommand: Registering the next handler with infoForUrlStep')
         # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
         # botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))

@@ -10,4 +10,6 @@ freeInfoRequests = 10
 
 # Prices
 
-paidPlanPriceStars = 250
+# Monthly cost of PAID plan (in XTR stars)
+paidPlanPriceStars = 100
+currency = 'XTR'

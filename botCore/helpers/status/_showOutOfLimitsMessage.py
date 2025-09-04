@@ -4,9 +4,9 @@ import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
 from botCore.constants import emojies
-from botCore.helpers import createSendRegistrationReguestButtonsMarkup, getUserName
+from botCore.helpers import getUserName
 from botCore.helpers._replyOrSend import replyOrSend
-from core.appConfig import CONTROLLER_CHANNEL_ID, LOCAL, PROJECT_INFO, PROJECT_PATH
+from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH
 from core.helpers.errors import errorToString
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
@@ -75,7 +75,7 @@ def showOutOfLimitsMessage(message: telebot.types.Message):
         ]
         content = '\n\n'.join(msgItems)
         _logger.info(logContent)
-        replyOrSend(botApp, content, chatId, message)
+        replyOrSend(content, chatId, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -85,4 +85,4 @@ def showOutOfLimitsMessage(message: telebot.types.Message):
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('showOutOfLimitsMessage: ' + errMsg))
-        replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
+        replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)

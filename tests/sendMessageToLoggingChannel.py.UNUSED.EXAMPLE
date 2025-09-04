@@ -6,7 +6,7 @@ from botApp import botApp
 from core.appConfig import LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
 from core.helpers.time import formatTime
 
-print('LOGGING_CHANNEL_ID:', LOGGING_CHANNEL_ID)
+# print('LOGGING_CHANNEL_ID:', LOGGING_CHANNEL_ID)
 
 timeStr = formatTime()
 

@@ -2,8 +2,10 @@
 
 import telebot  # pyTelegramBotAPI
 
+from botApp import botApp
 
-def replyOrSend(botApp: telebot.TeleBot, text: str, chatId: int | str, message: telebot.types.Message | None = None):
+
+def replyOrSend(text: str, chatId: int | str, message: telebot.types.Message | None = None):
     if message:
         return botApp.reply_to(message, text)
     else:

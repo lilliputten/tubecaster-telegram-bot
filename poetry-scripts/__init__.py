@@ -9,7 +9,17 @@ def isort():
         '--only-modified',
         '.',
     ]
-    subprocess.run(cmd)
+    subprocess.run(cmd, stdout=subprocess.DEVNULL)
+
+
+def format():
+    print('Running python linter (blue)...')
+    cmd = [
+        'blue',
+        '-q',
+        '.',
+    ]
+    subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
 
 def lint():
@@ -22,15 +32,6 @@ def lint():
         '.',
     ]
     subprocess.run(cmd, env=env)
-
-
-def format():
-    print('Running python linter (blue)...')
-    cmd = [
-        'blue',
-        '.',
-    ]
-    subprocess.run(cmd)
 
 
 def check_all():

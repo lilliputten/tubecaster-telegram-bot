@@ -1,26 +1,29 @@
 import traceback
+from typing import Union, cast
 
 from prisma.models import UserStatus
+from prisma.types import UserStatusCreateInput, UserStatusUpdateInput
 
-from botCore.types._TUserMode import TUserMode
 from core.helpers.errors import errorToString
 
+# Use Union to accept fields from either type
+UserStatusCommonData = Union[UserStatusCreateInput, UserStatusUpdateInput]
 
-def updateUserStatus(userId: int, userMode: TUserMode):
+
+def updateUserStatus(
+    userId: int,
+    data: UserStatusCommonData,
+):
     userStatusClient = UserStatus.prisma()
     try:
+        createData = cast(UserStatusCreateInput, {'userId': userId, **data})
+        updateData = cast(UserStatusUpdateInput, data)
+
         userStatus = userStatusClient.upsert(
-            where={
-                'userId': userId,
-            },
+            where={'userId': userId},
             data={
-                'create': {
-                    'userId': userId,
-                    'userMode': userMode,
-                },
-                'update': {
-                    'userMode': userMode,
-                },
+                'create': createData,
+                'update': updateData,
             },
         )
         return userStatus
@@ -31,5 +34,3 @@ def updateUserStatus(userId: int, userMode: TUserMode):
         print('Traceback for the following error:' + sTraceback)
         print('Error: ' + errMsg)
         raise Exception(errMsg)
-    finally:
-        pass

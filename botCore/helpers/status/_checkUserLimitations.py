@@ -1,11 +1,9 @@
-from datetime import datetime
 from typing import Literal, cast
 
 import telebot  # pyTelegramBotAPI
 from dateutil.relativedelta import relativedelta
 from prisma.models import MonthlyStats, TotalStats, UserStatus
 
-from botApp import botApp
 from botCore.constants import emojies, limits
 from botCore.helpers import replyOrSend
 from botCore.types import TUserMode
@@ -33,32 +31,40 @@ def checkIfUserDeleted(message: telebot.types.Message, userId: int, showMessage:
 
 def checkUserLimitations(message: telebot.types.Message, userId: int, action: TUserAction):
     """
-    Returns an error message error if user exceed some limits.
-    Returns an empty value (None) on success.
+    Sends warnings and errors directly to the chat.
+    Returns True if the action is allowed.
     """
     userStatus: UserStatus | None = getUserStatus(userId)
     userMode: TUserMode = cast(TUserMode, userStatus.userMode) if userStatus else 'GUEST'
 
     checkIfUserDeleted(message, userId, True)
 
+    if userMode == 'PREMIUM':
+        # No limitations
+        return True
+
     if userMode == 'PAID':
         if not userStatus:
             content = 'There is something wrong with your account status data (no userStatus record found). Please contact administrator (@lilliputten) and ask to fix the issue.'
             replyOrSend(emojies.error + ' ' + content, userId, message)
             return False
-        paidAt = userStatus.paidAt
-        if not paidAt:
-            content = 'There is something wrong with your account status data (no paidAt field found). Please contact administrator (@lilliputten) and ask to fix the issue.'
+        # paidAt = userStatus.paidAt
+        # if not paidAt:
+        #     content = 'There is something wrong with your account status data (no paidAt field found). Please contact administrator (@lilliputten) and ask to fix the issue.'
+        #     replyOrSend(emojies.error + ' ' + content, userId, message)
+        #     return False
+        paymentValidUntil = userStatus.paymentValidUntil   # ensureCorrectDateTime(paidAt) + relativedelta(months=1)
+        if not paymentValidUntil:
+            content = 'There is something wrong with your account status data (no paymentValidUntil field found). Please contact administrator (@lilliputten) and ask to fix the issue.'
             replyOrSend(emojies.error + ' ' + content, userId, message)
             return False
-        validUntil = paidAt + relativedelta(months=1)
         now = getCurrentDateTime()
-        if now < validUntil:
+        if now < paymentValidUntil:
             return True
         # Show a PAID plan expiration message and appy FREE plan
         content = '\n\n'.join(
             [
-                f'YOUR PAID PERIOD ALREADY ENDED ON {formatTime("onlyDate", validUntil)}.',
+                f'YOUR PAID PERIOD ALREADY ENDED ON {formatTime("onlyDate", paymentValidUntil)}.',
                 'The FREE usage plan is applied.',
                 'Renew your subscription via /get_full_access or contact the administrator (@lilliputten).',
             ]

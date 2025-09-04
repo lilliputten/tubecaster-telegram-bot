@@ -66,7 +66,7 @@ def downloadAndSendAudioToChat(
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.walkingMrCat)
-    rootMessage = replyOrSend(botApp, emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
+    rootMessage = replyOrSend(emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
 
     # Initally update chat status
     updateChatStatus(chatId)

@@ -23,17 +23,16 @@ from botCore.helpers import (
     sendNewUserRequestToController,
 )
 from botCore.helpers.plans import getPlansInfoMessage
-from botCore.helpers.status import (
-    checkIfUserDeleted,
+from botCore.helpers.status import (  # checkIfUserDeleted, # TODO: To use to check in critical points
     checkUserLimitations,
     getUserStatusShortSummaryInfoMessage,
     showOutOfLimitsMessage,
 )
-from core.appConfig import CONTROLLER_CHANNEL_ID, LOGGING_CHANNEL_ID, TELEGRAM_OWNER_ID
+from core.appConfig import CONTROLLER_CHANNEL_ID, TELEGRAM_OWNER_ID
 from core.helpers.errors import errorToString
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.logger.utils import errorStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
 from db import initDb
 
@@ -41,14 +40,13 @@ from .castCommand import castCommand, castForUrlStep, startWaitingForCastUrl
 from .castTestCommand import castTestCommand
 from .helpCommand import helpCommand
 from .infoCommand import infoCommand, infoForUrlStep
-from .requestFullAccessPayment import requestFullAccessPayment
+from .requestFullAccess import requestFullAccess
+from .requestFullAccessPayment import requestFullAccessPayment  # Import to register payment handlers
 from .sendInfo import sendCommandInfo, sendQueryInfo
 from .showRemoveAccountDialog import showRemoveAccountDialog
-from .showRequestFullAccessDialog import showRequestFullAccessDialog
 from .startCommand import startCommand
 from .statsCommand import statsCommand
 from .testCommand import testCommand
-from .requestFullAccessDialog import requestFullAccessDialog
 
 _logger = getDebugLogger()
 
@@ -56,8 +54,10 @@ _logTraceback = False
 
 # List some externally registered handlers
 __all__ = [
-    'requestFullAccessDialog',
+    'requestFullAccess',
+    'requestFullAccessPayment',
 ]
+
 
 @botApp.message_handler(commands=['become_user'])
 def requestRegistration(message: telebot.types.Message, state: StateContext):

@@ -13,7 +13,12 @@ from ._prepareYoutubeDate import prepareYoutubeDate
 from ._replyOrSend import replyOrSend
 from ._sendNewUserRequestToController import sendNewUserRequestToController
 from .plans import getPlansInfoMessage
-from .status import checkUserLimitations, getUserStatusShortSummaryInfoMessage, showOutOfLimitsMessage
+from .status import (
+    checkIfUserDeleted,
+    checkUserLimitations,
+    getUserStatusShortSummaryInfoMessage,
+    showOutOfLimitsMessage,
+)
 
 # from ._checkValidUser import checkValidUser # UNUSED
 # from ._showNewUserMessage import showNewUserMessage # UNUSED
@@ -39,6 +44,7 @@ __all__ = [
     'getPlansInfoMessage',
     # status
     'checkUserLimitations',
+    'checkIfUserDeleted',
     'getUserStatusShortSummaryInfoMessage',
     'showOutOfLimitsMessage',
 ]

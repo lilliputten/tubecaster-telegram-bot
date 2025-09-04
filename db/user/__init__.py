@@ -1,14 +1,14 @@
-from ._addActiveUser import addActiveUser
+from ._ensureValidUser import ensureValidUser
 from ._findUser import findUser
 from ._getActiveUser import getActiveUser
-from ._updateUserStatus import updateUserStatus
+from ._updateUser import updateUser
 from ._wipeOutDeletedUsers import wipeOutDeletedUsers
 
 __all__ = [
     # user
-    'addActiveUser',
+    'ensureValidUser',
     'findUser',
     'getActiveUser',
-    'updateUserStatus',
+    'updateUser',
     'wipeOutDeletedUsers',
 ]

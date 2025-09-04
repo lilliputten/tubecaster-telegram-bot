@@ -60,11 +60,23 @@ def webhookRoute():
     #  removed_chat_boost = None
     #  shipping_query = None
     #  update_id = 574259009
+
     updateId = update.update_id if update else None
+    pre_checkout_query = update.pre_checkout_query if update else None
     callback_query = update.callback_query if update else None
     message = update.message if update else None
     if not message and callback_query:
         message = callback_query.message
+    # if not message and pre_checkout_query:
+    #     # Example of pre_checkout_query: telebot.types.PreCheckoutQuery data:
+    #     # currency = 'XTR'
+    #     # from_user = <telebot.types.User object at 0x000001ECB101B8D0>
+    #     # id = '2106243732230179992'
+    #     # invoice_payload = '490398083:Ig (@lilliputten):en'
+    #     # order_info = None
+    #     # shipping_option_id = None
+    #     # total_amount = 1
+    #     pass
     messageText = message.text if message else None
     messageId = message.id if message else 0
     messageChat = message.chat if message else None
@@ -72,38 +84,6 @@ def webhookRoute():
     userId = user.id if user else 0
     usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
-    # # DEBUG
-    # # messageContentType = message.content_type if message else None
-    # # messageDate = formatTime(None, message.date) if message else None
-    # timeStr = formatTime()
-    # stateValue = botApp.get_state(userId, chatId)
-    # debugData = {
-    #     'startTimeStr': startTimeStr,
-    #     'timeStr': timeStr,
-    #     # 'WEBHOOK_URL': WEBHOOK_URL,
-    #     'LOCAL': LOCAL,
-    #     'update': repr(update),
-    #     'message': repr(message),
-    #     'callback_query': repr(callback_query),
-    #     'messageChat': repr(messageChat),
-    #     'user': repr(user),
-    #     'updateId': updateId,
-    #     'messageText': messageText,
-    #     'messageId': messageId,
-    #     # 'messageContentType': messageContentType,
-    #     # 'messageDate': messageDate,
-    #     'userId': userId,
-    #     'usernameStr': usernameStr,
-    #     'chatId': chatId,
-    #     'stateValue': stateValue,
-    # }
-    # debugStr = debugObj(debugData)
-    # logItems = [
-    #     titleStyle('webhookRoute: Update %d for message %d started' % (updateId, messageId)),
-    #     secondaryStyle(debugStr),
-    # ]
-    # logContent = '\n'.join(logItems)
-    # _logger.info(logContent)
 
     # Remove previous message markup
     if callback_query and callback_query.message:
@@ -120,36 +100,12 @@ def webhookRoute():
     try:
         if not update or not updateId:
             raise Exception('No update id has been provided!')
-        if not messageId:
-            raise Exception('No message id has been provided!')
+        if not messageId and not pre_checkout_query:
+            raise Exception('No message id or pre_checkout_query has been provided!')
 
         existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
         if existedCommand:
-            # Command already exists, do nothing, but notify user
-            # # DEBUG
-            # debugData = {
-            #     'commandId': existedCommand.id,
-            #     'repeated': existedCommand.repeated,
-            #     'createdAtStr': formatTime(None, existedCommand.createdAt),
-            #     'updatedAtStr': formatTime(None, existedCommand.updatedAt),
-            #     'timeStr': timeStr,
-            #     'messageChat': repr(messageChat),
-            #     'updateId': updateId,
-            #     'messageText': messageText,
-            #     'messageId': messageId,
-            #     'messageContentType': messageContentType,
-            #     'messageDate': messageDate,
-            #     'userId': userId,
-            #     'usernameStr': usernameStr,
-            #     'chatId': chatId,
-            # }
-            # debugStr = debugObj(debugData)
-            # logItems = [
-            #     titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
-            #     secondaryStyle(debugStr),
-            # ]
-            # logContent = '\n'.join(logItems)
-            # _logger.info(logContent)
+            # Command already exists, do nothing, but notify the user
             if chatId:
                 # fmt: off
                 infoStr = ' '.join(filter(None, [
@@ -165,7 +121,7 @@ def webhookRoute():
                     disable_web_page_preview=True,
                 )
                 addTempMessage(commandId=existedCommand.id, messageId=newMessage.id)
-        else:
+        elif messageId:
             # Create new command
             commandData: dbTypes.TNewCommandData = {
                 'updateId': updateId,
@@ -175,9 +131,6 @@ def webhookRoute():
             }
             createdCommand = addCommand(commandData)
 
-            # Process the command...
-            botApp.process_new_updates([update])
-
             # DEBUG: Local test: try adding (and removing later, see `finally` section) a temp message...
             if LOCAL and chatId and messageText == 'test':
                 newMessage = botApp.send_message(
@@ -186,31 +139,9 @@ def webhookRoute():
                 )
                 addTempMessage(commandId=createdCommand.id, messageId=newMessage.id)
 
-            # # DEBUG
-            # stateValue = botApp.get_state(userId, chatId)
-            # debugData = {
-            #     'commandId': createdCommand.id,
-            #     'createdAtStr': formatTime(None, createdCommand.createdAt),
-            #     'updatedAtStr': formatTime(None, createdCommand.updatedAt),
-            #     'timeStr': timeStr,
-            #     'messageChat': repr(messageChat),
-            #     'updateId': updateId,
-            #     'messageText': messageText,
-            #     'messageId': messageId,
-            #     'messageContentType': messageContentType,
-            #     'messageDate': messageDate,
-            #     'userId': userId,
-            #     'usernameStr': usernameStr,
-            #     'chatId': chatId,
-            #     'stateValue': stateValue,
-            # }
-            # debugStr = debugObj(debugData)
-            # logItems = [
-            #     titleStyle('webhookRoute: Update %d for message %d has been processed' % (updateId, messageId)),
-            #     secondaryStyle(debugStr),
-            # ]
-            # logContent = '\n'.join(logItems)
-            # _logger.info(logContent)
+        # Process the command...
+        botApp.process_new_updates([update])
+
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
