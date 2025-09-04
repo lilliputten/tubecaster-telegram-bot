@@ -58,11 +58,11 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     # Prepare and send extra content (the limit for photo captions is 1024B)
     logContent = '\n'.join(logItems)
     msgItems = [
-        'ADDITIONAL INFO:',
+        'USAGE NOTES.',
         'Use /cast to download an audio from the youtube video url, /info to get the video details, or just send me its url as a message.',
         'Also, /stats command will display your usage statistics, /status will show your usage plan and limits (if applicable), /plans will show details on available usage plans.',
         'Type /help to find all the available commands.',
-        'NOTE: Please keep in mind that the bot is working in experimental mode and that Google may change its algorithms and API, which may lead to temporary disruptions in the application.',
+        'Please keep in mind that the bot is working in experimental mode and that Google may change its algorithms and API, which may lead to temporary disruptions in the application.',
         'Also keep in mind that downloading and processing audio files takes time and can take up to several minutes. If the bot has accepted your command for processing and it seems to you that the process has been delayed, please be patient. In case of long-term operations, the bot will send you notifications about the active process every minute.',
     ]
     if LOCAL:
