@@ -1,13 +1,11 @@
 # -*- coding:utf-8 -*-
 
 from core.helpers.time import getTimeStamp
-
 from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
 
 from ..helpers.prepareLinkInfo import prepareLinkInfo
-
 
 _logger = getDebugLogger()
 

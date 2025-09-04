@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import traceback
+
 from flask import Flask, g
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -8,9 +9,7 @@ from core.appConfig import STATIC_PATH, isNormalRun
 from core.helpers.errors import errorToString
 from core.logger.logger import getDebugLogger
 from core.logger.utils import errorStyle, warningStyle
-
-from db import initDb, closeDb
-
+from db import closeDb, initDb
 
 _logger = getDebugLogger()
 

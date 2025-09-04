@@ -1,18 +1,17 @@
 # -*- coding:utf-8 -*-
 
-from datetime import timedelta
 import pathlib
 import re
 import traceback
+from datetime import timedelta
 from typing import Callable
 
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
 from core.appConfig import AUDIO_FILE_EXT
+from core.ffmpeg import probeDuration, split
 from core.helpers.errors import errorToString
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, errorTitleStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
-from core.ffmpeg import split, probeDuration
-
 
 # The parameters to pass to a callback are:
 # - audioFileName: str - Source audio file name (is already on the disk);

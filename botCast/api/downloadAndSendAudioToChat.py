@@ -2,31 +2,27 @@
 
 import os
 import re
-import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.helpers.files import sizeofFmt
-from core.helpers.errors import errorToString
-from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-from core.utils import debugObj
+import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
+from botCore.constants import emojies, stickers
+from botCore.helpers import getVideoDetailsStr, replyOrSend
 from botCore.types import YtdlOptionsType
-from botCore.constants import stickers, emojies
-from botCore.helpers import (
-    replyOrSend,
-    getVideoDetailsStr,
-)
-from db._updateStats import updateStats
+from core.helpers.errors import errorToString
+from core.helpers.files import sizeofFmt
+from core.helpers.time import RepeatedTimer
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, errorTitleStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.utils import debugObj
+from db import updateStats
 
 from ..config.castConfig import logTraceback
+from ..helpers._sendAudioToChat import sendAudioToChat
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadAudioFile import downloadAudioFile
 from ..helpers.downloadInfo import downloadInfo
-from ..helpers._sendAudioToChat import sendAudioToChat
-
 
 _logger = getDebugLogger()
 
@@ -70,7 +66,7 @@ def downloadAndSendAudioToChat(
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.walkingMrCat)
-    rootMessage = replyOrSend(botApp, emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
+    rootMessage = replyOrSend(emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
 
     # Initally update chat status
     updateChatStatus(chatId)

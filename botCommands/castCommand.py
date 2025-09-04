@@ -1,20 +1,18 @@
 # -*- coding:utf-8 -*-
 
 from functools import partial
+
 import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
 
-from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
-from core.utils import debugObj
-
 from botApp import botApp
 from botApp.botStates import BotStates
-from botCore.helpers import getUserName
-from botCore.constants import emojies
-from botCore.helpers import replyOrSend
 from botCast import downloadAndSendAudioToChat
-
+from botCore.constants import emojies
+from botCore.helpers import getUserName, replyOrSend
+from core.helpers.urls import isYoutubeLink
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
+from core.utils import debugObj
 
 _logger = getDebugLogger()
 
@@ -55,7 +53,7 @@ def startWaitingForCastUrl(
     chatId = chat.id
     userId = message.from_user.id if message.from_user else chatId
     replyMsg = emojies.question + ' Ok, now send the video address:'
-    replyOrSend(botApp, replyMsg, chat.id, message)
+    replyOrSend(replyMsg, chat.id, message)
     _logger.info('startWaitingForCastUrl: Setting state to waitForCastUrl')
     # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
     # botApp.register_next_step_handler(message, partial(castForUrlStep, chat))

@@ -2,11 +2,9 @@
 
 from flask import Response
 
-
-from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
-
 from botApp import botApp
+from core.helpers.time import getTimeStamp
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 
 from .botRoutes import botRoutes
 

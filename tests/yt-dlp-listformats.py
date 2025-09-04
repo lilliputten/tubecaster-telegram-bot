@@ -1,13 +1,12 @@
 # -*- coding:utf-8 -*-
 
+import os
 import pathlib
 import posixpath
 import re
-import os
 import traceback
 
 import yt_dlp
-
 
 YTDL = yt_dlp
 

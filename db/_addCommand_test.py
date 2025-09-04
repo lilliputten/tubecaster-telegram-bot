@@ -8,16 +8,14 @@
 
 import os
 from typing import Optional
+from unittest import TestCase, main, mock
 
 from prisma.models import Command
 
-from unittest import TestCase, main, mock
-
+from ._addCommand import addCommand
 from ._init import closeDb, initDb
-
 from ._testDbConfig import testEnv
 from ._types import TNewCommandData, TPrismaCommand
-from ._addCommand import addCommand
 
 
 @mock.patch.dict(os.environ, testEnv)

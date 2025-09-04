@@ -2,10 +2,9 @@
 
 import posixpath
 
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
-from core.appConfig import appConfig
-
 from botCore.types import YtdlOptionsType
+from core.appConfig import appConfig
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 
 _logger = getDebugLogger()
 

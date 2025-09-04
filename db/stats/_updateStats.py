@@ -1,8 +1,8 @@
 from datetime import date
 
-# from prisma import Prisma
+from .._init import initDb
 
-from ._init import initDb
+# from prisma import Prisma
 
 
 def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures: int = 0, volume: int = 0):
@@ -13,6 +13,36 @@ def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures:
     prisma = initDb()
 
     with prisma.tx() as tx:
+        # # Ensure if the user exists
+        # tx.user.upsert(
+        #     where={
+        #         'id': userId,
+        #     },
+        #     data={
+        #         'create': {
+        #             'userId': userId,
+        #             'requests': requests,
+        #             'infoRequests': infoRequests,
+        #             'failures': failures,
+        #             'volume': volume,
+        #         },
+        #         'update': {
+        #             'requests': {
+        #                 'increment': requests,
+        #             },
+        #             'infoRequests': {
+        #                 'increment': infoRequests,
+        #             },
+        #             'failures': {
+        #                 'increment': failures,
+        #             },
+        #             'volume': {
+        #                 'increment': volume,
+        #             },
+        #         },
+        #     },
+        # )
+
         # Update or create TotalStats
         tx.totalstats.upsert(
             where={

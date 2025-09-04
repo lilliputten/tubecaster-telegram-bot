@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 
-import traceback
-import re
 import os
 import pathlib
+import re
+import traceback
 
 _PROJECT_PATH = pathlib.Path(os.getcwd()).as_posix()
 

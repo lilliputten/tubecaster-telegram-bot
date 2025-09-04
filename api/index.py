@@ -2,14 +2,13 @@
 
 import sysconfig
 import traceback
-from core.appConfig import appConfig, LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, isNormalRun
 
+from core.appConfig import LOCAL, PROJECT_INFO, WERKZEUG_RUN_MAIN, appConfig, isNormalRun
 from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle
 from core.helpers.time import formatTime
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, warningStyle
 from core.utils import debugObj
-
 
 _logger = getDebugLogger()
 
@@ -49,8 +48,8 @@ from flaskApp import flaskApp
 
 if isNormalRun:
     try:
-        from botRoutes import botRoutes
         from botCommands import registerCommands
+        from botRoutes import botRoutes
 
         # Register routes
         flaskApp.register_blueprint(botRoutes, url_prefix='/')

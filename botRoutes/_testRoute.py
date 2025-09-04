@@ -2,25 +2,22 @@
 
 import time
 import traceback
-from flask import Response
-from flask import request
 
-from core.appConfig import LOCAL, appConfig, PROJECT_INFO
-from core.helpers.errors import errorToString
-
-from core.helpers.strings import truncStr
-from core.helpers.time import getTimeStamp
-from core.logger import getDebugLogger, loggerConfig
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-from core.utils import debugObj
-from core.utils.generic import dictFromModule
+from flask import Response, request
 
 from botApp import botApp
 from botCore import botConfig
 from botCore.botConfig import WEBHOOK_URL
+from core.appConfig import LOCAL, PROJECT_INFO, appConfig
+from core.helpers.errors import errorToString
+from core.helpers.strings import truncStr
+from core.helpers.time import getTimeStamp
+from core.logger import getDebugLogger, loggerConfig
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.utils import debugObj
+from core.utils.generic import dictFromModule
 
 from .botRoutes import botRoutes
-
 
 startTimeStr = getTimeStamp()
 

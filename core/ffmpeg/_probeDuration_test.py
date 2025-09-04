@@ -7,7 +7,6 @@
 #  - `poetry run python -m unittest discover -v -f -t . -s . -p "*_test.py" -k _addCommand_test`
 
 import traceback
-
 from unittest import TestCase, main
 
 from ._probeDuration import probeDuration

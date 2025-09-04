@@ -1,30 +1,28 @@
 # -*- coding:utf-8 -*-
 
-from datetime import timedelta
-import re
-from typing import Optional
-import telebot  # pyTelegramBotAPI
 import os
+import re
 import traceback
+from datetime import timedelta
 from functools import partial
+from typing import Optional
 
-from core.appConfig import AUDIO_FILE_EXT, MAX_AUDIO_FILE_SIZE
-from core.helpers.files import sizeofFmt
-from core.helpers.errors import errorToString
-
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-from core.utils import debugObj
+import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
-from botCore.types import TVideoInfo
 from botCore.constants import emojies
 from botCore.helpers import getDesiredPiecesCount
 from botCore.routines import splitAudio
+from botCore.types import TVideoInfo
+from core.appConfig import AUDIO_FILE_EXT, MAX_AUDIO_FILE_SIZE
+from core.helpers.errors import errorToString
+from core.helpers.files import sizeofFmt
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, errorTitleStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.utils import debugObj
 
 from ..config.castConfig import logTraceback
 from ..helpers._sendAudioPiece import sendAudioPiece
-
 
 _logger = getDebugLogger()
 

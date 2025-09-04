@@ -9,7 +9,6 @@
 from unittest import TestCase, main
 
 from ..types import TVideoInfo
-
 from ._getVideoTags import getVideoTags
 
 

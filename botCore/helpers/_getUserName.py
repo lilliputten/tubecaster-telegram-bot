@@ -3,7 +3,7 @@
 import telebot  # pyTelegramBotAPI
 
 
-def getUserName(user: telebot.types.User | None):
+def getUserName(user: telebot.types.User | telebot.types.Chat | None, appendId: bool = False):
     if not user:
         return 'Unknown'
     userId = user.id if user else None
@@ -15,9 +15,12 @@ def getUserName(user: telebot.types.User | None):
         lastName,
     ]
     realName = ' '.join(filter(None, realNameList))
+    extraItems = [
+        '@' + username if username and realName else None,
+        '#' + str(userId) if appendId and realName and username else None,
+    ]
     if not realName:
-        realName = username
-    if not realName:
-        realName = '#' + str(userId)
-    name = ' '.join(filter(None, [realName, '(@%s)' % username if username and realName != username else None]))
+        realName = '@' + username if username else '#' + str(userId)
+    extra = ', '.join(filter(None, extraItems))
+    name = ' '.join(filter(None, [realName, f'({extra})' if extra else None]))
     return name

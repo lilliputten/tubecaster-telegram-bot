@@ -1,23 +1,20 @@
 # -*- coding:utf-8 -*-
 
-from prisma.models import MonthlyStats, TotalStats
-import telebot  # pyTelegramBotAPI
 import traceback
 
-from core.helpers.files import sizeofFmt
-from core.helpers.errors import errorToString
-from core.logger import getDebugLogger, titleStyle, tretiaryStyle, secondaryStyle, errorStyle, warningTitleStyle
-from core.utils import debugObj
+import telebot  # pyTelegramBotAPI
+from prisma.models import MonthlyStats, TotalStats
 
 from botApp import botApp
-
 from botCore.constants import emojies
 from botCore.helpers import replyOrSend
-
-from db._collectStats import collectStats
+from core.helpers.errors import errorToString
+from core.helpers.files import sizeofFmt
+from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
+from core.utils import debugObj
+from db import collectStats
 
 from ..config.castConfig import logTraceback
-
 
 _logger = getDebugLogger()
 
@@ -63,7 +60,7 @@ def sendStatsToChat(
     Parameters:
 
     - statsForUserId: int - User id to collect the stats for (usually is the current user; but admin can request stats for another user).
-    - chatId: str | int - Chat id (optional).
+    - chatId: str | int - Chat/user id.
     - username: str - Chat username.
     - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
     """
@@ -91,10 +88,10 @@ def sendStatsToChat(
         infoItems = list(filter(None, infoItems))
         infoContent = '\n\n'.join(infoItems)
         if not len(infoItems):
-            infoContent = emojies.info + ' ' + 'You do not have any statistics yet.'
+            infoContent = emojies.info + ' ' + 'You do not have any usage statistics yet.'
         logContent = '\n'.join([titleStyle('sendStatsToChat'), debugStr, infoContent])
         _logger.info(logContent)
-        replyOrSend(botApp, infoContent, chatId, originalMessage)
+        replyOrSend(infoContent, chatId, originalMessage)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -106,5 +103,5 @@ def sendStatsToChat(
                 warningTitleStyle('sendStatsToChat: Traceback for the following error:') + tretiaryStyle(sTraceback)
             )
         _logger.error(errorStyle('sendStatsToChat: ' + errMsg))
-        replyOrSend(botApp, errMsg, chatId, originalMessage)
+        replyOrSend(errMsg, chatId, originalMessage)
         #  raise Exception(errMsg)

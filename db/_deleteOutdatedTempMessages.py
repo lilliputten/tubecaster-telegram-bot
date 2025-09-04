@@ -1,10 +1,10 @@
-from datetime import date
 import datetime
 import traceback
+from datetime import date
+
 from prisma.models import TempMessage
 
 from core.helpers.errors import errorToString
-
 
 validHours = 1
 

@@ -7,22 +7,18 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _addTempMessage_test`
 
 import os
-from random import randrange
-from datetime import date
 import traceback
+from datetime import date
+from random import randrange
 from typing import Optional
-from prisma.models import User, TotalStats, MonthlyStats
-
 from unittest import TestCase, main, mock
+
+from prisma.models import MonthlyStats, TotalStats, User
 
 from core.helpers.errors import errorToString
 
-from ._init import closeDb, initDb
-
-from ._testDbConfig import testEnv
-from ._types import TTempMessage
-
-from ._addTempMessage import addTempMessage
+from .._init import closeDb, initDb
+from .._testDbConfig import testEnv
 
 
 @mock.patch.dict(os.environ, testEnv)
@@ -44,7 +40,7 @@ class Test_addTempMessage_test(TestCase):
             data={
                 'id': userId,
                 'userStr': f'Test {userId}',
-                'isActive': True,
+                # 'isActive': True,
             },
         )
 
@@ -112,16 +108,6 @@ class Test_addTempMessage_test(TestCase):
                         'volume': 100,
                     },
                 )
-                # userClient = User.prisma()
-                # user = userClient.find_unique(
-                #     where={
-                #         'id': self.user.id,
-                #     },
-                #     include={
-                #         'totalStats': True,
-                #         'monthlyStats': True,
-                #     },
-                # )
             self.assertIsInstance(totalStats, TotalStats)
             if totalStats:
                 self.assertIsInstance(totalStats.userId, int)

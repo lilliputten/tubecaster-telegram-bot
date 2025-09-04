@@ -1,28 +1,23 @@
 # -*- coding:utf-8 -*-
 
-from datetime import timedelta
-import traceback
-import telebot  # pyTelegramBotAPI
-from telebot.types import ReplyParameters
 import math
+import traceback
+from datetime import timedelta
 from urllib.request import urlopen
 
-from core.ffmpeg import probeDuration, probe
-from core.helpers.errors import errorToString
-from core.helpers.files import getFormattedFileSize
-
-from core.helpers.strings import truncStr
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+import telebot  # pyTelegramBotAPI
+from telebot.types import ReplyParameters
 
 from botApp import botApp
-from botCore.helpers import (
-    getVideoDetailsStr,
-    createVideoCaptionStr,
-)
-from botCore.types import TVideoInfo
 from botCore.constants import emojies
-
+from botCore.helpers import createVideoCaptionStr, getVideoDetailsStr
+from botCore.types import TVideoInfo
+from core.ffmpeg import probe, probeDuration
+from core.helpers.errors import errorToString
+from core.helpers.files import getFormattedFileSize
+from core.helpers.strings import truncStr
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 
 _logger = getDebugLogger()   # 'botCast/helpers/_sendAudioPiece')
 

@@ -4,13 +4,14 @@
 Test simple message sending code.
 """
 
-import telebot  # pyTelegramBotAPI
 import traceback
 
+import telebot  # pyTelegramBotAPI
+
+from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_OWNER_ID, TELEGRAM_TOKEN
+from core.helpers.errors import errorToString
 from core.logger import secondaryStyle, titleStyle
 from core.utils import debugObj
-from core.helpers.errors import errorToString
-from core.appConfig import LOCAL, PROJECT_INFO, PROJECT_PATH, TELEGRAM_TOKEN, TELEGRAM_OWNER_ID
 
 botApp = telebot.TeleBot(token=TELEGRAM_TOKEN, threaded=False)
 

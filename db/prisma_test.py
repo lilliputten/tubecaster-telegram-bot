@@ -7,8 +7,8 @@
 #  - `poetry run python -m unittest -v -f -p '*_test.py' -k _prisma_test`
 
 import os
-import sys
 import pathlib
+import sys
 
 # from typing import Optional
 from unittest import TestCase, main
@@ -18,8 +18,6 @@ from unittest import TestCase, main
 
 # Inject project path to allow server-side tests
 sys.path.insert(1, pathlib.Path(os.getcwd()).as_posix())
-
-# from db._testDbConfig import testEnv
 
 
 # @mock.patch.dict(os.environ, testEnv)

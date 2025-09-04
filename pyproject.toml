@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.0.16"
+version = "0.1.1"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
@@ -25,12 +25,14 @@ concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # ffmpeg-python = "^0.2.0" # @see https://kkroening.github.io/ffmpeg-python/
 prisma = "^0.15.0"
 colorama = "^0.4.6"
+python-dateutil = "^2.9.0.post0"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
 # Don't use newer versions if pyright: they bring a lot of false typings' errors
 pyright = "==1.1.403"
 poetry-plugin-export = "^1.8.0"
+isort = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -11,7 +11,7 @@
 
 ## Build info (auto-generated)
 
-- Project info: v.0.0.16 / 2025.09.02 02:43:25 +0300
+- Project info: v.0.1.1 / 2025.09.05 02:36:14 +0300
 
 ## Key User Features
 

@@ -1,28 +1,23 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pyTelegramBotAPI
-from datetime import timedelta
-import traceback
 import os
+import traceback
+from datetime import timedelta
 
-from botCore.helpers import replyOrSend
-from core.helpers.files import sizeofFmt
-from core.helpers.errors import errorToString
-from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
-
-from core.appConfig import TELEGRAM_OWNER_ID
-
-from botCast.config.castConfig import demoVideo
+import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
-
-from botCore.types import YtdlOptionsType
-
-from botCast.config.castConfig import logTraceback
+from botCast.config.castConfig import demoVideo, logTraceback
 from botCast.helpers.cleanFiles import cleanFiles
 from botCast.helpers.downloadAudioFile import downloadAudioFile
 from botCast.helpers.downloadInfo import downloadInfo
+from botCore.helpers import replyOrSend
+from botCore.types import YtdlOptionsType
+from core.appConfig import TELEGRAM_OWNER_ID
+from core.helpers.errors import errorToString
+from core.helpers.files import sizeofFmt
+from core.logger import getDebugLogger
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 
 _logger = getDebugLogger()
 
@@ -33,7 +28,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
     options: YtdlOptionsType | None = None
 
     try:
-        rootMessage = replyOrSend(botApp, 'Fetching the video details...', chatId, message) if chatId else None
+        rootMessage = replyOrSend('Fetching the video details...', chatId, message) if chatId else None
         options, videoInfo = downloadInfo(url, chatId, username)
 
         filesize = videoInfo.get('filesize')
@@ -68,7 +63,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             )
         )
         _logger.info(f'downloadAudioTest: Message: ' + infoMsg)
-        #  replyOrSend(botApp, infoMsg, chatId, message)
+        #  replyOrSend(infoMsg, chatId, message)
 
         # Load audio from url...
         audioFile = downloadAudioFile(options, videoInfo)
@@ -90,7 +85,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             )
         )
         _logger.info(f'downloadAudioTest: Message: ' + infoMsg)
-        #  replyOrSend(botApp, infoMsg, chatId, message)
+        #  replyOrSend(infoMsg, chatId, message)
         #  with open(audioFile, 'rb') as audio:
         #      # send_audio params:
         #      #  chat_id: int | str,
@@ -131,7 +126,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
             _logger.warning(warningStyle('downloadAudioTest: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioTest: ' + errMsg))
         # if chatId:
-        #     replyOrSend(botApp, errMsg, chatId, message)
+        #     replyOrSend(errMsg, chatId, message)
         #  raise Exception(errMsg)
     finally:
         # Remove temporary files and folders

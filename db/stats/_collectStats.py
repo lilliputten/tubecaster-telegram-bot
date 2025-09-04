@@ -1,4 +1,4 @@
-from ._init import initDb
+from .._init import initDb
 
 
 def collectStats(userId: int):

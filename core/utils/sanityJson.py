@@ -1,6 +1,5 @@
 import re
 
-
 #  error: Method "decode" overrides class "JSONDecoder" in an incompatible manner
 #      Positional parameter count mismatch; base method has 3, but override has 3 (reportIncompatibleMethodOverride)
 #  class SanityJson(json.JSONDecoder):

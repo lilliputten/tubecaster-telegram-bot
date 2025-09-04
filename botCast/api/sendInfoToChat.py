@@ -1,26 +1,24 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pyTelegramBotAPI
-from datetime import timedelta
 import traceback
+from datetime import timedelta
 
-from core.helpers.files import sizeofFmt
-from core.helpers.errors import errorToString
-from core.helpers.time import RepeatedTimer
-from core.logger import getDebugLogger, titleStyle, tretiaryStyle, secondaryStyle, errorStyle, warningTitleStyle
-from core.utils import debugObj
+import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
-from botCore.constants import stickers, emojies
-from botCore.helpers import getVideoTags, replyOrSend, prepareYoutubeDate
+from botCore.constants import emojies, stickers
+from botCore.helpers import getVideoTags, prepareYoutubeDate, replyOrSend
 from botCore.types import YtdlOptionsType
-
-from db._updateStats import updateStats
+from core.helpers.errors import errorToString
+from core.helpers.files import sizeofFmt
+from core.helpers.time import RepeatedTimer
+from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
+from core.utils import debugObj
+from db import updateStats
 
 from ..config.castConfig import logTraceback
 from ..helpers.cleanFiles import cleanFiles
 from ..helpers.downloadInfo import downloadInfo
-
 
 _logger = getDebugLogger()
 
@@ -74,7 +72,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
 
     # Send initial sticker (will be removed) and message (will be updated)
     rootSticker = botApp.send_sticker(chatId, sticker=stickers.typingMrCat)
-    rootMessage = replyOrSend(botApp, emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
+    rootMessage = replyOrSend(emojies.waiting + ' Fetching the video details...', chatId, originalMessage)
 
     # Initally update chat status
     updateChatStatus(chatId)
@@ -125,25 +123,19 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         debugStr = debugObj(debugData)
         infoStr = debugObj(infoData)
         tagsContent = getVideoTags(videoInfo)
-        infoContent = '\n\n'.join(
-            list(
-                filter(
-                    None,
-                    [
-                        emojies.success + ' Video details:',
-                        'Title: %s' % videoInfo.get('title'),
-                        'Link: %s' % videoInfo.get('webpage_url'),
-                        'Channel: %s' % videoInfo.get('channel'),
-                        'Channel link: %s'
-                        % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
-                        #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
-                        'Other parameters:',
-                        infoStr,
-                        tagsContent,
-                    ],
-                )
-            )
-        )
+        infoItems = [
+            emojies.success + ' Video details:',
+            'Title: %s' % videoInfo.get('title'),
+            'Link: %s' % videoInfo.get('webpage_url'),
+            'Channel: %s' % videoInfo.get('channel'),
+            'Channel link: %s'
+            % videoInfo.get('channel_url'),  # 'https://www.youtube.com/channel/UCslZQaLM_VNzwTzr4SAonqw'
+            #  'Description:\n\n%s' % str(videoInfo.get('description')) if videoInfo.get('description') else None,
+            'Other parameters:',
+            infoStr,
+            tagsContent,
+        ]
+        infoContent = '\n\n'.join(list(filter(None, infoItems)))
         logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
         botApp.edit_message_text(

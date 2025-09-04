@@ -1,21 +1,19 @@
 # -*- coding:utf-8 -*-
 
-import socket
 import os
-import sys
 import pathlib
-
+import socket
+import sys
 
 # Inject project path to allow server-side tests
 sys.path.insert(1, pathlib.Path(os.getcwd()).as_posix())
 
 
+from botCast.api import downloadAndSendAudioToChat
 from core.appConfig import TELEGRAM_OWNER_ID
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, errorTitleStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+from core.logger.utils import errorStyle, errorTitleStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
-
-from botCast.api import downloadAndSendAudioToChat
 
 _logger = getDebugLogger()
 

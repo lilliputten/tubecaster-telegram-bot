@@ -15,23 +15,22 @@ See environment variable to configure it:
 - LOGS_SERVER_RETRIES
 """
 
+import json
 import logging
+import os
 import pathlib
 import posixpath
-import json
-import os
+import sys
+from contextlib import contextmanager
 
 #  from dotenv import dotenv_values
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from contextlib import contextmanager
-import sys
+
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
 from core.helpers.time import getTimeStamp
-
 from core.logger import loggerConfig
 from core.logger.NoColorFormatter import NoColorFormatter
-
 
 #  _appConfig = {
 #      **dotenv_values('.env'),

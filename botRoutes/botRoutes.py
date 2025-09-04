@@ -2,11 +2,9 @@
 
 from flask import Blueprint
 
+from botCore.botConfig import WEBHOOK_URL
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
-
-from botCore.botConfig import WEBHOOK_URL
-
 
 # Create a blueprint route
 botRoutes = Blueprint('botRoutes', __name__)

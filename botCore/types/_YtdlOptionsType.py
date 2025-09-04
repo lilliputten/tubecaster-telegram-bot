@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from typing import TypedDict, Optional
+from typing import Optional, TypedDict
 
 
 class YtdlOptionsType(TypedDict):

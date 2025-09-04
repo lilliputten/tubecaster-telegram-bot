@@ -1,23 +1,20 @@
 # -*- coding:utf-8 -*-
 
 import traceback
-import telebot  # pyTelegramBotAPI
 from functools import partial
 
+import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
-
-from core.helpers.errors import errorToString
-from core.helpers.urls import isYoutubeLink
-from core.logger import getDebugLogger, titleStyle, secondaryStyle, tretiaryStyle, errorStyle, warningTitleStyle
-from core.utils import debugObj
 
 from botApp import botApp
 from botApp.botStates import BotStates
-from botCore.helpers import getUserName
-from botCore.helpers import replyOrSend
-from botCore.constants import emojies
 from botCast import sendInfoToChat
-
+from botCore.constants import emojies
+from botCore.helpers import getUserName, replyOrSend
+from core.helpers.errors import errorToString
+from core.helpers.urls import isYoutubeLink
+from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
+from core.utils import debugObj
 
 _logger = getDebugLogger()
 
@@ -88,7 +85,7 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
     isInfoCommand = args[0] == '/info' if argsCount > 0 else False
     if not argsCount or (isInfoCommand and argsCount == 1):
         replyMsg = emojies.question + ' Ok, now send the video address:'
-        replyOrSend(botApp, replyMsg, chat.id, message)
+        replyOrSend(replyMsg, chat.id, message)
         _logger.info('infoCommand: Registering the next handler with infoForUrlStep')
         # NOTE: Next step doesn't work on vds deployed server for a reason, using state (see below)
         # botApp.register_next_step_handler_by_chat_id(chat.id, partial(infoForUrlStep, chat))

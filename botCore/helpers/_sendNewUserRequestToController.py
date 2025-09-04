@@ -1,28 +1,28 @@
 import traceback
+
 import telebot  # pyTelegramBotAPI
 from telebot.states.sync.context import StateContext
 
+from botApp import botApp
+from botApp.botStates import BotStates
+from botCore.constants import emojies
+from botCore.helpers import createAcceptNewUserButtonsMarkup, getUserName
+from botCore.helpers._replyOrSend import replyOrSend
 from core.appConfig import CONTROLLER_CHANNEL_ID, LOCAL, LOGGING_CHANNEL_ID, PROJECT_INFO, PROJECT_PATH
 from core.helpers.errors import errorToString
-from core.helpers.strings import removeAnsiStyles
 from core.helpers.time import formatTime, getTimeStamp
-from core.logger import getDebugLogger, titleStyle, secondaryStyle
+from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.logger.utils import errorStyle, warningStyle
 from core.utils import debugObj
-
-from botCore.constants import stickers, emojies
-from botCore.helpers import createAcceptNewUserButtonsMarkup
-from botCore.helpers._replyOrSend import replyOrSend
-from botCore.helpers import getUserName
-
-from botApp import botApp
 
 _logger = getDebugLogger()
 
 _logTraceback = False
 
 
-def sendNewUserRequestToController(message: telebot.types.Message, newUserId: int, newUserStr: str):
+def sendNewUserRequestToController(
+    message: telebot.types.Message, newUserId: int, newUserStr: str, state: StateContext
+):
     chatId = message.chat.id
     try:
         text = message.text
@@ -75,14 +75,14 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
-        msgItems = [
+        contentItems = [
             emojies.question
-            + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}',
+            + f' A new user has requested registration: {newUserStr}, id {newUserId}, tg://user?id={newUserId}, language: {languageCode}',
             # secondaryStyle(debugStr),
         ]
-        content = '\n\n'.join(msgItems)
+        content = '\n\n'.join(contentItems)
         _logger.info(logContent)
-        markup = createAcceptNewUserButtonsMarkup(newUserId, newUserStr)
+        markup = createAcceptNewUserButtonsMarkup(newUserId, newUserStr, languageCode)
         botApp.send_message(
             CONTROLLER_CHANNEL_ID,
             content,
@@ -91,8 +91,21 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         botApp.send_message(
             newUserId,
             emojies.success
-            + ' Your request has been sent. But also, it would be very helpful if you would send a brief information about yourself and why you decided to use this bot to the administrator contact (@lilliputten). Most silent requests are treated as spam.',
+            + ' '
+            + '\n\n'.join(
+                [
+                    "YOU'VE JUST REQUESTED A FREE MEMBEERSHIP.",
+                    "Your request will be reviewed soon. You'll receive a notification if it is accepted.",
+                    'But, it would be very helpful if you sent a brief information about yourself and why you decided to use this bot. Contact the administrator (@lilliputten) in this case.',
+                    'There are a lot of spam requests and we are trying to accept real and motivated humans for the free tier.',
+                    'Alternatively, you can obtain a paid usbcription via /get_full_access command.',
+                    'See /plans for the detailed information on all the available plans',
+                    'Thanks for understanding.',
+                    'Now please enter the message below if you wish (or enter /no otherwise):',
+                ]
+            ),
         )
+        state.set(BotStates.waitForRegistrationInfo)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
@@ -102,4 +115,4 @@ def sendNewUserRequestToController(message: telebot.types.Message, newUserId: in
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('sendNewUserRequestToController: ' + errMsg))
-        replyOrSend(botApp, emojies.robot + ' ' + errMsg, chatId, message)
+        replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)

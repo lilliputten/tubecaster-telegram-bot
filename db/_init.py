@@ -1,11 +1,12 @@
 import traceback
 from typing import Optional
+
 from flask.ctx import _AppCtxGlobals
-from prisma import Prisma, register, get_client
 
 from core.helpers.errors import errorToString
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, warningStyle, secondaryStyle, primaryStyle, titleStyle
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from prisma import Prisma, get_client, register
 
 TGlobalCtx = _AppCtxGlobals
 
