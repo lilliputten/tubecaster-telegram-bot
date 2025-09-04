@@ -16,6 +16,7 @@ star = '⭐️'
 memo = '📝'
 pencil = '✏️'
 hmm = '🤔'
+money = '💰'
 
 numbers = [
     '0️⃣',

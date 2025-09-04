@@ -7,7 +7,8 @@ def getPlansInfoMessage(userId: int):
     """
     guestPlanItems = [
         emojies.numbers[1]
-        + f' GUEST PLAN allows to make {limits.guestCastRequests} download and {limits.guestInfoRequests} info requests. This mode is intended only for familiarization with the service.',
+        + f' GUEST PLAN allows to make {limits.guestCastRequests} download and {limits.guestInfoRequests} info requests.',
+        'This mode is intended only for familiarization with the service in trial mode.',
     ]
 
     freePlanItems = [

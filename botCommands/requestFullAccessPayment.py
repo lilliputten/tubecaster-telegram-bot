@@ -73,6 +73,7 @@ def requestFullAccessPayment(message: telebot.types.Message, user: telebot.types
         descrItems = [
             'Get unlimited access to all TubeCaster bot features for a month.',
             'The PAID usage plan includes an unlimited number of requests to download YouTube audio and receive video details.',
+            "See usage plans' details for more information via the /plans command.",
         ]
 
         payload = ':'.join([str(userId), userName.replace(':', '-'), languageCode])
@@ -183,7 +184,7 @@ def handlePayment(message: telebot.types.Message):
         )
 
         contentItems = [
-            'Your payment already received!',
+            'YOUR PAYMENT ALREADY RECEIVED!',
             f'You are now on a PAID plan util {formatTime("onlyDate", paymentValidUntil)}.',
             'Use the /status command to show the current account status.',
         ]
@@ -205,14 +206,14 @@ def handlePayment(message: telebot.types.Message):
         }
         logItems = [
             titleStyle('handlePayment:')
-            + f' The user {userName} with id {userId} has paid {amount} {currency} for the invoice {chargeId}.',
+            + f' The user {userName} with id {userId} has paid {amount} {currency} for the PAID plan invoice {chargeId}.',
             secondaryStyle(debugObj(debugItems)),
         ]
         logContent = '\n'.join(logItems)
         _logger.info(logContent)
 
         # Send info to the controller
-        botApp.send_message(CONTROLLER_CHANNEL_ID, removeAnsiStyles(logContent))
+        botApp.send_message(CONTROLLER_CHANNEL_ID, emojies.money + ' ' + removeAnsiStyles(logContent))
 
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

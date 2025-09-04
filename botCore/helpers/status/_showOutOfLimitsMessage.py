@@ -69,13 +69,13 @@ def showOutOfLimitsMessage(message: telebot.types.Message):
             secondaryStyle(debugStr),
         ]
         logContent = '\n'.join(logItems)
-        msgItems = [
-            emojies.warning
-            + ' Sorry, your command can not be processed. Check your /status or contact the administraor via @lilliputten.',
-        ]
-        content = '\n\n'.join(msgItems)
         _logger.info(logContent)
-        replyOrSend(content, chatId, message)
+        contentItems = [
+            'Sorry, your command can not be processed.',
+            'Check your /status or contact the administraor (@lilliputten) in case of any questions.'
+            'You can upgrade you account with /become_user (if you are on a GUEST plan) or /get_full_access (if you want to get unlimited access) commands. See also usage /plains info.',
+        ]
+        replyOrSend(emojies.warning + ' ' + '\n\n'.join(contentItems), chatId, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

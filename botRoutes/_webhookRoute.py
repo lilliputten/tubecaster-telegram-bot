@@ -100,8 +100,8 @@ def webhookRoute():
     try:
         if not update or not updateId:
             raise Exception('No update id has been provided!')
-        if not messageId and not pre_checkout_query:
-            raise Exception('No message id or pre_checkout_query has been provided!')
+        # if not messageId and not pre_checkout_query:
+        #     raise Exception('No message id or pre_checkout_query has been provided!')
 
         existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
         if existedCommand:

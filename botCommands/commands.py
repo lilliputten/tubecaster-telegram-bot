@@ -128,9 +128,10 @@ def sendRegistrationInfoStep(message: telebot.types.Message, state: StateContext
         + ' '
         + '\n\n'.join(
             [
-                'Ok. Your message has been sent to the administrator.',
+                'YOUR MESSAGE HAS BEEN SENT TO THE ADMINISTRATOR.',
                 'This should speed up the registration process.',
-                'If there is no response for a long time, you can request the reqistration again, or (better) drop a message to the administrator (@lilliputten).',
+                'If there is no response for a long time, you can request the reqistration again (via /become_user command), or (better) drop a message to the administrator (@lilliputten).',
+                'Or, alternatively, you can obtain a paid subcription via the /get_full_access command. See the usage /plans details for more information.',
             ]
         ),
     )
@@ -149,7 +150,7 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
         languageCode = str(list[3])
         addNewValidUser(userId, userStr, languageCode, query)
         contentItems = [
-            "You've been successfully added to the registered users list!",
+            "YOU'VE BEEN SUCCESSFULLY ADDED TO THE REGISTERED USERS LIST!",
             getUserStatusShortSummaryInfoMessage(userId),
         ]
         botApp.send_message(userId, emojies.success + ' ' + '\n\n'.join(filter(None, contentItems)))
