@@ -63,7 +63,7 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
         'Also, /stats command will display your usage statistics, /status will show your usage plan and limits (if applicable), /plans will show details on available usage plans.',
         'Type /help to find all the available commands.',
         'Please keep in mind that the bot is working in experimental mode and that Google may change its algorithms and API, which may lead to temporary disruptions in the application.',
-        'Also keep in mind that downloading and processing audio files takes time and can take up to several minutes. If the bot has accepted your command for processing and it seems to you that the process has been delayed, please be patient. In case of long-term operations, the bot will send you notifications about the active process every minute.',
+        'Also remember that downloading and processing audio files takes time and can take up to several minutes. If the bot has accepted your command for processing and it seems to you that the process has been delayed, please be patient. In case of long-term operations, the bot will send you notifications about the active process every minute.',
     ]
     if LOCAL:
         msgItems.append(

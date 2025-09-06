@@ -7,7 +7,7 @@
 
 ## [v.0.1.1](https://github.com/lilliputten/tubecaster-telegram-bot/releases/tag/v.0.1.1) - 2025.09.05
 
-Implemented usage control based on different usage plains, added ability to pay for the PAID plan via telegram stars (XTR).
+Implemented usage control based on different usage plans, added ability to pay for the PAID plan via telegram stars (XTR).
 
 - Added `UserStatus` data model. Added new bot commands: `status`, `plans`, `become_user`, `get_full_access`, `remove_account`, `restore_account`. Updated dialog texts and messages. Users divided by 3 groups: guests, free and paid tiers. Guests and free users have limits (defined by constants in `botCore/constants/limits.py`). Added new db actions: `collectStats`, `updateStats`, `ensureValidUser`, `findUser`. Added new core bot helpers: `addNewValidUser`, `checkValidUser`, `createAcceptNewUserButtonsMarkup`, `createSendRegistrationReguestButtonsMarkup`, `sendNewUserRequestToController`, `showNewUserMessage`. Added api methods: `downloadAndSendAudioToChat`, `sendInfoToChat`, `sendStatsToChat`. Added ability to remove (to mark to removal in a month) and restore (in a month) user's account.
 - Already replaced an old checkValidUser/showNewUserMessage valid user checking method with a new checkUserLimitations/showOutOfLimitsMessage.

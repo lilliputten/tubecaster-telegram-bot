@@ -10,13 +10,15 @@ from core.helpers.strings import removeAnsiStyles
 from core.helpers.time import formatTime, getTimeStamp
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
+from core.utils.generic import prepareLongString
 
 # from botCore import botConfig
 
+_maxHashLength = 100
 
-logger = getDebugLogger()
+_logger = getDebugLogger()
 
-commonInfoData = {
+_commonInfoData = {
     'LOCAL': LOCAL,
     'PROJECT_INFO': PROJECT_INFO,
     'PROJECT_PATH': PROJECT_PATH,
@@ -27,7 +29,7 @@ commonInfoData = {
 
 def notifyOwner(text: str, logInfo: str | None = None):
     if logInfo:
-        logger.info(logInfo)
+        _logger.info(logInfo)
     if LOGGING_CHANNEL_ID:   # and not LOCAL:
         botApp.send_message(LOGGING_CHANNEL_ID, removeAnsiStyles(text))
 
@@ -45,7 +47,7 @@ def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
     messageDate = formatTime(None, message.date)
     user = message.from_user
     userId = user.id if user else chatId
-    text = message.text
+    text = prepareLongString(message.text, _maxHashLength)
     usernameStr = getUserName(user)
     json = message.json
     fromData: dict = json.get('from', {})
@@ -59,6 +61,7 @@ def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
     ])))
     # fmt: on
     obj = {
+        'timeStr': getTimeStamp(),
         'commandHash': commandHash,
         'contentType': contentType,
         'messageId': messageId,
@@ -67,13 +70,12 @@ def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
         'stickerFileId': stickerFileId,
         'stickerSetName': stickerSetName,
         'stickerEmoji': stickerEmoji,
-        'timeStr': getTimeStamp(),
         'userId': userId,
         'usernameStr': usernameStr,
         'languageCode': languageCode,
         'messageDate': messageDate,
         'stateValue': stateValue if stateValue else 'None',
-        **commonInfoData,
+        **_commonInfoData,
     }
     debugStr = debugObj(obj)
     logItems = [
@@ -102,7 +104,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
 
     userId = user.id
     usernameStr = getUserName(user)
-    text = message.text if message else None
+    text = prepareLongString(message.text, _maxHashLength)  if message else None
 
     # fmt: off
     queryHash = ' '.join(list(filter(None, [
@@ -112,6 +114,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
     # fmt: on
 
     obj = {
+        'timeStr': getTimeStamp(),
         'queryHash': queryHash,
         'data': data,
         'text': text,
@@ -123,7 +126,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
         #  'json': json, # It's too long
         'message': repr(message),
         'stateValue': stateValue if stateValue else 'None',
-        **commonInfoData,
+        **_commonInfoData,
     }
     debugStr = debugObj(obj)
     logItems = [

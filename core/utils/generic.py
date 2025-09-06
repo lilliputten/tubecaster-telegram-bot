@@ -7,6 +7,8 @@
 import re
 import traceback
 
+defaultEllipsis = '…'
+
 
 def empty(var):
     return not var and var is None
@@ -78,9 +80,9 @@ def dictFromClass(cls):
     )
 
 
-def truncateLongString(s, maxLength=0):
+def truncateLongString(s, maxLength=0, ellipsis=defaultEllipsis):
     if maxLength and len(s) >= maxLength:
-        s = s[0 : maxLength - 3] + '...'
+        s = s[0 : maxLength - len(ellipsis)] + ellipsis
     return s
 
 
