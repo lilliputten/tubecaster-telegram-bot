@@ -104,7 +104,7 @@ def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
 
     userId = user.id
     usernameStr = getUserName(user)
-    text = prepareLongString(message.text, _maxHashLength)  if message else None
+    text = prepareLongString(message.text, _maxHashLength) if message else None
 
     # fmt: off
     queryHash = ' '.join(list(filter(None, [

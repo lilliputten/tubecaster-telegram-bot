@@ -4,6 +4,7 @@ from ._createCommonButtonsMarkup import createCommonButtonsMarkup
 from ._createRemoveAccountButtonsMarkup import createRemoveAccountButtonsMarkup
 from ._createSendRegistrationReguestButtonsMarkup import createSendRegistrationReguestButtonsMarkup
 from ._createVideoCaptionStr import createVideoCaptionStr
+from ._editOrSendMessage import editOrSendMessage
 from ._getDesiredPiecesCount import getDesiredPiecesCount
 from ._getFormattedVideoFileSize import getFormattedVideoFileSize
 from ._getUserName import getUserName
@@ -36,6 +37,7 @@ __all__ = [
     'getVideoTags',
     'prepareYoutubeDate',
     'replyOrSend',
+    'editOrSendMessage',
     # 'checkValidUser', # UNUSED
     # 'showNewUserMessage', # UNUSED
     'sendNewUserRequestToController',

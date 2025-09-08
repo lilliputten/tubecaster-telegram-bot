@@ -10,7 +10,7 @@ from telebot.types import ReplyParameters
 
 from botApp import botApp
 from botCore.constants import emojies
-from botCore.helpers import createVideoCaptionStr, getVideoDetailsStr
+from botCore.helpers import createVideoCaptionStr, editOrSendMessage, getVideoDetailsStr
 from botCore.types import TVideoInfo
 from core.ffmpeg import probe, probeDuration
 from core.helpers.errors import errorToString
@@ -59,10 +59,10 @@ def sendAudioPiece(
     )
     _logger.info(infoContent)
     if rootMessage:
-        botApp.edit_message_text(
-            chat_id=chatId,
-            message_id=rootMessage.id,
-            text=infoContent,
+        editOrSendMessage(
+            infoContent,
+            chatId,
+            rootMessage,
         )
     else:
         botApp.send_message(

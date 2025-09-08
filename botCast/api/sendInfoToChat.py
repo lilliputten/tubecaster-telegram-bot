@@ -7,7 +7,7 @@ import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
 from botCore.constants import emojies, stickers
-from botCore.helpers import getVideoTags, prepareYoutubeDate, replyOrSend
+from botCore.helpers import editOrSendMessage, getVideoTags, prepareYoutubeDate, replyOrSend
 from botCore.types import YtdlOptionsType
 from core.helpers.errors import errorToString
 from core.helpers.files import sizeofFmt
@@ -138,10 +138,10 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
         infoContent = '\n\n'.join(list(filter(None, infoItems)))
         logContent = '\n'.join([titleStyle('sendInfoToChat'), debugStr, infoStr])
         _logger.info(logContent)
-        botApp.edit_message_text(
-            chat_id=chatId,
-            text=infoContent,
-            message_id=rootMessage.id,
+        editOrSendMessage(
+            infoContent,
+            chatId,
+            rootMessage,
         )
         updateStats(int(chatId), infoRequests=1)
     except Exception as err:
@@ -155,10 +155,10 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
                 warningTitleStyle('sendInfoToChat: Traceback for the following error:') + tretiaryStyle(sTraceback)
             )
         _logger.error(errorStyle('sendInfoToChat: ' + errMsg))
-        botApp.edit_message_text(
-            chat_id=chatId,
-            text=errMsg,
-            message_id=rootMessage.id,
+        editOrSendMessage(
+            errMsg,
+            chatId,
+            rootMessage,
         )
         updateStats(int(chatId), failures=1)
         #  raise Exception(errMsg)

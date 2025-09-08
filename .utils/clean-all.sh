@@ -33,7 +33,6 @@ $FINDCMD . \
   \) \
   -exec $RMCMD -Rvf {} \; \
 ; $RMCMD -Rf \
-  log-install.txt \
   .handler-saves \
   .state-save \
   .*.lock \

@@ -8,7 +8,7 @@ import telebot  # pyTelegramBotAPI
 
 from botApp import botApp
 from botCore.constants import emojies, stickers
-from botCore.helpers import getVideoDetailsStr, replyOrSend
+from botCore.helpers import editOrSendMessage, getVideoDetailsStr, replyOrSend
 from botCore.types import YtdlOptionsType
 from core.helpers.errors import errorToString
 from core.helpers.files import sizeofFmt
@@ -91,10 +91,10 @@ def downloadAndSendAudioToChat(
                 ],
             )
         )
-        botApp.edit_message_text(
-            chat_id=chatId,
-            text=infoContent,
-            message_id=rootMessage.id,
+        editOrSendMessage(
+            infoContent,
+            chatId,
+            rootMessage,
         )
 
         # Load audio from url...
@@ -141,11 +141,7 @@ def downloadAndSendAudioToChat(
         else:
             _logger.warning(warningStyle('downloadAndSendAudioToChat: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAndSendAudioToChat: ' + errMsg))
-        botApp.edit_message_text(
-            chat_id=chatId,
-            text=errMsg,
-            message_id=rootMessage.id,
-        )
+        editOrSendMessage(errMsg, chatId, rootMessage)
         # Update stats
         updateStats(int(chatId), failures=1)
         #  raise Exception(errMsg)
