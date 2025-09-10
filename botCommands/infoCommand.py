@@ -10,11 +10,12 @@ from botApp import botApp
 from botApp.botStates import BotStates
 from botCast import sendInfoToChat
 from botCore.constants import emojies
-from botCore.helpers import getUserName, replyOrSend
+from botCore.helpers import getLanguageCode, getUserId, getUserName, replyOrSend
 from core.helpers.errors import errorToString
 from core.helpers.urls import isYoutubeLink
 from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
 from core.utils import debugObj
+from db import ensureValidUser
 
 _logger = getDebugLogger()
 
@@ -52,6 +53,7 @@ def infoForUrlStep(
         ]
         logContent = '\n'.join(logItems)
         _logger.info(logContent)
+        ensureValidUser(getUserId(message), username, getLanguageCode(message))
         sendInfoToChat(url, chat.id, username, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
@@ -102,6 +104,7 @@ def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state:
         return
     # Wait for the url in the next message
     try:
+        ensureValidUser(getUserId(message), username, getLanguageCode(message))
         sendInfoToChat(url, chat.id, username, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

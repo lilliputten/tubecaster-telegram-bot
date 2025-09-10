@@ -8,11 +8,12 @@ from telebot.states.sync.context import StateContext
 from botApp import botApp
 from botCast import sendStatsToChat
 from botCore.constants import emojies
-from botCore.helpers import getUserName
+from botCore.helpers import getLanguageCode, getUserId, getUserName
 from core.appConfig import TELEGRAM_OWNER_ID
 from core.helpers.errors import errorToString
 from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
 from core.utils import debugObj
+from db import ensureValidUser
 
 _logger = getDebugLogger()
 
@@ -41,6 +42,7 @@ def statsCommand(chat: telebot.types.Chat, message: telebot.types.Message, state
         return
     # Wait for the url in the next message
     try:
+        ensureValidUser(getUserId(message), username, getLanguageCode(message))
         sendStatsToChat(statsForUserId, chat.id, username, message)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)

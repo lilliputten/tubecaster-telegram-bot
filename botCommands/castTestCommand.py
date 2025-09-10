@@ -5,9 +5,10 @@ import telebot  # pyTelegramBotAPI
 from botApp import botApp
 from botCast import downloadAndSendAudioToChat
 from botCast.config import demoVideo
-from botCore.helpers import getUserName
+from botCore.helpers import getLanguageCode, getUserId, getUserName
 from core.appConfig import TELEGRAM_OWNER_ID
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
+from db import ensureValidUser
 
 _logger = getDebugLogger()
 
@@ -22,4 +23,5 @@ def castTestCommand(chat: telebot.types.Chat, message: telebot.types.Message):
     url = demoVideo
     _logger.info('castTestCommand: Start with url: %s' % url)
     # Let's start...
+    ensureValidUser(getUserId(message), username, getLanguageCode(message))
     downloadAndSendAudioToChat(url, chatId, username, message)

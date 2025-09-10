@@ -7,6 +7,8 @@ from ._createVideoCaptionStr import createVideoCaptionStr
 from ._editOrSendMessage import editOrSendMessage
 from ._getDesiredPiecesCount import getDesiredPiecesCount
 from ._getFormattedVideoFileSize import getFormattedVideoFileSize
+from ._getLanguageCode import getLanguageCode
+from ._getUserId import getUserId
 from ._getUserName import getUserName
 from ._getVideoDetailsStr import getVideoDetailsStr
 from ._getVideoTags import getVideoTags
@@ -32,7 +34,9 @@ __all__ = [
     'createVideoCaptionStr',
     'getDesiredPiecesCount',
     'getFormattedVideoFileSize',
+    'getLanguageCode',
     'getUserName',
+    'getUserId',
     'getVideoDetailsStr',
     'getVideoTags',
     'prepareYoutubeDate',

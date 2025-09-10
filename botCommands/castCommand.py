@@ -9,10 +9,11 @@ from botApp import botApp
 from botApp.botStates import BotStates
 from botCast import downloadAndSendAudioToChat
 from botCore.constants import emojies
-from botCore.helpers import getUserName, replyOrSend
+from botCore.helpers import getLanguageCode, getUserId, getUserName, replyOrSend
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
+from db import ensureValidUser
 
 _logger = getDebugLogger()
 
@@ -43,6 +44,7 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
     ]
     logContent = '\n'.join(logItems)
     _logger.info(logContent)
+    ensureValidUser(getUserId(message), username, getLanguageCode(message))
     downloadAndSendAudioToChat(url, chatId, username, message)
 
 
@@ -93,4 +95,5 @@ def castCommand(
             emojies.error + ' A youtube url has been expected to fetch a video from. But you\'ve sent "%s".' % url,
         )
         return
+    ensureValidUser(getUserId(message), username, getLanguageCode(message))
     downloadAndSendAudioToChat(url, chatId, username, message)
