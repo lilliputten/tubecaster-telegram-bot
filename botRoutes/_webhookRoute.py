@@ -14,6 +14,7 @@ from core.helpers.errors import errorToString
 from core.helpers.time import formatTime
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
+from core.utils import debugObj
 from db import (
     addCommand,
     addTempMessage,
@@ -85,6 +86,39 @@ def webhookRoute():
     usernameStr = getUserName(user)
     chatId = messageChat.id if messageChat else None
 
+    # DEBUG
+    messageContentType = message.content_type if message else None
+    messageDate = formatTime(None, message.date) if message else None
+    timeStr = formatTime()
+    stateValue = botApp.get_state(userId, chatId)
+    debugData = {
+        'startTimeStr': startTimeStr,
+        'timeStr': timeStr,
+        # 'WEBHOOK_URL': WEBHOOK_URL,
+        'LOCAL': LOCAL,
+        'update': repr(update),
+        'message': repr(message),
+        'callback_query': repr(callback_query),
+        'messageChat': repr(messageChat),
+        'user': repr(user),
+        'updateId': updateId,
+        'messageText': messageText,
+        'messageId': messageId,
+        'messageContentType': messageContentType,
+        'messageDate': messageDate,
+        'userId': userId,
+        'usernameStr': usernameStr,
+        'chatId': chatId,
+        'stateValue': stateValue,
+    }
+    debugStr = debugObj(debugData)
+    logItems = [
+        titleStyle('webhookRoute: Update %d for message %d started' % (updateId, messageId)),
+        secondaryStyle(debugStr),
+    ]
+    logContent = '\n'.join(logItems)
+    _logger.info(logContent)
+
     # Remove previous message markup
     if callback_query and callback_query.message:
         botApp.edit_message_reply_markup(chat_id=chatId, message_id=callback_query.message.id, reply_markup=None)
@@ -100,12 +134,43 @@ def webhookRoute():
     try:
         if not update or not updateId:
             raise Exception('No update id has been provided!')
-        # if not messageId and not pre_checkout_query:
-        #     raise Exception('No message id or pre_checkout_query has been provided!')
+        if not messageId and not pre_checkout_query:
+            errMsg = 'No message id or pre_checkout_query has been provided!'
+            logItems = [
+                titleStyle('webhookRoute: Update %d failed' % (updateId)),
+                secondaryStyle(debugStr),
+            ]
+            logContent = '\n'.join(logItems)
+            _logger.info(logContent)
+            raise Exception(errMsg)
 
         existedCommand = checkCommandExistsForMessageId(messageId) if messageId else None
         if existedCommand:
-            # Command already exists, do nothing, but notify the user
+            # Command already exists, do nothing, but notify user
+            # DEBUG
+            debugData = {
+                'commandId': existedCommand.id,
+                'repeated': existedCommand.repeated,
+                'createdAtStr': formatTime(None, existedCommand.createdAt),
+                'updatedAtStr': formatTime(None, existedCommand.updatedAt),
+                'timeStr': timeStr,
+                'messageChat': repr(messageChat),
+                'updateId': updateId,
+                'messageText': messageText,
+                'messageId': messageId,
+                'messageContentType': messageContentType,
+                'messageDate': messageDate,
+                'userId': userId,
+                'usernameStr': usernameStr,
+                'chatId': chatId,
+            }
+            debugStr = debugObj(debugData)
+            logItems = [
+                titleStyle('webhookRoute: Update %d for message %d is already processing' % (updateId, messageId)),
+                secondaryStyle(debugStr),
+            ]
+            logContent = '\n'.join(logItems)
+            _logger.info(logContent)
             if chatId:
                 # fmt: off
                 infoStr = ' '.join(filter(None, [
@@ -140,7 +205,8 @@ def webhookRoute():
                 addTempMessage(commandId=createdCommand.id, messageId=newMessage.id)
 
         # Process the command...
-        botApp.process_new_updates([update])
+        if not existedCommand:
+            botApp.process_new_updates([update])
 
     except Exception as err:
         sError = errorToString(err, show_stacktrace=False)
