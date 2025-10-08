@@ -17,7 +17,8 @@ flask = "^3.1.0"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 pyTelegramBotAPI = "^4.24.0" # The telebot package to control telegram bots
-yt-dlp = "^2025.09.23" # The video/audio dowload library
+# yt-dlp = "^2025.09.23" # The video/audio dowload libraryyt-dlp = "^2025.09.23" # The video/audio dowload library
+yt-dlp = "^2024.11.18" # The video/audio dowload library
 concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # NOTE: Using external ffmpeg for audio processing, see `core/ffmpeg`
 # librosa = "^0.10.2.post1" # NOTE: ffmpeg is required, see: https://www.ffmpeg.org/download.html
