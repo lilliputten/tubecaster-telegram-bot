@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 
 import re
+import time
 import traceback
+from random import uniform
 
 from botCore.types import TVideoInfo, YtdlOptionsType
 from core.helpers.errors import errorToString
@@ -49,14 +51,33 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
         # DEBUG: Show options...
         _logger.info('downloadAudioFile: Downloading with options:\n%s' % debugObj(dict(options)))
 
-        # Downloading...
-        with YTDL.YoutubeDL(options) as ydl:
-            ydl.download([webpageUrl])  # BUG: It fails silently here for vercel serverless funciton
-            # Done!
-            _logger.info(
-                'downloadAudioFile: Success, the audio has loaded from url %s into file %s' % (webpageUrl, destFile)
-            )
-            return destFile
+        # Downloading with retry logic for YouTube's anti-bot patterns...
+        max_retries = 5  # Increased to handle typical YouTube blocking patterns
+        for attempt in range(max_retries):
+            try:
+                with YTDL.YoutubeDL(options) as ydl:
+                    ydl.download([webpageUrl])  # BUG: It fails silently here for vercel serverless funciton
+                    # Done!
+                    _logger.info(
+                        'downloadAudioFile: Success, the audio has loaded from url %s into file %s (attempt %d)' % (webpageUrl, destFile, attempt + 1)
+                    )
+                    return destFile
+            except Exception as retry_err:
+                is_403_error = "403" in str(retry_err) or "Forbidden" in str(retry_err)
+                is_retryable = is_403_error or "HTTP Error" in str(retry_err)
+                
+                if is_retryable and attempt < max_retries - 1:
+                    # Use longer delays for YouTube's rate limiting patterns
+                    base_delay = 3 + (attempt * 2)  # 3s, 5s, 7s, 9s
+                    wait_time = base_delay + uniform(0, 2)  # Add jitter
+                    _logger.warning(
+                        f'downloadAudioFile: Attempt {attempt + 1} failed ({str(retry_err)[:100]}...), retrying in {wait_time:.1f}s'
+                    )
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    # Re-raise the exception if not retryable or exhausted retries
+                    raise retry_err
     except Exception as err:
         errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
