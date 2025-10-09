@@ -1,9 +1,18 @@
 <!--
  @since 2025.09.02
- @changed 2025.09.05, 02:45
+ @changed 2025.10.09, 17:36
 -->
 
 # CHANGELOG
+
+## [v.0.1.2](https://github.com/lilliputten/tubecaster-telegram-bot/releases/tag/v.0.1.2) - 2025.10.09
+
+- In case of error 403, the download is repeated several times (5).
+- The video retrieving parameter has been removed for pre-requesting the video details.
+
+See also:
+
+- [Compare with the previous version](https://github.com/lilliputten/tubecaster-telegram-bot/compare/v.0.1.1...v.0.1.2)
 
 ## [v.0.1.1](https://github.com/lilliputten/tubecaster-telegram-bot/releases/tag/v.0.1.1) - 2025.09.05
 
@@ -13,6 +22,10 @@ Implemented usage control based on different usage plans, added ability to pay f
 - Already replaced an old checkValidUser/showNewUserMessage valid user checking method with a new checkUserLimitations/showOutOfLimitsMessage.
 - Connected telegram XTR invoice payment.
 - Updated minor version: 0.1.1.
+
+2025.10.09:
+
+- In case of error 403, the download is repeated several times (5).
 
 See also:
 

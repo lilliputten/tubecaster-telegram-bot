@@ -3,8 +3,8 @@
 Poetry scripts runner - use this instead of poetry scripts for VSCode compatibility
 Usage: python scripts.py <command>
 """
-import sys
 import subprocess
+import sys
 
 
 def export_requirements():

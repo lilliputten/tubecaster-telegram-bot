@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 
-from random import uniform
 import re
 import time
 import traceback
+from random import uniform
 
 from botCore.types import TVideoInfo, YtdlOptionsType
 from core.helpers.errors import errorToString
@@ -68,12 +68,13 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
                     ydl.download([webpageUrl])   # type: ignore
                     # Done!
                     _logger.info(
-                        'downloadAudioFile: Success, the audio has loaded from url %s into file %s (attempt %d)' % (webpageUrl, destFile, attempt + 1)
+                        'downloadAudioFile: Success, the audio has loaded from url %s into file %s (attempt %d)'
+                        % (webpageUrl, destFile, attempt + 1)
                     )
                     return destFile
             except Exception as retry_err:
-                is_403_error = "403" in str(retry_err) or "Forbidden" in str(retry_err)
-                is_retryable = is_403_error or "HTTP Error" in str(retry_err)
+                is_403_error = '403' in str(retry_err) or 'Forbidden' in str(retry_err)
+                is_retryable = is_403_error or 'HTTP Error' in str(retry_err)
 
                 if is_retryable and attempt < max_retries - 1:
                     # Use longer delays for YouTube's rate limiting patterns

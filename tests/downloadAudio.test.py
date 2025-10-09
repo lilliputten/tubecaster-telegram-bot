@@ -5,7 +5,6 @@ import traceback
 from datetime import timedelta
 
 import telebot  # pyTelegramBotAPI
-
 from telebot import types
 
 from botApp import botApp

@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from botCore.types import YtdlOptionsType, TVideoInfo
+from botCore.types import TVideoInfo, YtdlOptionsType
 from core.helpers.time import getTimeStamp
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
