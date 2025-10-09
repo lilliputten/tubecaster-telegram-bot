@@ -6,6 +6,8 @@ from datetime import timedelta
 
 import telebot  # pyTelegramBotAPI
 
+from telebot import types
+
 from botApp import botApp
 from botCast.config.castConfig import demoVideo, logTraceback
 from botCast.helpers.cleanFiles import cleanFiles
@@ -24,7 +26,7 @@ _logger = getDebugLogger()
 _doCleanFiles = False
 
 
-def downloadAudioTest(url: str, chatId: str | int | None, username: str, message: telebot.types.Message | None = None):
+def downloadAudioTest(url: str, chatId: str | int | None, username: str, message: types.Message | None = None):
     options: YtdlOptionsType | None = None
 
     try:
@@ -34,6 +36,15 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
         filesize = videoInfo.get('filesize')
         filesizeApprox = videoInfo.get('filesize_approx')
         sizeFmt = sizeofFmt(filesize if filesize else filesizeApprox)
+
+        # DEBUG
+        # cachedir = '.temp'
+        # destFile = cachedir + '/file.mp3'
+        # options['_destFolder'] = cachedir
+        # options['cachedir'] = cachedir
+        # options['_destFile'] = destFile
+        # options['outtmpl'] = destFile
+        # options['keepvideo'] = True
 
         details = ', '.join(
             list(

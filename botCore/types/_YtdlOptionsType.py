@@ -14,5 +14,6 @@ class YtdlOptionsType(TypedDict):
     keepvideo: Optional[bool]
     verbose: Optional[bool]
     noplaylist: Optional[bool]
+    paths: Optional[dict[str, str]]
     #  listformats: Optional[bool]
     #  debug_printtraffic: Optional[bool]

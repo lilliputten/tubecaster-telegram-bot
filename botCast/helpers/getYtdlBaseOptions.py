@@ -13,6 +13,9 @@ def getYtdlBaseOptions():
         # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
         'verbose': True,
         'cachedir': TEMP_PATH,
+        'paths': {
+            'temp': TEMP_PATH,
+        },
         'verbose': True,
         'noplaylist': True,
         'keepvideo': False,

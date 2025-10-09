@@ -4,6 +4,7 @@ import pathlib
 import posixpath
 import re
 import traceback
+from typing import Any
 
 from botCore.types import TVideoInfo
 from core.appConfig import AUDIO_FILE_EXT, TEMP_PATH
@@ -20,7 +21,7 @@ from ..helpers.getYtdlBaseOptions import getYtdlBaseOptions
 _logger = getDebugLogger()
 
 
-def prepareLinkInfo(url: str, username: str):
+def prepareLinkInfo(url: str, userId: int | str | None, username: str):
     """
     Returns local temporary saved audio file name.
     """
@@ -30,7 +31,8 @@ def prepareLinkInfo(url: str, username: str):
         # Prepare options...
         options = getYtdlBaseOptions()
 
-        folderName = getTimeStamp('id') + '-' + getIdFromName(username)
+        folderName = '-'.join(list(map(str, filter(None, [getTimeStamp('id'), str(userId), getIdFromName(username)]))))
+
         destFolder = options['_destFolder'] = posixpath.join(TEMP_PATH, folderName)
         # Ensure temp folder is exists
         pathlib.Path(destFolder).mkdir(parents=True, exist_ok=True)
@@ -39,8 +41,14 @@ def prepareLinkInfo(url: str, username: str):
         # /info https://www.youtube.com/watch?v=EngW7tLk6R8
         _logger.info('prepareLinkInfo: Fetching info with options:\n%s' % debugObj(dict(options)))
 
-        # Extract video info
-        videoInfo: TVideoInfo | None = YTDL.YoutubeDL(options).extract_info(url=url, download=False)
+        # Extract video info with format testing disabled
+        info_options = {
+            **options,
+            'check_formats': False,  # Don't test format availability
+            'format': None,  # Don't select specific format during info extraction
+        }
+        ytdl = YTDL.YoutubeDL(info_options)  # type: ignore
+        videoInfo: TVideoInfo | None = ytdl.extract_info(url=url, download=False)   # type: ignore
         if not videoInfo:
             raise Exception('No video info has been returned')
         _logger.info('prepareLinkInfo: Got video info: %s' % debugObj(dict(videoInfo)))

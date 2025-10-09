@@ -17,8 +17,7 @@ flask = "^3.1.0"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 pyTelegramBotAPI = "^4.24.0" # The telebot package to control telegram bots
-# yt-dlp = "^2025.09.23" # The video/audio dowload libraryyt-dlp = "^2025.09.23" # The video/audio dowload library
-yt-dlp = "^2024.11.18" # The video/audio dowload library
+yt-dlp = "^2024.12.13" # The video/audio dowload library
 concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # NOTE: Using external ffmpeg for audio processing, see `core/ffmpeg`
 # librosa = "^0.10.2.post1" # NOTE: ffmpeg is required, see: https://www.ffmpeg.org/download.html
@@ -53,14 +52,4 @@ line-length = 120
 line-length = 120
 # TODO!
 
-[tool.poetry.scripts]
-export_requirements = "poetry-scripts:export_requirements"
-lint = "poetry-scripts:lint"
-format = "poetry-scripts:format"
-check_all = "poetry-scripts:check_all"
-# test = "poetry-scripts:test"
-prisma_format = "poetry-scripts.prisma:format"
-prisma_format_and_validate = "poetry-scripts.prisma:format_and_validate"
-prisma_db_push = "poetry-scripts.prisma:db_push"
-prisma_db_push_test = "poetry-scripts.prisma:db_push_test"
-prisma_db_push_all = "poetry-scripts.prisma:db_push_all"
+# [tool.poetry.scripts] - Temporarily disabled for VSCode debugging

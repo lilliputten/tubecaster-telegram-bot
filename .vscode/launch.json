@@ -107,7 +107,7 @@
       "name": "Python: Specific File",
       "type": "debugpy",
       "request": "launch",
-      "program": "tests/sendLocalAudioToChat.test.py",
+      "program": "tests/downloadAudio.test.py",
       "console": "integratedTerminal",
       "justMyCode": false
     },    

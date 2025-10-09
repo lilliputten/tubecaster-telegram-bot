@@ -31,10 +31,11 @@
     "logging-server-syslog": "echo --Run local syslog logging server-- && poetry run python logging-server-syslog.py",
     "pyformat-autopep8": "echo --Run autopep8 python formatter-- && poetry run autopep8 .",
     "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
-    "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all pyformat pylint",
+    "isort": "echo --Sort imports-- && isort --only-modified .",
+    "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all isort pyformat pylint",
     "pytests": "echo --Run python tests with poetry-- && poetry run python -m unittest discover -v -f -t . -s . -p *_test.py",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
-    "export-requirements": "echo --Export requirements from with poetry for vercel-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
+    "export-requirements": "echo --Export requirements from poetry-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"
   }
 }

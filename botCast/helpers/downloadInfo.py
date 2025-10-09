@@ -37,4 +37,4 @@ def downloadInfo(
         ]
     )
     _logger.info(logContent)
-    return prepareLinkInfo(url, username)
+    return prepareLinkInfo(url, chatId, username)
