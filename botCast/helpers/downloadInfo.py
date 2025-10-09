@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+from botCore.types import YtdlOptionsType, TVideoInfo
 from core.helpers.time import getTimeStamp
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
@@ -14,7 +15,7 @@ def downloadInfo(
     url: str,
     chatId: str | int | None,
     username: str,
-):
+) -> tuple[YtdlOptionsType, TVideoInfo]:
     """
     This is usually the first action: to retrieve the video info from youtube.
     """

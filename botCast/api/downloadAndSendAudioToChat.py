@@ -5,6 +5,7 @@ import re
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import apihelper, util, types
 
 from botApp import botApp
 from botCore.constants import emojies, stickers
@@ -41,7 +42,7 @@ def downloadAndSendAudioToChat(
     url: str,
     chatId: str | int,
     username: str,
-    originalMessage: telebot.types.Message | None = None,
+    originalMessage: types.Message | None = None,
     cleanUp: bool = True,
 ):
     """

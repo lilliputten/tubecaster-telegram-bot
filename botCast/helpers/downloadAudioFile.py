@@ -51,7 +51,7 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
 
         # Downloading...
         with YTDL.YoutubeDL(options) as ydl:
-            ydl.download([webpageUrl])  # BUG: It fails silently here for vercel serverless funciton
+            ydl.download([webpageUrl])
             # Done!
             _logger.info(
                 'downloadAudioFile: Success, the audio has loaded from url %s into file %s' % (webpageUrl, destFile)
@@ -67,4 +67,3 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
             _logger.warning(warningStyle('downloadAudioFile: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioFile: ' + errMsg))
         raise Exception(errMsg)
-
