@@ -51,7 +51,7 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
         # DEBUG: Show options...
         _logger.info('downloadAudioFile: Downloading with options:\n%s' % debugObj(dict(options)))
 
-        # # Downloading (old version: a single attempt)...
+        # # Downloading (the old approach: a single attempt)...
         # with YTDL.YoutubeDL(options) as ydl:   # type: ignore
         #     ydl.download([webpageUrl])   # type: ignore
         #     # Done!
@@ -72,22 +72,22 @@ def downloadAudioFile(options: YtdlOptionsType, videoInfo: TVideoInfo):
                         % (webpageUrl, destFile, attempt + 1)
                     )
                     return destFile
-            except Exception as retry_err:
-                is_403_error = '403' in str(retry_err) or 'Forbidden' in str(retry_err)
-                is_retryable = is_403_error or 'HTTP Error' in str(retry_err)
+            except Exception as err:
+                is_403_error = '403' in str(err) or 'Forbidden' in str(err)
+                is_retryable = is_403_error or 'HTTP Error' in str(err) or 'Use --list-formats' in str(err)
 
                 if is_retryable and attempt < max_retries - 1:
                     # Use longer delays for YouTube's rate limiting patterns
                     base_delay = 3 + (attempt * 2)  # 3s, 5s, 7s, 9s
                     wait_time = base_delay + uniform(0, 2)  # Add jitter
                     _logger.warning(
-                        f'downloadAudioFile: Attempt {attempt + 1} failed ({str(retry_err)[:100]}...), retrying in {wait_time:.1f}s'
+                        f'downloadAudioFile: Attempt {attempt + 1} failed ({str(err)[:100]}...), retrying in {wait_time:.1f}s'
                     )
                     time.sleep(wait_time)
                     continue
                 else:
                     # Re-raise the exception if not retryable or exhausted retries
-                    raise retry_err
+                    raise err
 
     except Exception as err:
         errText = re.sub('[\n\r]+', ' ', errorToString(err, show_stacktrace=False))

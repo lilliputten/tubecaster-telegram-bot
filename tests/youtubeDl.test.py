@@ -6,7 +6,9 @@ import traceback
 
 # Youtube download libraries
 # import youtube_dl # @see https://github.com/ytdl-org/youtube-dl
-import yt_dlp  # @see https://github.com/yt-dlp/yt-dlp
+import yt_dlp
+
+from botCast.config.castConfig import demoVideo  # @see https://github.com/yt-dlp/yt-dlp
 
 YTDL = yt_dlp
 
@@ -20,10 +22,12 @@ def getFileIdFromName(name: str):
 
 def run():
     # url = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Small test fragment
-    url = 'https://www.youtube.com/watch?v=VgyQ-1tzFaY'   # Autodubbed
+    # url = 'https://www.youtube.com/watch?v=VgyQ-1tzFaY'   # Autodubbed
+    url = demoVideo
     try:
         #  url = input("please enter youtube video url:")
-        video_info = YTDL.YoutubeDL().extract_info(url=url, download=False)
+        ytdl = YTDL.YoutubeDL()
+        video_info = ytdl.extract_info(url=url, download=False)
         if not video_info:
             raise Exception('No video info has been returned')
         title = video_info['title']

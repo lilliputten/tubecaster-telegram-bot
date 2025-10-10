@@ -22,9 +22,13 @@ def format():
     subprocess.run(['blue', '-q', '.'])
 
 
-def check_all():
+def isort():
     print('Running imports sorter...')
     subprocess.run(['isort', '--only-modified', '.'])
+
+
+def check_all():
+    isort()
     format()
     lint()
 
@@ -60,6 +64,7 @@ def prisma_db_push_all():
 
 commands = {
     'export_requirements': export_requirements,
+    'isort': isort,
     'lint': lint,
     'format': format,
     'check_all': check_all,
@@ -75,9 +80,10 @@ if __name__ == '__main__':
         print('Available commands:', ', '.join(commands.keys()))
         sys.exit(1)
 
-    command = sys.argv[1]
-    if command in commands:
-        commands[command]()
-    else:
-        print(f'Unknown command: {command}')
-        print('Available commands:', ', '.join(commands.keys()))
+    for command in sys.argv[1:]:
+        if command in commands:
+            commands[command]()
+        else:
+            print(f'Unknown command: {command}')
+            print('Available commands:', ', '.join(commands.keys()))
+            sys.exit(1)

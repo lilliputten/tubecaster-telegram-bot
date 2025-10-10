@@ -8,19 +8,22 @@ import traceback
 
 import yt_dlp
 
+from botCast.config.castConfig import demoVideo
+
 YTDL = yt_dlp
 
 
 # url = 'https://www.youtube.com/watch?v=EngW7tLk6R8' # Small test fragment
-url = 'https://www.youtube.com/watch?v=VgyQ-1tzFaY'   # Autodubbed
+# url = "https://www.youtube.com/watch?v=VgyQ-1tzFaY"  # Autodubbed
+url = demoVideo
 
 
 def run():
     try:
         ydl_opts = {'listformats': True}
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with YTDL.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
-            for f in info['formats']:   # type: ignore
+            for f in info['formats']:  # type: ignore
                 print(
                     f"{f['format_id']}: {f.get('acodec')} {f.get('abr')}k {f.get('language', 'unknown')} {f.get('tbr')}k"
                 )
