@@ -138,7 +138,7 @@ def downloadAudioFile(
         )
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = (
-            "Youtube is currently blocking 3rd-party media download requests. We'll try to fix the issue ASAP."
+            "It seems that YouTube is currently blocking 3rd-party media download requests. We'll try to fix the issue ASAP."
             if isBlocking
             else 'Audio download error: ' + removeAnsiStyles(errText)
         )
