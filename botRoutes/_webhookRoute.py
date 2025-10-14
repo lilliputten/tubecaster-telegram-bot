@@ -44,14 +44,14 @@ def webhookRoute():
     """
     requestStream = request.stream.read().decode('utf-8')
     update = types.Update.de_json(requestStream)
-    #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
+    #  Sample update data: <types.Update object at 0x0000024A1904B5C0>
     #  chosen_inline_result = None
     #  deleted_business_messages = None
     #  edited_business_message = None
     #  edited_channel_post = None
     #  edited_message = None
     #  inline_query = None
-    #  message = <telebot.types.Message object at 0x0000024A1904B560>
+    #  message = <types.Message object at 0x0000024A1904B560>
     #  message_reaction = None
     #  message_reaction_count = None
     #  my_chat_member = None
@@ -70,9 +70,9 @@ def webhookRoute():
     if not message and callback_query:
         message = callback_query.message
     # if not message and pre_checkout_query:
-    #     # Example of pre_checkout_query: telebot.types.PreCheckoutQuery data:
+    #     # Example of pre_checkout_query: types.PreCheckoutQuery data:
     #     # currency = 'XTR'
-    #     # from_user = <telebot.types.User object at 0x000001ECB101B8D0>
+    #     # from_user = <types.User object at 0x000001ECB101B8D0>
     #     # id = '2106243732230179992'
     #     # invoice_payload = '490398083:Ig (@lilliputten):en'
     #     # order_info = None

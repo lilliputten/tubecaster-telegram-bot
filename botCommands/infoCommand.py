@@ -4,6 +4,7 @@ import traceback
 from functools import partial
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -23,8 +24,8 @@ _logTraceback = False
 
 
 def infoForUrlStep(
-    chat: telebot.types.Chat,
-    message: telebot.types.Message,
+    chat: types.Chat,
+    message: types.Message,
 ):
     _logger.info('infoForUrlStep: Invoked')
     try:
@@ -72,7 +73,7 @@ def infoForUrlStep(
         )
 
 
-def infoCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
+def infoCommand(chat: types.Chat, message: types.Message, state: StateContext):
     """
     Expects commands like:
     `/info URL`

@@ -4,6 +4,7 @@ import traceback
 
 import telebot  # pyTelegramBotAPI
 from prisma.models import MonthlyStats, TotalStats
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -52,7 +53,7 @@ def formatStatsEntry(title: str, stats: TotalStats | MonthlyStats | None):
 
 
 def sendStatsToChat(
-    statsForUserId: int, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None
+    statsForUserId: int, chatId: str | int, username: str, originalMessage: types.Message | None = None
 ):
     """
     Send info for passed video url.
@@ -62,7 +63,7 @@ def sendStatsToChat(
     - statsForUserId: int - User id to collect the stats for (usually is the current user; but admin can request stats for another user).
     - chatId: str | int - Chat/user id.
     - username: str - Chat username.
-    - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
+    - originalMessage: types.Message | None = None - Original message reply to (optional).
     """
 
     try:

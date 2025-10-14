@@ -3,6 +3,7 @@
 from functools import partial
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -18,7 +19,7 @@ from db import ensureValidUser
 _logger = getDebugLogger()
 
 
-def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
+def castForUrlStep(chat: types.Chat, message: types.Message):
     text = message.text
     chatId = chat.id
     username = getUserName(message.from_user)
@@ -49,8 +50,8 @@ def castForUrlStep(chat: telebot.types.Chat, message: telebot.types.Message):
 
 
 def startWaitingForCastUrl(
-    chat: telebot.types.Chat,
-    message: telebot.types.Message,
+    chat: types.Chat,
+    message: types.Message,
 ):
     chatId = chat.id
     userId = message.from_user.id if message.from_user else chatId
@@ -64,8 +65,8 @@ def startWaitingForCastUrl(
 
 
 def castCommand(
-    chat: telebot.types.Chat,
-    message: telebot.types.Message,
+    chat: types.Chat,
+    message: types.Message,
 ):
     """
     Expects commands like:

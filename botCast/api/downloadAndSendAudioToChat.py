@@ -53,7 +53,7 @@ def downloadAndSendAudioToChat(
     - url: str - Video url.
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
-    - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
+    - originalMessage: types.Message | None = None - Original message reply to (optional).
     - cleanUp: bool | None = False - Clean all the temporary and generated files at the end (true by default).
 
     For tests, use the command:

@@ -6,6 +6,7 @@ from datetime import timedelta
 from urllib.request import urlopen
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.types import ReplyParameters
 
 from botApp import botApp
@@ -27,8 +28,8 @@ logTraceback = False
 def sendAudioPiece(
     chatId: str | int,
     videoInfo: TVideoInfo,
-    rootMessage: telebot.types.Message | None = None,
-    originalMessage: telebot.types.Message | None = None,
+    rootMessage: types.Message | None = None,
+    originalMessage: types.Message | None = None,
     audioFileName: str = '',
     pieceNo: int | None = None,
     piecesCount: int | None = None,

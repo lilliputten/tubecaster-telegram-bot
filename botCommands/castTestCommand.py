@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCast import downloadAndSendAudioToChat
@@ -13,7 +14,7 @@ from db import ensureValidUser
 _logger = getDebugLogger()
 
 
-def castTestCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+def castTestCommand(chat: types.Chat, message: types.Message):
     chatId = chat.id
     username = getUserName(message.from_user)
     # userId = message.from_user.id

@@ -1,4 +1,6 @@
 # import telebot
+from telebot import types
+
 # from telebot import custom_filters, types
 from telebot.states import State, StatesGroup
 

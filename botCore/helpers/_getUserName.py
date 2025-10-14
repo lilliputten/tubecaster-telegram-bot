@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 
-def getUserName(user: telebot.types.User | telebot.types.Chat | None, appendId: bool = False):
+def getUserName(user: types.User | types.Chat | None, appendId: bool = False):
     if not user:
         return 'Unknown'
     userId = user.id if user else None

@@ -4,6 +4,7 @@ import traceback
 from datetime import timedelta
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies, stickers
@@ -50,7 +51,7 @@ def updateChatStatus(chatId: str | int):
     botApp.send_chat_action(chatId, action='upload_document')
 
 
-def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: telebot.types.Message | None = None):
+def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: types.Message | None = None):
     """
     Send info for passed video url.
 
@@ -59,7 +60,7 @@ def sendInfoToChat(url: str, chatId: str | int, username: str, originalMessage: 
     - url: str - Video url.
     - chatId: str | int - Chat id (optional).
     - username: str - Chat username.
-    - originalMessage: telebot.types.Message | None = None - Original message reply to (optional).
+    - originalMessage: types.Message | None = None - Original message reply to (optional).
 
     For tests, use the command:
 

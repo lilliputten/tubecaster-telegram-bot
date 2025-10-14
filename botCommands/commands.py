@@ -10,6 +10,7 @@ import traceback
 from datetime import datetime
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -60,7 +61,7 @@ __all__ = [
 
 
 @botApp.message_handler(commands=['become_user'])
-def requestRegistration(message: telebot.types.Message, state: StateContext):
+def requestRegistration(message: types.Message, state: StateContext):
     sendCommandInfo(message, 'requestRegistration')
     userId = message.from_user.id if message.from_user else message.chat.id
     userStr = getUserName(message.from_user)
@@ -68,10 +69,10 @@ def requestRegistration(message: telebot.types.Message, state: StateContext):
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('registerUser:'))
-def registerUserQuery(query: telebot.types.CallbackQuery, state: StateContext):
+def registerUserQuery(query: types.CallbackQuery, state: StateContext):
     sendQueryInfo(query, query.data)
     message = query.message
-    if not isinstance(message, telebot.types.Message):
+    if not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
         _logger.error(errorStyle('registerUserQuery: Error: %s' % errMsg))
@@ -85,7 +86,7 @@ def registerUserQuery(query: telebot.types.CallbackQuery, state: StateContext):
 
 
 @botApp.message_handler(state=BotStates.waitForRegistrationInfo)
-def sendRegistrationInfoStep(message: telebot.types.Message, state: StateContext):
+def sendRegistrationInfoStep(message: types.Message, state: StateContext):
     sendCommandInfo(message, 'sendRegistrationInfoStep')
     state.delete()
     chat = message.chat
@@ -138,7 +139,7 @@ def sendRegistrationInfoStep(message: telebot.types.Message, state: StateContext
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('acceptUser:'))
-def acceptUserQuery(query: telebot.types.CallbackQuery):
+def acceptUserQuery(query: types.CallbackQuery):
     """
     Creation of the user when it has been accepted by the admin
     """
@@ -155,7 +156,7 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
         ]
         botApp.send_message(userId, emojies.success + ' ' + '\n\n'.join(filter(None, contentItems)))
         message = query.message
-        if isinstance(message, telebot.types.Message):
+        if isinstance(message, types.Message):
             botApp.reply_to(
                 message,
                 emojies.success
@@ -164,7 +165,7 @@ def acceptUserQuery(query: telebot.types.CallbackQuery):
 
 
 @botApp.callback_query_handler(lambda query: query.data.startswith('rejectUser:'))
-def rejectUserQuery(query: telebot.types.CallbackQuery):
+def rejectUserQuery(query: types.CallbackQuery):
     """
     Rejection of the user when it has been accepted by the admin
     """
@@ -179,7 +180,7 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
             + ' Unfortunatelly, your registration has been declined. You can try again or better reach the administrator (@lilliputten).',
         )
         message = query.message
-        if isinstance(message, telebot.types.Message):
+        if isinstance(message, types.Message):
             botApp.reply_to(
                 message,
                 emojies.error + f' User request from {userStr} has been rejected. Id: {userId}, tg://user?id={userId}',
@@ -187,7 +188,7 @@ def rejectUserQuery(query: telebot.types.CallbackQuery):
 
 
 @botApp.message_handler(commands=['restore_account'])
-def restoreAccount(message: telebot.types.Message):
+def restoreAccount(message: types.Message):
     sendCommandInfo(message, 'restoreAccount')
     userId = message.from_user.id if message.from_user else message.chat.id
     prisma = initDb()
@@ -218,16 +219,16 @@ def restoreAccount(message: telebot.types.Message):
 
 
 @botApp.message_handler(commands=['remove_account'])
-def removeAccount(message: telebot.types.Message):
+def removeAccount(message: types.Message):
     sendCommandInfo(message, 'removeAccount')
     showRemoveAccountDialog(message)
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'removeAccountYes')
-def removeAccountYes(query: telebot.types.CallbackQuery):
+def removeAccountYes(query: types.CallbackQuery):
     sendQueryInfo(query, 'removeAccountYes')
     message = query.message
-    if not isinstance(message, telebot.types.Message):
+    if not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved!'
         _logger.error(errorStyle('removeAccountYes: Error: %s' % errMsg))
@@ -259,15 +260,15 @@ def removeAccountYes(query: telebot.types.CallbackQuery):
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'removeAccountNo')
-def removeAccountNo(query: telebot.types.CallbackQuery):
+def removeAccountNo(query: types.CallbackQuery):
     sendQueryInfo(query, 'removeAccountNo')
     message = query.message
-    if isinstance(message, telebot.types.Message):
+    if isinstance(message, types.Message):
         botApp.delete_message(message.chat.id, message.id)
 
 
 @botApp.message_handler(commands=['test'])
-def testReaction(message: telebot.types.Message, state: StateContext):
+def testReaction(message: types.Message, state: StateContext):
     # DEBUG
     sendCommandInfo(message, 'testReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
@@ -278,7 +279,7 @@ def testReaction(message: telebot.types.Message, state: StateContext):
 
 
 @botApp.message_handler(commands=['cast_test'])
-def castTestReaction(message: telebot.types.Message):
+def castTestReaction(message: types.Message):
     sendCommandInfo(message, 'castTestReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     if userId != TELEGRAM_OWNER_ID:
@@ -288,29 +289,29 @@ def castTestReaction(message: telebot.types.Message):
 
 
 @botApp.message_handler(commands=['help'])
-def helpReaction(message: telebot.types.Message):
+def helpReaction(message: types.Message):
     sendCommandInfo(message, 'helpReaction')
     helpCommand(message.chat)
 
 
 @botApp.message_handler(commands=['start'])
-def startReaction(message: telebot.types.Message):
+def startReaction(message: types.Message):
     sendCommandInfo(message, 'startReaction')
     startCommand(message.chat, message)
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'startHelp')
-def startHelp(query: telebot.types.CallbackQuery):
+def startHelp(query: types.CallbackQuery):
     sendQueryInfo(query, 'startHelp')
     message = query.message
     helpCommand(message.chat)
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'startCast')
-def startCast(query: telebot.types.CallbackQuery):
+def startCast(query: types.CallbackQuery):
     sendQueryInfo(query, 'startCast')
     message = query.message
-    if not isinstance(message, telebot.types.Message):
+    if not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
         _logger.error(errorStyle('startCast: Error: %s' % errMsg))
@@ -328,14 +329,14 @@ def startCast(query: telebot.types.CallbackQuery):
 
 
 @botApp.message_handler(state=BotStates.waitForCastUrl)
-def castForUrlStepHandler(message: telebot.types.Message, state: StateContext):
+def castForUrlStepHandler(message: types.Message, state: StateContext):
     sendCommandInfo(message, 'castForUrlStepHandler')
     state.delete()
     castForUrlStep(message.chat, message)
 
 
 @botApp.message_handler(commands=['cast'])
-def castReaction(message: telebot.types.Message):
+def castReaction(message: types.Message):
     sendCommandInfo(message, 'castReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     if not checkUserLimitations(message, userId, 'CAST'):
@@ -345,14 +346,14 @@ def castReaction(message: telebot.types.Message):
 
 
 @botApp.message_handler(state=BotStates.waitForInfoUrl)
-def infoForUrlStepHandler(message: telebot.types.Message, state: StateContext):
+def infoForUrlStepHandler(message: types.Message, state: StateContext):
     sendCommandInfo(message, 'infoForUrlStepHandler')
     state.delete()
     infoForUrlStep(message.chat, message)
 
 
 @botApp.message_handler(commands=['info'])
-def infoReaction(message: telebot.types.Message, state: StateContext):
+def infoReaction(message: types.Message, state: StateContext):
     sendCommandInfo(message, f'infoReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     # if not checkValidUser(userId):
@@ -366,13 +367,13 @@ def infoReaction(message: telebot.types.Message, state: StateContext):
 
 
 @botApp.message_handler(commands=['stats'])
-def statsReaction(message: telebot.types.Message, state: StateContext):
+def statsReaction(message: types.Message, state: StateContext):
     sendCommandInfo(message, f'statsReaction')
     statsCommand(message.chat, message, state)
 
 
 @botApp.message_handler(commands=['status'])
-def statusReaction(message: telebot.types.Message):
+def statusReaction(message: types.Message):
     sendCommandInfo(message, f'statusReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     # user = getActiveUser(userId)
@@ -386,7 +387,7 @@ def statusReaction(message: telebot.types.Message):
 
 
 @botApp.message_handler(commands=['plans'])
-def plansReaction(message: telebot.types.Message):
+def plansReaction(message: types.Message):
     sendCommandInfo(message, f'plansReaction')
     userId = message.from_user.id if message.from_user else message.chat.id
     # userStr = getUserName(message.from_user)
@@ -405,7 +406,7 @@ def plansReaction(message: telebot.types.Message):
     content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'],
     state=None,
 )
-def defaultCommand(message: telebot.types.Message, state: StateContext):
+def defaultCommand(message: types.Message, state: StateContext):
     sendCommandInfo(message, 'defaultCommand')
     chat = message.chat
     chatId = chat.id

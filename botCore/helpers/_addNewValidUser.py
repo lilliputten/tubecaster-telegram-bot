@@ -1,6 +1,7 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -15,8 +16,8 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def addNewValidUser(userId: int, userStr: str, languageCode: str | None, query: telebot.types.CallbackQuery):
-    message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
+def addNewValidUser(userId: int, userStr: str, languageCode: str | None, query: types.CallbackQuery):
+    message = query.message  # <types.Message object at 0x000002B8D6F12210>
     chatId = message.chat.id
     try:
         user = ensureValidUser(userId, userStr, languageCode)

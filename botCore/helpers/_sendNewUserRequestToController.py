@@ -1,6 +1,7 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -20,9 +21,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def sendNewUserRequestToController(
-    message: telebot.types.Message, newUserId: int, newUserStr: str, state: StateContext
-):
+def sendNewUserRequestToController(message: types.Message, newUserId: int, newUserStr: str, state: StateContext):
     chatId = message.chat.id
     try:
         text = message.text

@@ -10,9 +10,9 @@ def cleanFiles(options: YtdlOptionsType):
     """
     Clean temporary files and folders created in prepareAudioFile, downloadAudioFile
     """
-    cookieFile = options['cookiefile']
-    destFile = options['_destFile']
-    destFolder = options['_destFolder']
+    cookieFile = options.get('cookiefile')
+    destFile = options.get('_destFile')
+    destFolder = options.get('_destFolder')
     try:
         if cookieFile:
             pathlib.Path(cookieFile).unlink(missing_ok=True)
