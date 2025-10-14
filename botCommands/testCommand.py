@@ -3,6 +3,7 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -19,7 +20,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def testCommand(chat: telebot.types.Chat, message: telebot.types.Message, _state: StateContext):
+def testCommand(chat: types.Chat, message: types.Message, _state: StateContext):
     try:
         chatId = chat.id  # Is userId
         userId = message.from_user.id if message.from_user else chatId

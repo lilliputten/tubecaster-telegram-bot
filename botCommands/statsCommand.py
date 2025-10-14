@@ -3,6 +3,7 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 from telebot.states.sync.context import StateContext
 
 from botApp import botApp
@@ -20,7 +21,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def statsCommand(chat: telebot.types.Chat, message: telebot.types.Message, state: StateContext):
+def statsCommand(chat: types.Chat, message: types.Message, state: StateContext):
     """
     Expects commands like:
     `/stats [ID]`

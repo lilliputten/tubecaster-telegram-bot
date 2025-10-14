@@ -8,6 +8,7 @@ from functools import partial
 from typing import Optional
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -30,15 +31,15 @@ _logger = getDebugLogger()
 def sendAudioToChat(
     chatId: str | int,
     videoInfo: TVideoInfo,
-    rootMessage: telebot.types.Message | None = None,
-    originalMessage: telebot.types.Message | None = None,
+    rootMessage: types.Message | None = None,
+    originalMessage: types.Message | None = None,
     audioFileName: str = '',
     cleanUp: bool = True,
     maxAudioFileSize: int | None = MAX_AUDIO_FILE_SIZE,
     splitGap: int = 1,
     delimiter: str = '-',
 ):
-    newMessage: Optional[telebot.types.Message] = None
+    newMessage: Optional[types.Message] = None
     try:
         audioSize = os.path.getsize(audioFileName)
         audioSizeFmt = sizeofFmt(audioSize)

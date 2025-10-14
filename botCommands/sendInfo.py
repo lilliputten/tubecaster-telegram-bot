@@ -30,7 +30,8 @@ _commonInfoData = {
 
 def notifyOwner(text: str, logInfo: str | None = None):
     textStr = removeAnsiStyles(text)
-    _logger.info(logInfo if logInfo else textStr)
+    if logInfo != '':
+        _logger.info(logInfo if logInfo else textStr)
     if LOGGING_CHANNEL_ID:   # and not LOCAL:
         botApp.send_message(LOGGING_CHANNEL_ID, textStr)
 
@@ -94,11 +95,11 @@ def sendCommandInfo(message: types.Message, info: str | None = None):
 
 def sendQueryInfo(query: types.CallbackQuery, info: str | None = None):
     data = query.data  # 'startHelp'
-    user = query.from_user  # <telebot.types.User object at 0x000002B8D75517F0>
+    user = query.from_user  # <types.User object at 0x000002B8D75517F0>
     gameShortName = query.game_short_name  # None
     id = query.id  # '2106243731802653912'
     inlineMessageId = query.inline_message_id  # None
-    message = query.message  # <telebot.types.Message object at 0x000002B8D6F12210>
+    message = query.message  # <types.Message object at 0x000002B8D6F12210>
     chatId = message.chat.id
     userId = user.id if user else chatId
     stateValue = botApp.get_state(userId, chatId)

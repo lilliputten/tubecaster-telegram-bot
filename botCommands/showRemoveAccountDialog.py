@@ -2,6 +2,7 @@
 
 import telebot  # pyTelegramBotAPI
 from dateutil.relativedelta import relativedelta
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -15,7 +16,7 @@ from db import findUser
 _logger = getDebugLogger()
 
 
-def showRemoveAccountDialog(message: telebot.types.Message):
+def showRemoveAccountDialog(message: types.Message):
     # name = first_name if first_name else username
     userId = message.from_user.id if message.from_user else message.chat.id
     user = findUser({'id': userId})   # , 'isDeleted': False})

@@ -1,6 +1,7 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -18,7 +19,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def showOutOfLimitsMessage(message: telebot.types.Message):
+def showOutOfLimitsMessage(message: types.Message):
     chatId = message.chat.id
     try:
         text = message.text

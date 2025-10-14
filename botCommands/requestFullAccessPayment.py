@@ -6,6 +6,7 @@ from random import randrange
 
 import telebot  # pyTelegramBotAPI
 from dateutil.relativedelta import relativedelta
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies, limits
@@ -33,7 +34,7 @@ _logger = getDebugLogger()
 _logTraceback = False
 
 
-def requestFullAccessPayment(message: telebot.types.Message, user: telebot.types.User | telebot.types.Chat):
+def requestFullAccessPayment(message: types.Message, user: types.User | types.Chat):
     chatId = message.chat.id
     userId = user.id
     userName = getUserName(user)
@@ -63,7 +64,7 @@ def requestFullAccessPayment(message: telebot.types.Message, user: telebot.types
         paymentName = 'TubeCasterBot Full Access'
 
         prices = [
-            telebot.types.LabeledPrice(
+            types.LabeledPrice(
                 label=paymentName,
                 # Price in XTR stars
                 amount=amount,
@@ -89,8 +90,8 @@ def requestFullAccessPayment(message: telebot.types.Message, user: telebot.types
 
         # DEBUG: Mock the successfull payment handler invocation
         if isEmulation and LOCAL:
-            # payment: telebot.types.SuccessfulPayment = {}
-            payment = telebot.types.SuccessfulPayment(
+            # payment: types.SuccessfulPayment = {}
+            payment = types.SuccessfulPayment(
                 currency=limits.currency,  # Currency code, e.g., 'XTR'
                 total_amount=amount,  # Amount in smallest units (cents)
                 invoice_payload=payload,  # The invoice payload string you passed before
@@ -138,7 +139,7 @@ def handlePreCheckout(pre_checkout_query):
 
 # Handler for successful payment messages
 @botApp.message_handler(content_types=['successful_payment'])
-def handlePayment(message: telebot.types.Message):
+def handlePayment(message: types.Message):
     payment = message.successful_payment
     userId = message.from_user.id if message.from_user else message.chat.id
 

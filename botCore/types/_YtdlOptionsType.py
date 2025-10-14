@@ -3,9 +3,9 @@
 from typing import Callable, Optional, TypedDict
 
 
-class YtdlOptionsType(TypedDict):
-    cachedir: str
-    extractor_args: Optional[str]
+class YtdlOptionsType(TypedDict, total=False):
+    cachedir: str  # Required field
+    extractor_args: Optional[dict[str, dict[str, list[str]]]]
     outtmpl: Optional[str]
     _destFolder: Optional[str]
     _destFile: Optional[str]

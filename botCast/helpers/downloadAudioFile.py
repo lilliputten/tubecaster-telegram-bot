@@ -49,9 +49,9 @@ def downloadAudioFile(
         download_options: YtdlOptionsType = {
             **options,
             # @see https://github.com/ytdl-org/youtube-dl/blob/3e4cedf9e8cd3157df2457df7274d0c842421945/youtube_dl/YoutubeDL.py#L137-L312
-            'format': 'worstaudio/worst',
+            # 'format': 'worstaudio/worst',
             # 'format': 'bestaudio/best',
-            # 'format': 'bestaudio[format_note*=original]/bestaudio',  # Trying to get an original audio track
+            'format': 'bestaudio[format_note*=original]/bestaudio',  # Trying to get an original audio track
             # 'format': 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio/best[height<=720]/best',
             'keepvideo': False,
             'verbose': True,
@@ -147,4 +147,5 @@ def downloadAudioFile(
         else:
             _logger.warning(warningStyle('downloadAudioFile: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioFile: ' + errMsg))
+        notifyOwner('downloadAudioFile: Error: ' + errMsg, '')
         raise Exception(errMsg)

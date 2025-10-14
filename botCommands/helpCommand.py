@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore import botConfig
@@ -10,7 +11,7 @@ from .commandsInfo import commandsInfo
 #  _logger = getDebugLogger()
 
 
-def helpCommand(chat: telebot.types.Chat):
+def helpCommand(chat: types.Chat):
     chatId = chat.id
     helpText = 'The following commands are available: \n\n'
     for key in commandsInfo:
@@ -22,5 +23,5 @@ def helpCommand(chat: telebot.types.Chat):
             chatId,
             photo=fh,
             caption=helpText,
-            reply_markup=telebot.types.ReplyKeyboardRemove(),
+            reply_markup=types.ReplyKeyboardRemove(),
         )

@@ -2,6 +2,7 @@ import traceback
 
 import telebot  # pyTelegramBotAPI
 from prisma.models import UserStatus
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -22,7 +23,7 @@ _logTraceback = False
 
 
 @botApp.message_handler(commands=['get_full_access'])
-def requestFullAccess(message: telebot.types.Message):
+def requestFullAccess(message: types.Message):
     sendCommandInfo(message, 'requestFullAccess')
     userId = message.from_user.id if message.from_user else message.chat.id
     checkIfUserDeleted(message, userId, True)
@@ -47,7 +48,7 @@ def requestFullAccess(message: telebot.types.Message):
     requestFullAccessPayment(message, message.chat)
 
 
-def showRequestFullAccessIfAlreadyPaidConfirmDialog(message: telebot.types.Message, userStatus: UserStatus):
+def showRequestFullAccessIfAlreadyPaidConfirmDialog(message: types.Message, userStatus: UserStatus):
     paymentValidUntil = userStatus.paymentValidUntil
     msgItems = [
         'YOU ALREADY HAVE A PAID USAGE PLAN.',
@@ -66,7 +67,7 @@ def showRequestFullAccessIfAlreadyPaidConfirmDialog(message: telebot.types.Messa
 
 
 # UNUSED: showRequestFullAccessDialog
-# def showRequestFullAccessDialog(message: telebot.types.Message):
+# def showRequestFullAccessDialog(message: types.Message):
 #     msgItems = [
 #         'Are you sure you want to upgrade your account to a paid usage plan?',
 #     ]
@@ -81,21 +82,21 @@ def showRequestFullAccessIfAlreadyPaidConfirmDialog(message: telebot.types.Messa
 
 def createRequestFullAccessButtonsMarkup():
     # @see https://core.telegram.org/bots/api#inlinekeyboardmarkup
-    markup = telebot.types.InlineKeyboardMarkup(
+    markup = types.InlineKeyboardMarkup(
         row_width=2,
     )
     # See https://core.telegram.org/bots/api#inlinekeyboardbutton
-    yes = telebot.types.InlineKeyboardButton('Yes', callback_data='requestFullAccessYes')
-    no = telebot.types.InlineKeyboardButton('No', callback_data='requestFullAccessNo')
+    yes = types.InlineKeyboardButton('Yes', callback_data='requestFullAccessYes')
+    no = types.InlineKeyboardButton('No', callback_data='requestFullAccessNo')
     markup.add(yes, no)
     return markup
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'requestFullAccessYes')
-def requestFullAccessYes(query: telebot.types.CallbackQuery):
+def requestFullAccessYes(query: types.CallbackQuery):
     sendQueryInfo(query, 'requestFullAccessYes')
     message = query.message
-    if not isinstance(message, telebot.types.Message):
+    if not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved!'
         _logger.error(errorStyle('requestFullAccessYes: Error: %s' % errMsg))
@@ -117,8 +118,8 @@ def requestFullAccessYes(query: telebot.types.CallbackQuery):
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'requestFullAccessNo')
-def requestFullAccessNo(query: telebot.types.CallbackQuery):
+def requestFullAccessNo(query: types.CallbackQuery):
     sendQueryInfo(query, 'requestFullAccessNo')
     message = query.message
-    if isinstance(message, telebot.types.Message):
+    if isinstance(message, types.Message):
         botApp.delete_message(message.chat.id, message.id)

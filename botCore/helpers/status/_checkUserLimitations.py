@@ -3,6 +3,7 @@ from typing import Literal, cast
 import telebot  # pyTelegramBotAPI
 from dateutil.relativedelta import relativedelta
 from prisma.models import MonthlyStats, TotalStats, UserStatus
+from telebot import types
 
 from botCore.constants import emojies, limits
 from botCore.helpers import replyOrSend
@@ -15,7 +16,7 @@ from db.user import findUser
 TUserAction = Literal['CAST', 'INFO']
 
 
-def checkIfUserDeleted(message: telebot.types.Message, userId: int, showMessage: bool = True):
+def checkIfUserDeleted(message: types.Message, userId: int, showMessage: bool = True):
     user = findUser({'id': userId})
 
     if user and user.isDeleted:
@@ -29,7 +30,7 @@ def checkIfUserDeleted(message: telebot.types.Message, userId: int, showMessage:
     return False
 
 
-def checkUserLimitations(message: telebot.types.Message, userId: int, action: TUserAction):
+def checkUserLimitations(message: types.Message, userId: int, action: TUserAction):
     """
     Sends warnings and errors directly to the chat.
     Returns True if the action is allowed.
