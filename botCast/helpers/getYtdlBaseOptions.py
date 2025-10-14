@@ -33,7 +33,7 @@ def getYtdlBaseOptions():
     YT_POTOKEN = appConfig.get('YT_POTOKEN')
     if YT_POTOKEN:
         _logger.info('getYtdlBaseOptions: Using YT_POTOKEN: %s' % (YT_POTOKEN))
-        options['extractor_args'] = 'youtube:player-client=web;po_token=web+' + YT_POTOKEN
+        options['extractor_args'] = {'youtube': {'player-client': ['web'], 'po_token': ['web+' + YT_POTOKEN]}}
 
     #  # Add authentication params (NOTE: Unused as not supported)
     #  YT_USERNAME = appConfig.get('YT_USERNAME')

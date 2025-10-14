@@ -1,9 +1,18 @@
 <!--
  @since 2025.09.02
- @changed 2025.10.09, 17:36
+ @changed 2025.10.14, 17:47
 -->
 
 # CHANGELOG
+
+## [v.0.2.1](https://github.com/lilliputten/tubecaster-telegram-bot/releases/tag/v.0.2.1) - 2025.10.14
+
+- Issue #45: Updated yt-dlp version to 2025.10.12.232804.dev0.
+- Updated minor version: v.0.2.1.
+
+See also:
+
+- [Compare with the previous version](https://github.com/lilliputten/tubecaster-telegram-bot/compare/v.0.1.2...v.0.2.1)
 
 ## [v.0.1.2](https://github.com/lilliputten/tubecaster-telegram-bot/releases/tag/v.0.1.2) - 2025.10.09
 

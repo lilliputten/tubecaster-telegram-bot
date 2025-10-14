@@ -147,4 +147,5 @@ def downloadAudioFile(
         else:
             _logger.warning(warningStyle('downloadAudioFile: Traceback for the following error:') + sTraceback)
         _logger.error(errorStyle('downloadAudioFile: ' + errMsg))
+        notifyOwner('downloadAudioFile: Error: ' + errMsg, '')
         raise Exception(errMsg)
