@@ -1,11 +1,14 @@
 # -*- coding:utf-8 -*-
 
-import telebot  # pyTelegramBotAPI
+# import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 
 
-def editOrSendMessage(text: str, chatId: int | str, message: telebot.types.Message | None = None):
+def editOrSendMessage(text: str, chatId: int | str | None = None, message: types.Message | None = None):
+    if not chatId:
+        return
     try:
         if not message:
             raise Exception('No message')

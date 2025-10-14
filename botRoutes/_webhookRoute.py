@@ -5,6 +5,7 @@ from typing import Optional
 
 import telebot  # pyTelegramBotAPI
 from flask import Response, request
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies
@@ -42,7 +43,7 @@ def webhookRoute():
     Core access point: Process the telegram bot webhook.
     """
     requestStream = request.stream.read().decode('utf-8')
-    update = telebot.types.Update.de_json(requestStream)
+    update = types.Update.de_json(requestStream)
     #  Sample update data: <telebot.types.Update object at 0x0000024A1904B5C0>
     #  chosen_inline_result = None
     #  deleted_business_messages = None

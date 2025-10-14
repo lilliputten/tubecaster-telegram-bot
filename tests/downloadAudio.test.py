@@ -98,7 +98,7 @@ def downloadAudioTest(url: str, chatId: str | int | None, username: str, message
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
-        errMsg = 'Error fetching audio file: ' + errText
+        errMsg = 'Error fetching test audio file: ' + errText
         if logTraceback:
             errMsg += sTraceback
         else:

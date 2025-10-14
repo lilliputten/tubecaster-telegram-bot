@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore.helpers import getUserName
@@ -28,13 +29,13 @@ _commonInfoData = {
 
 
 def notifyOwner(text: str, logInfo: str | None = None):
-    if logInfo:
-        _logger.info(logInfo)
+    textStr = removeAnsiStyles(text)
+    _logger.info(logInfo if logInfo else textStr)
     if LOGGING_CHANNEL_ID:   # and not LOCAL:
-        botApp.send_message(LOGGING_CHANNEL_ID, removeAnsiStyles(text))
+        botApp.send_message(LOGGING_CHANNEL_ID, textStr)
 
 
-def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
+def sendCommandInfo(message: types.Message, info: str | None = None):
     #  chat = message.chat
     chatId = message.chat.id
     text = message.text
@@ -91,7 +92,7 @@ def sendCommandInfo(message: telebot.types.Message, info: str | None = None):
     notifyOwner(content, logContent)
 
 
-def sendQueryInfo(query: telebot.types.CallbackQuery, info: str | None = None):
+def sendQueryInfo(query: types.CallbackQuery, info: str | None = None):
     data = query.data  # 'startHelp'
     user = query.from_user  # <telebot.types.User object at 0x000002B8D75517F0>
     gameShortName = query.game_short_name  # None

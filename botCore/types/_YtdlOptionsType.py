@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from typing import Optional, TypedDict
+from typing import Callable, Optional, TypedDict
 
 
 class YtdlOptionsType(TypedDict):
@@ -15,5 +15,8 @@ class YtdlOptionsType(TypedDict):
     verbose: Optional[bool]
     noplaylist: Optional[bool]
     paths: Optional[dict[str, str]]
+    extractor_retries: Optional[int]
+    fragment_retries: Optional[int]
+    retry_sleep_functions: Optional[dict[str, Callable[[int], float]]]
     #  listformats: Optional[bool]
     #  debug_printtraffic: Optional[bool]

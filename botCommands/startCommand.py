@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import telebot  # pyTelegramBotAPI
+from telebot import types
 
 from botApp import botApp
 from botCore import botConfig
@@ -14,7 +15,7 @@ from core.utils import debugObj
 _logger = getDebugLogger()
 
 
-def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
+def startCommand(chat: types.Chat, message: types.Message):
     # userId = message.from_user.id if message.from_user else message.chat.id
     chatId = chat.id
     username = chat.username
@@ -55,8 +56,17 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
             caption=content,
             # parse_mode='Markdown',
         )
+    # Send blocking warning
+    msgItems = [
+        'WARNING.',
+        'Youtube is currently blocking 3rd-party media download requests.',
+        "We'll try to fix the issue ASAP.",
+    ]
+    botApp.send_message(
+        chatId,
+        emojies.warning + ' ' + '\n\n'.join(filter(None, msgItems)),
+    )
     # Prepare and send extra content (the limit for photo captions is 1024B)
-    logContent = '\n'.join(logItems)
     msgItems = [
         'USAGE NOTES.',
         'Use /cast to download an audio from the youtube video url, /info to get the video details, or just send me its url as a message.',
@@ -74,7 +84,6 @@ def startCommand(chat: telebot.types.Chat, message: telebot.types.Message):
                 ]
             )
         )
-    # botApp.reply_to(msg
     botApp.send_message(
         chatId,
         emojies.info + ' ' + '\n\n'.join(filter(None, msgItems)),

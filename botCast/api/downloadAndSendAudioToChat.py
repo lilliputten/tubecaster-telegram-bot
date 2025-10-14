@@ -5,7 +5,7 @@ import re
 import traceback
 
 import telebot  # pyTelegramBotAPI
-from telebot import apihelper, types, util
+from telebot import types
 
 from botApp import botApp
 from botCore.constants import emojies, stickers
@@ -81,25 +81,8 @@ def downloadAndSendAudioToChat(
     try:
         options, videoInfo = downloadInfo(url, chatId, username)
 
-        videoDetails = getVideoDetailsStr(videoInfo)
-        infoContent = ''.join(
-            filter(
-                None,
-                [
-                    emojies.waiting + ' Downloading an audio from the video',
-                    f' ({videoDetails})' if videoDetails else '',
-                    '...',
-                ],
-            )
-        )
-        editOrSendMessage(
-            infoContent,
-            chatId,
-            rootMessage,
-        )
-
         # Load audio from url...
-        audioFileName = downloadAudioFile(options, videoInfo)
+        audioFileName = downloadAudioFile(options, videoInfo, chatId, rootMessage)
         if not audioFileName:
             raise Exception('Audio file name has not been defined')
         audioSize = os.path.getsize(audioFileName)
