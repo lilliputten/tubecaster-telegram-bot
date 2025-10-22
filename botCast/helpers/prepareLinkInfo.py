@@ -51,7 +51,12 @@ def prepareLinkInfo(url: str, userId: int | str | None, username: str):
         videoInfo: TVideoInfo | None = ytdl.extract_info(url=url, download=False)   # type: ignore
         if not videoInfo:
             raise Exception('No video info has been returned')
-        _logger.info('prepareLinkInfo: Got video info: %s' % debugObj(dict(videoInfo)))
+
+        # # Remove large automatic_captions data from logging
+        # if 'automatic_captions' in videoInfo:
+        #     videoInfo.pop('automatic_captions')
+
+        _logger.info('prepareLinkInfo: Got video info: %s' % debugObj(dict(videoInfo), None, 200))
 
         # Create file url:
         title = videoInfo.get('title')

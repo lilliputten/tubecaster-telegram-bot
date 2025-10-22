@@ -78,7 +78,7 @@ def downloadAudioFile(
         #     return destFile
 
         # Downloading with retry logic for YouTube's anti-bot patterns...
-        maxRetries = 5  # Increased to handle typical YouTube blocking patterns
+        maxRetries = 3  # Increased to handle typical YouTube blocking patterns
         for attempt in range(maxRetries):
             try:
                 infoItems = [

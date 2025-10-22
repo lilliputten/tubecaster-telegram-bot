@@ -5,7 +5,7 @@ from core.utils.variableAndKeyString import variableAndKeyString
 space = ' - '
 
 
-def debugObj(obj: dict[str, Any], keys: list[str] | None = None):
+def debugObj(obj: dict[str, Any], keys: list[str] | None = None, limit: int | None = None):
     if not keys:
         keys = list(filter(lambda key: not key.startswith('__'), obj.keys()))
     res = '\n'.join(
@@ -13,7 +13,7 @@ def debugObj(obj: dict[str, Any], keys: list[str] | None = None):
             filter(
                 None,
                 map(
-                    lambda a: variableAndKeyString(obj, a),
+                    lambda a: variableAndKeyString(obj, a, limit),
                     keys,
                 ),
             )
