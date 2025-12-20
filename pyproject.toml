@@ -53,4 +53,15 @@ line-length = 120
 line-length = 120
 # TODO!
 
-# [tool.poetry.scripts] - Temporarily disabled for VSCode debugging
+# There may be required to temporarily disabled this section in favor of VSCode debugging
+[tool.poetry.scripts]
+check_all = "poetry_scripts:check_all"
+lint = "poetry_scripts:lint"
+format = "poetry_scripts:format"
+isort = "poetry_scripts:isort"
+export_requirements = "poetry_scripts.export_requirements:export_requirements"
+prisma_format = "poetry_scripts.prisma:format"
+prisma_format_and_validate = "poetry_scripts.prisma:format_and_validate"
+prisma_db_push = "poetry_scripts.prisma:db_push"
+prisma_db_push_test = "poetry_scripts.prisma:db_push_test"
+prisma_db_push_all = "poetry_scripts.prisma:db_push_all"

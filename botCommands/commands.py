@@ -486,6 +486,9 @@ def defaultCommand(message: types.Message, state: StateContext):
             _logger.warning(warningStyle(titleStyle('defaultCommand: Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('defaultCommand: ' + errMsg))
         replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)
+    finally:
+        # TODO: Add cleaning up of outdated temp folders (under the `TEMP_PATH`)
+        pass
 
 
 def registerCommands():

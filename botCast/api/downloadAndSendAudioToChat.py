@@ -10,7 +10,7 @@ from telebot import types
 from botApp import botApp
 from botCore.constants import emojies, stickers
 from botCore.helpers import editOrSendMessage, getVideoDetailsStr, replyOrSend
-from botCore.types import YtdlOptionsType
+from botCore.types import TVideoInfo, YtdlOptionsType
 from core.helpers.errors import errorToString
 from core.helpers.files import sizeofFmt
 from core.helpers.time import RepeatedTimer
@@ -77,6 +77,7 @@ def downloadAndSendAudioToChat(
 
     # Future options, will be downloaded later
     options: YtdlOptionsType | None = None
+    videoInfo: TVideoInfo | None = None
 
     try:
         options, videoInfo = downloadInfo(url, chatId, username)
