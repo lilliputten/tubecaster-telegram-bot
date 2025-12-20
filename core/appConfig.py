@@ -46,6 +46,8 @@ appConfig = {
     },
 }
 
+SHOW_BLOCKING_MSG = bool(appConfig.get('SHOW_BLOCKING_MSG'))
+
 LOCAL = bool(appConfig.get('LOCAL'))
 WERKZEUG_RUN_MAIN = bool(appConfig.get('WERKZEUG_RUN_MAIN'))
 isNormalRun = not LOCAL or WERKZEUG_RUN_MAIN

@@ -7,7 +7,7 @@ from botApp import botApp
 from botCore import botConfig
 from botCore.constants import emojies
 from botCore.helpers import createCommonButtonsMarkup, getUserName
-from core.appConfig import LOCAL, PROJECT_INFO, appConfig
+from core.appConfig import LOCAL, PROJECT_INFO, SHOW_BLOCKING_MSG, appConfig
 from core.helpers.time import getTimeStamp
 from core.logger import getDebugLogger, secondaryStyle, titleStyle
 from core.utils import debugObj
@@ -57,15 +57,16 @@ def startCommand(chat: types.Chat, message: types.Message):
             # parse_mode='Markdown',
         )
     # Send blocking warning
-    msgItems = [
-        'WARNING.',
-        'Youtube is currently blocking 3rd-party media download requests.',
-        "We'll try to fix the issue ASAP.",
-    ]
-    botApp.send_message(
-        chatId,
-        emojies.warning + ' ' + '\n\n'.join(filter(None, msgItems)),
-    )
+    if SHOW_BLOCKING_MSG:
+        msgItems = [
+            'WARNING.',
+            'Youtube is currently blocking 3rd-party media download requests.',
+            "We'll try to fix the issue ASAP.",
+        ]
+        botApp.send_message(
+            chatId,
+            emojies.warning + ' ' + '\n\n'.join(filter(None, msgItems)),
+        )
     # Prepare and send extra content (the limit for photo captions is 1024B)
     msgItems = [
         'USAGE NOTES.',
