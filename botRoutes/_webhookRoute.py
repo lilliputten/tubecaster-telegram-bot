@@ -3,11 +3,12 @@
 import traceback
 from typing import Optional
 
-import telebot  # pyTelegramBotAPI
+# import telebot  # pyTelegramBotAPI
 from flask import Response, request
 from telebot import types
 
 from botApp import botApp
+from botCast.helpers import cleanOutdatedTempFolders
 from botCore.constants import emojies
 from botCore.helpers import getUserName
 from core.appConfig import LOCAL
@@ -243,6 +244,10 @@ def webhookRoute():
             deleteOutdatedTempMessages()
             # Check and clean well outdated deleted accounts (removed alder than mpnth ago)
             wipeOutDeletedUsers()
+        # Clean up outdated temp folders
+        cleanOutdatedTempFolders()
+        # TODO: To save the last cleaning time and run it only once a period )eg, in an hour)
+
         # # DEBUG
         # stateValue = botApp.get_state(userId, chatId)
         # debugStr = debugObj({**debugData, 'stateValue': stateValue })

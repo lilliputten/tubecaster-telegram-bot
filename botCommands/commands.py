@@ -9,7 +9,7 @@ See https://pytba.readthedocs.io/en/latest/sync_version/index.html
 import traceback
 from datetime import datetime
 
-import telebot  # pyTelegramBotAPI
+# import telebot  # pyTelegramBotAPI
 from telebot import types
 from telebot.states.sync.context import StateContext
 
@@ -24,7 +24,7 @@ from botCore.helpers import (
     sendNewUserRequestToController,
 )
 from botCore.helpers.plans import getPlansInfoMessage
-from botCore.helpers.status import (  # checkIfUserDeleted, # TODO: To use to check in critical points
+from botCore.helpers.status import (
     checkUserLimitations,
     getUserStatusShortSummaryInfoMessage,
     showOutOfLimitsMessage,
@@ -33,7 +33,7 @@ from core.appConfig import CONTROLLER_CHANNEL_ID, TELEGRAM_OWNER_ID
 from core.helpers.errors import errorToString
 from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, secondaryStyle, titleStyle, warningStyle
+from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
 from db import initDb
 
@@ -412,10 +412,9 @@ def defaultCommand(message: types.Message, state: StateContext):
     chatId = chat.id
     stateValue = state.get()
     userId = message.from_user.id if message.from_user else message.chat.id
+    contentType = message.content_type
+    text = message.text
     try:
-        contentType = message.content_type
-        text = message.text
-
         # Check states and default commands...
 
         # Forcibly invoke info command if the state has been set
@@ -486,9 +485,6 @@ def defaultCommand(message: types.Message, state: StateContext):
             _logger.warning(warningStyle(titleStyle('defaultCommand: Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('defaultCommand: ' + errMsg))
         replyOrSend(emojies.robot + ' ' + errMsg, chatId, message)
-    finally:
-        # TODO: Add cleaning up of outdated temp folders (under the `TEMP_PATH`)
-        pass
 
 
 def registerCommands():
