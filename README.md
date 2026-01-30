@@ -1,6 +1,6 @@
 <!--
  @since 2024.11.20, 02:55
- @changed 2025.09.02, 02:57
+ @changed 2026.01.30, 20:05
 -->
 
 # TubeCaster Telegram Bot
@@ -11,7 +11,7 @@
 
 ## Build info (auto-generated)
 
-- Project info: v.0.2.1 / 2026.01.29 17:48:14 +0300
+- Project info: v.0.2.2 / 2026.01.30 20:12:15 +0300
 
 ## Key User Features
 
@@ -46,6 +46,31 @@
 - A development branch of yt-dlp used for video processing (fetching info and audio tracks).
 - The bot itself is implemented using pyTelegramBotAPI v.4 and flask v.3.
 - The bot's [landing page](https://tubecaster.lilliputten.com/) is a playground for my another toy: the [Gulp LQIP small image placeholder generator](https://github.com/lilliputten/gulp-embed-lqip-as-background) plugin.
+
+### Monitor runtime logs
+
+```bash
+cd /var/www/flask-tubecaster
+tail -f local.log
+```
+
+### Update yt-dlp versions
+
+To update and push dependencies to the server run locally:
+
+```bash
+poetry update
+poetry run export_requirements
+# Then commit and push the changes
+```
+
+...and then on the server:
+
+````bash
+pip install -r requirements.txt
+# And to reload uWSGI Emperor:
+touch /var/www/.uwsgi-apps/flask-tubecaster.ini
+```
 
 ## Resources
 
