@@ -96,13 +96,14 @@ def createRequestFullAccessButtonsMarkup():
 def requestFullAccessYes(query: types.CallbackQuery):
     sendQueryInfo(query, 'requestFullAccessYes')
     message = query.message
-    if not isinstance(message, types.Message):
+    userId = query.from_user.id if query.from_user else (message.chat.id if message else None)
+    if not message or not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved!'
         _logger.error(errorStyle('requestFullAccessYes: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, emojies.error + ' ' + errMsg)
+        if userId:
+            botApp.send_message(userId, emojies.error + ' ' + errMsg)
         return
-    userId = query.from_user.id if query.from_user else message.chat.id
     try:
         requestFullAccessPayment(message, message.chat)
     except Exception as err:
@@ -114,7 +115,8 @@ def requestFullAccessYes(query: types.CallbackQuery):
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('requestFullAccessYes: ' + errMsg))
-        replyOrSend(emojies.error + ' ' + errMsg, userId, message)
+        if userId:
+            replyOrSend(emojies.error + ' ' + errMsg, userId, message)
 
 
 @botApp.callback_query_handler(lambda query: query.data == 'requestFullAccessNo')

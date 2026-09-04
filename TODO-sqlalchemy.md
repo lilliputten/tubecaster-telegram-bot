@@ -38,10 +38,10 @@ Status legend: `[ ]` pending, `[~]` in progress, `[x]` done.
 
 ## 6. Rewrite queries
 
-- [ ] Command / temp-message routines (`db/_addCommand.py`, `_addTempMessage.py`, etc.)
-- [ ] User / status / stats routines
-- [ ] Keep existing function signatures where possible
-- [ ] Replace leftover Prisma usage in bot command handlers (types + `initDb()` client API)
+- [x] Command / temp-message routines (`db/_addCommand.py`, `_addTempMessage.py`, etc.)
+- [x] User / status / stats routines
+- [x] Keep existing function signatures where possible
+- [x] Replace leftover Prisma usage in bot command handlers (types + `initDb()` client API)
 
 ## 7. Tests
 

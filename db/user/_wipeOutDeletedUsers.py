@@ -19,7 +19,7 @@ def wipeOutDeletedUsers():
     try:
         result = session.execute(delete(User).where(User.deletedAt < deletedAt))
         session.commit()
-        return result.rowcount
+        return result.rowcount  # type: ignore
     except Exception as err:
         session.rollback()
         errText = errorToString(err, show_stacktrace=False)

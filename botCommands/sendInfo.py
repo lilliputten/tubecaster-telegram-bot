@@ -100,9 +100,9 @@ def sendQueryInfo(query: types.CallbackQuery, info: str | None = None):
     id = query.id  # '2106243731802653912'
     inlineMessageId = query.inline_message_id  # None
     message = query.message  # <types.Message object at 0x000002B8D6F12210>
-    chatId = message.chat.id
+    chatId = message.chat.id if message else None
     userId = user.id if user else chatId
-    stateValue = botApp.get_state(userId, chatId)
+    stateValue = botApp.get_state(userId, chatId) if userId and chatId else None
 
     userId = user.id
     usernameStr = getUserName(user)

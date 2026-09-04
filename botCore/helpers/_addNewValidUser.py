@@ -18,7 +18,7 @@ _logTraceback = False
 
 def addNewValidUser(userId: int, userStr: str, languageCode: str | None, query: types.CallbackQuery):
     message = query.message  # <types.Message object at 0x000002B8D6F12210>
-    chatId = message.chat.id
+    chatId = message.chat.id if message else None
     try:
         user = ensureValidUser(userId, userStr, languageCode)
         now = getCurrentDateTime()
@@ -41,4 +41,5 @@ def addNewValidUser(userId: int, userStr: str, languageCode: str | None, query: 
         else:
             _logger.warning(warningStyle(titleStyle('Traceback for the following error:') + sTraceback))
         _logger.error(errorStyle('addNewValidUser: ' + errMsg))
-        replyOrSend(emojies.robot + ' ' + errMsg, chatId)  # , message)
+        if chatId:
+            replyOrSend(emojies.robot + ' ' + errMsg, chatId)  # , message)

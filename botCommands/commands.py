@@ -68,11 +68,13 @@ def requestRegistration(message: types.Message, state: StateContext):
 def registerUserQuery(query: types.CallbackQuery, state: StateContext):
     sendQueryInfo(query, query.data)
     message = query.message
-    if not isinstance(message, types.Message):
+    userId = query.from_user.id if query.from_user else (message.chat.id if message else None)
+    if not message or not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
         _logger.error(errorStyle('registerUserQuery: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, errMsg)
+        if userId:
+            botApp.send_message(userId, errMsg)
         return
     if query.data is not None:
         list = query.data.split(':')
@@ -223,11 +225,13 @@ def removeAccount(message: types.Message):
 def removeAccountYes(query: types.CallbackQuery):
     sendQueryInfo(query, 'removeAccountYes')
     message = query.message
-    if not isinstance(message, types.Message):
+    userId = query.from_user.id if query.from_user else (message.chat.id if message else None)
+    if not message or not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved!'
         _logger.error(errorStyle('removeAccountYes: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, emojies.error + ' ' + errMsg)
+        if userId:
+            botApp.send_message(userId, emojies.error + ' ' + errMsg)
         return
     userId = query.from_user.id if query.from_user else message.chat.id
     try:
@@ -298,6 +302,9 @@ def startReaction(message: types.Message):
 def startHelp(query: types.CallbackQuery):
     sendQueryInfo(query, 'startHelp')
     message = query.message
+    if not message or not isinstance(message, types.Message):
+        # Cannot call helpCommand without a valid message object
+        return
     helpCommand(message.chat)
 
 
@@ -305,11 +312,13 @@ def startHelp(query: types.CallbackQuery):
 def startCast(query: types.CallbackQuery):
     sendQueryInfo(query, 'startCast')
     message = query.message
-    if not isinstance(message, types.Message):
+    userId = query.from_user.id if query.from_user else (message.chat.id if message else None)
+    if not message or not isinstance(message, types.Message):
         # NOTE: A normal message is required to register next step handler
         errMsg = 'Inaccessible message recieved! The message is required to register a next step handler'
         _logger.error(errorStyle('startCast: Error: %s' % errMsg))
-        botApp.send_message(message.chat.id, errMsg)
+        if userId:
+            botApp.send_message(userId, errMsg)
         return
     userId = query.from_user.id if query.from_user else message.chat.id
     # if not checkValidUser(userId):

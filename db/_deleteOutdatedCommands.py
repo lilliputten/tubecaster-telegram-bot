@@ -20,7 +20,7 @@ def deleteOutdatedCommands(outdatedDate: date | datetime.datetime | None = None)
             outdatedDate = now - datetime.timedelta(hours=validHours)
         result = session.execute(delete(Command).where(Command.createdAt < outdatedDate))
         session.commit()
-        return result.rowcount
+        return result.rowcount  # type: ignore
     except Exception as err:
         session.rollback()
         errText = errorToString(err, show_stacktrace=False)

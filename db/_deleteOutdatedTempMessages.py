@@ -20,7 +20,7 @@ def deleteOutdatedTempMessages(outdatedDate: date | datetime.datetime | None = N
             outdatedDate = now - datetime.timedelta(hours=validHours)
         result = session.execute(delete(TempMessage).where(TempMessage.createdAt < outdatedDate))
         session.commit()
-        return result.rowcount
+        return result.rowcount  # type: ignore
     except Exception as err:
         session.rollback()
         errText = errorToString(err, show_stacktrace=False)
