@@ -16,13 +16,8 @@
     "rimraf": "^5.0.5"
   },
   "scripts": {
-    "prisma-switch-UNUSED": "echo --Switch database client-- && node prisma-switch.mjs",
-    "prisma-generate": "echo --Generate database client-- && poetry run prisma generate",
-    "prisma-db-push": "echo --Create database-- && poetry run prisma db push",
-    "prisma-db-push-test": "echo --Create test database-- && cross-env DATABASE_URL='file:.data-test.db' poetry run prisma db push",
-    "prisma-init": "echo --Initialize prisma environment- && npm-run-all prisma-generate prisma-db-push prisma-db-push-test",
-    "prisma-studio": "echo --Run database explorer-- && poetry run prisma studio",
-    "prisma-studio-test": "echo --Run database explorer-- && cross-env DATABASE_URL='file:.data-test.db' poetry run prisma studio",
+    "db-upgrade": "echo --Apply database migrations-- && poetry run alembic upgrade head",
+    "db-import-sqlite": "echo --Import prisma SQLite data into PostgreSQL-- && poetry run import_sqlite_db",
     "xtunnel": "echo --Start xtunnel for flask and logging server (don't forget to add following address WEBHOOK_HOST to .env.local for webhook or .env.logging-ngrok for logging)-- && xtunnel http 5000",
     "ngrok-tunnel": "echo --Start ngrok tunnel for flask and logging server (don't forget to add following ngrok address WEBHOOK_HOST to .env.local)-- && ngrok http 5000",
     "clean": "echo --Clean cache-- && sh .utils/clean-all.sh",

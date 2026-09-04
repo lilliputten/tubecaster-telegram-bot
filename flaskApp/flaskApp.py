@@ -28,7 +28,7 @@ def createFlaskApp():
         if isNormalRun:
             flaskApp.wsgi_app = ProxyFix(flaskApp.wsgi_app, x_host=1)
 
-            # Initialize prisma
+            # Initialize the database
             with flaskApp.app_context():
                 initDb(g)
 

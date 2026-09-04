@@ -28,9 +28,6 @@ def showDebug():
         'timeStr': timeStr,
         # NOTE: It's possible to encounter a bug if `EXT_SUFFIX` values will be different in different enviroments
         'EXT_SUFFIX': sysconfig.get_config_var('EXT_SUFFIX'),
-        # NOTE: Used manual setting for prisma query engine path variable (`PRISMA_QUERY_ENGINE_BINARY`) in `/var/www/.uwsgi-apps/flask-tubecaster.ini`
-        'PRISMA_QUERY_ENGINE_BINARY': appConfig.get('PRISMA_QUERY_ENGINE_BINARY'),
-        # NOTE: Timezone (set in `/var/www/.uwsgi-apps/flask-tubecaster.ini`)
         'TZ': appConfig.get('TZ'),
     }
     logItems = [

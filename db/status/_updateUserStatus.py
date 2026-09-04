@@ -1,33 +1,40 @@
 import traceback
-from typing import Union, cast
-
-from prisma.models import UserStatus
-from prisma.types import UserStatusCreateInput, UserStatusUpdateInput
+from typing import Any, TypedDict, Union
 
 from core.helpers.errors import errorToString
 
-# Use Union to accept fields from either type
-UserStatusCommonData = Union[UserStatusCreateInput, UserStatusUpdateInput]
+from .._init import initDb
+from ..models import UserStatus
+
+UserStatusCommonData = dict[str, Any]
+
+
+class UserStatusUpdateData(TypedDict, total=False):
+    userMode: str
+    statusChangedAt: Any
+    paidAt: Any
+    paymentValidUntil: Any
+    paymentId: str | None
 
 
 def updateUserStatus(
     userId: int,
-    data: UserStatusCommonData,
+    data: Union[UserStatusCommonData, UserStatusUpdateData],
 ):
-    userStatusClient = UserStatus.prisma()
+    session = initDb()
     try:
-        createData = cast(UserStatusCreateInput, {'userId': userId, **data})
-        updateData = cast(UserStatusUpdateInput, data)
-
-        userStatus = userStatusClient.upsert(
-            where={'userId': userId},
-            data={
-                'create': createData,
-                'update': updateData,
-            },
-        )
+        userStatus = session.get(UserStatus, userId)
+        payload = dict(data)
+        if userStatus is None:
+            userStatus = UserStatus(userId=userId, **payload)
+            session.add(userStatus)
+        else:
+            for key, value in payload.items():
+                setattr(userStatus, key, value)
+        session.commit()
         return userStatus
     except Exception as err:
+        session.rollback()
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Error: ' + errText

@@ -2,9 +2,12 @@ import traceback
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from prisma.models import User
+from sqlalchemy import delete
 
 from core.helpers import errorToString
+
+from .._init import initDb
+from ..models import User
 
 
 def wipeOutDeletedUsers():
@@ -12,17 +15,13 @@ def wipeOutDeletedUsers():
     Remove all user records marked for deletion earlier than a month ago
     """
     deletedAt = datetime.now() - relativedelta(months=1)
-    userClient = User.prisma()
+    session = initDb()
     try:
-        user = userClient.delete_many(
-            where={
-                'deletedAt': {
-                    'lt': deletedAt,
-                },
-            },
-        )
-        return user
+        result = session.execute(delete(User).where(User.deletedAt < deletedAt))
+        session.commit()
+        return result.rowcount
     except Exception as err:
+        session.rollback()
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Error: ' + errText

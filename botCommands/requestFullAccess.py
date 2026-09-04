@@ -1,7 +1,6 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
-from prisma.models import UserStatus
 from telebot import types
 
 from botApp import botApp
@@ -12,6 +11,7 @@ from core.helpers.errors import errorToString
 from core.helpers.time import formatTime, getCurrentDateTime
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, titleStyle, warningStyle
+from db.models import UserStatus
 from db.status import getUserStatus
 
 from .requestFullAccessPayment import requestFullAccessPayment

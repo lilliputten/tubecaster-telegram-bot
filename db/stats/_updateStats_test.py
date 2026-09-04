@@ -8,12 +8,12 @@ from random import randrange
 from typing import Optional
 from unittest import TestCase, main, mock
 
-from prisma.models import MonthlyStats, TotalStats, User
-
 from core.helpers.errors import errorToString
 
 from .._init import closeDb, initDb
 from .._testDbConfig import testEnv
+from .._testHelpers import setup_test_db
+from ..models import MonthlyStats, TotalStats, User
 from ._updateStats import updateStats
 
 
@@ -22,32 +22,26 @@ class Test_updateStats(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        initDb()
+        setup_test_db()
 
     @classmethod
     def tearDownClass(cls):
         closeDb()
 
     def setUp(self):
-        # Create test user
-        userClient = User.prisma()
+        session = initDb()
         userId = randrange(100, 999)
-        self.user = userClient.create(
-            data={
-                'id': userId,
-                'userStr': f'Test {userId}',
-                # 'isActive': True,
-            },
-        )
+        self.user = User(id=userId, userStr=f'Test {userId}')
+        session.add(self.user)
+        session.commit()
 
     def tearDown(self):
         if self.user:
-            userClient = User.prisma()
-            userClient.delete(
-                where={
-                    'id': self.user.id,
-                },
-            )
+            session = initDb()
+            user = session.get(User, self.user.id)
+            if user:
+                session.delete(user)
+                session.commit()
             self.user = None
 
     def test_updateStats_should_create_and_update_total_and_monthly_stats(self):
@@ -63,52 +57,30 @@ class Test_updateStats(TestCase):
             userId = self.user.id
             volume = 500
 
-            # First update
             updateStats(userId, requests=1, volume=volume)
 
-            # Check TotalStats
-            totalStatsClient = TotalStats.prisma()
-            totalStats = totalStatsClient.find_unique(where={'userId': userId})
+            session = initDb()
+            totalStats = session.get(TotalStats, userId)
             self.assertIsNotNone(totalStats)
             if totalStats:
                 self.assertEqual(totalStats.requests, 1)
                 self.assertEqual(totalStats.volume, volume)
 
-            # Check MonthlyStats
-            monthlyStatsClient = MonthlyStats.prisma()
-            monthlyStats = monthlyStatsClient.find_unique(
-                where={
-                    'userId_year_month': {
-                        'userId': userId,
-                        'year': year,
-                        'month': month,
-                    }
-                }
-            )
+            monthlyStats = session.get(MonthlyStats, (userId, year, month))
             self.assertIsNotNone(monthlyStats)
             if monthlyStats:
                 self.assertEqual(monthlyStats.requests, 1)
                 self.assertEqual(monthlyStats.volume, volume)
 
-            # Second update
             updateStats(userId, requests=1, volume=volume)
 
-            # Check updated values
-            totalStats = totalStatsClient.find_unique(where={'userId': userId})
+            totalStats = session.get(TotalStats, userId)
             self.assertIsNotNone(totalStats)
             if totalStats:
                 self.assertEqual(totalStats.requests, 2)
                 self.assertEqual(totalStats.volume, volume * 2)
 
-            monthlyStats = monthlyStatsClient.find_unique(
-                where={
-                    'userId_year_month': {
-                        'userId': userId,
-                        'year': year,
-                        'month': month,
-                    }
-                }
-            )
+            monthlyStats = session.get(MonthlyStats, (userId, year, month))
             self.assertIsNotNone(monthlyStats)
             if monthlyStats:
                 self.assertEqual(monthlyStats.requests, 2)
@@ -120,21 +92,17 @@ class Test_updateStats(TestCase):
             print('Traceback for the following error:' + sTraceback)
             print('Error: ' + errMsg)
         finally:
-            # Clean up
+            session = initDb()
             if totalStats:
-                totalStatsClient = TotalStats.prisma()
-                totalStatsClient.delete(where={'userId': totalStats.userId})
+                db_total = session.get(TotalStats, totalStats.userId)
+                if db_total:
+                    session.delete(db_total)
+                    session.commit()
             if monthlyStats:
-                monthlyStatsClient = MonthlyStats.prisma()
-                monthlyStatsClient.delete(
-                    where={
-                        'userId_year_month': {
-                            'userId': monthlyStats.userId,
-                            'year': year,
-                            'month': month,
-                        }
-                    }
-                )
+                db_monthly = session.get(MonthlyStats, (monthlyStats.userId, year, month))
+                if db_monthly:
+                    session.delete(db_monthly)
+                    session.commit()
 
 
 if __name__ == '__main__':

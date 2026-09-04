@@ -3,7 +3,6 @@
 import traceback
 
 import telebot  # pyTelegramBotAPI
-from prisma.models import MonthlyStats, TotalStats
 from telebot import types
 
 from botApp import botApp
@@ -14,6 +13,7 @@ from core.helpers.files import sizeofFmt
 from core.logger import errorStyle, getDebugLogger, secondaryStyle, titleStyle, tretiaryStyle, warningTitleStyle
 from core.utils import debugObj
 from db import collectStats
+from db.models import MonthlyStats, TotalStats
 
 from ..config.castConfig import logTraceback
 

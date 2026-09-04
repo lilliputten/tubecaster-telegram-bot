@@ -1,29 +1,20 @@
+from sqlalchemy import select
+
 from .._init import initDb
+from ..models import MonthlyStats, TotalStats
 
 
 def collectStats(userId: int):
-    prisma = initDb()
+    session = initDb()
 
-    # Get TotalStats
-    totalStats = prisma.totalstats.find_unique(
-        where={
-            'userId': userId,
-        },
-    )
+    totalStats = session.get(TotalStats, userId)
 
-    # Get MonthlyStats sorted by year desc, month desc
-    monthlyStats = prisma.monthlystats.find_many(
-        where={
-            'userId': userId,
-        },
-        order=[
-            {'year': 'desc'},
-            {'month': 'desc'},
-        ],
+    monthlyStats = list(
+        session.scalars(
+            select(MonthlyStats)
+            .where(MonthlyStats.userId == userId)
+            .order_by(MonthlyStats.year.desc(), MonthlyStats.month.desc())
+        ).all()
     )
 
     return (totalStats, monthlyStats)
-    # return {
-    #     'total': totalStats,
-    #     'monthly': monthlyStats,
-    # }

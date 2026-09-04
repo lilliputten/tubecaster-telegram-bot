@@ -1,8 +1,10 @@
 from datetime import date
 
-from .._init import initDb
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 
-# from prisma import Prisma
+from .._init import initDb
+from ..models import MonthlyStats, TotalStats
 
 
 def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures: int = 0, volume: int = 0):
@@ -10,100 +12,46 @@ def updateStats(userId: int, requests: int = 0, infoRequests: int = 0, failures:
     year = current_date.year
     month = current_date.month
 
-    prisma = initDb()
-
-    with prisma.tx() as tx:
-        # # Ensure if the user exists
-        # tx.user.upsert(
-        #     where={
-        #         'id': userId,
-        #     },
-        #     data={
-        #         'create': {
-        #             'userId': userId,
-        #             'requests': requests,
-        #             'infoRequests': infoRequests,
-        #             'failures': failures,
-        #             'volume': volume,
-        #         },
-        #         'update': {
-        #             'requests': {
-        #                 'increment': requests,
-        #             },
-        #             'infoRequests': {
-        #                 'increment': infoRequests,
-        #             },
-        #             'failures': {
-        #                 'increment': failures,
-        #             },
-        #             'volume': {
-        #                 'increment': volume,
-        #             },
-        #         },
-        #     },
-        # )
-
-        # Update or create TotalStats
-        tx.totalstats.upsert(
-            where={
-                'userId': userId,
-            },
-            data={
-                'create': {
-                    'userId': userId,
-                    'requests': requests,
-                    'infoRequests': infoRequests,
-                    'failures': failures,
-                    'volume': volume,
-                },
-                'update': {
-                    'requests': {
-                        'increment': requests,
-                    },
-                    'infoRequests': {
-                        'increment': infoRequests,
-                    },
-                    'failures': {
-                        'increment': failures,
-                    },
-                    'volume': {
-                        'increment': volume,
-                    },
-                },
+    session = initDb()
+    try:
+        total_stmt = insert(TotalStats).values(
+            userId=userId,
+            requests=requests,
+            infoRequests=infoRequests,
+            failures=failures,
+            volume=volume,
+        )
+        total_stmt = total_stmt.on_conflict_do_update(
+            index_elements=[TotalStats.userId],
+            set_={
+                'requests': TotalStats.requests + requests,
+                'infoRequests': TotalStats.infoRequests + infoRequests,
+                'failures': TotalStats.failures + failures,
+                'volume': TotalStats.volume + volume,
             },
         )
-        # Update or create MonthlyStats
-        tx.monthlystats.upsert(
-            where={
-                'userId_year_month': {
-                    'userId': userId,
-                    'year': year,
-                    'month': month,
-                },
-            },
-            data={
-                'create': {
-                    'userId': userId,
-                    'year': year,
-                    'month': month,
-                    'requests': requests,
-                    'infoRequests': infoRequests,
-                    'failures': failures,
-                    'volume': volume,
-                },
-                'update': {
-                    'requests': {
-                        'increment': requests,
-                    },
-                    'infoRequests': {
-                        'increment': infoRequests,
-                    },
-                    'failures': {
-                        'increment': failures,
-                    },
-                    'volume': {
-                        'increment': volume,
-                    },
-                },
+        session.execute(total_stmt)
+
+        monthly_stmt = insert(MonthlyStats).values(
+            userId=userId,
+            year=year,
+            month=month,
+            requests=requests,
+            infoRequests=infoRequests,
+            failures=failures,
+            volume=volume,
+        )
+        monthly_stmt = monthly_stmt.on_conflict_do_update(
+            index_elements=[MonthlyStats.userId, MonthlyStats.year, MonthlyStats.month],
+            set_={
+                'requests': MonthlyStats.requests + requests,
+                'infoRequests': MonthlyStats.infoRequests + infoRequests,
+                'failures': MonthlyStats.failures + failures,
+                'volume': MonthlyStats.volume + volume,
             },
         )
+        session.execute(monthly_stmt)
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise

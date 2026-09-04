@@ -1,27 +1,21 @@
 # -*- coding:utf-8 -*-
 # @see https://docs.python.org/3/library/unittest.html
 
-# NOTE: For running only current test use:
-#  - `python -m unittest -v -f botCore/helpers/_deleteOutdatedTempMessages_test.py` (under venv)
-#  - `poetry run python -m unittest -v -f botCore/helpers/_deleteOutdatedTempMessages_test.py`
-#  - `poetry run python -m unittest -v -f -p '*_test.py' -k _deleteOutdatedTempMessages_test`
-
 import datetime
 import os
-import time
 import traceback
 from random import randrange
 from typing import Optional
 from unittest import TestCase, main, mock
-
-from prisma.models import Command, TempMessage
 
 from core.helpers.errors import errorToString
 
 from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
 from ._init import closeDb, initDb
 from ._testDbConfig import testEnv
+from ._testHelpers import setup_test_db
 from ._types import TPrismaCommand, TTempMessage
+from .models import Command, TempMessage
 
 
 @mock.patch.dict(os.environ, testEnv)
@@ -29,7 +23,7 @@ class Test_deleteOutdatedTempMessages_test(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        initDb()
+        setup_test_db()
 
     @classmethod
     def tearDownClass(cls):
@@ -39,44 +33,28 @@ class Test_deleteOutdatedTempMessages_test(TestCase):
         command: Optional[TPrismaCommand] = None
         tempMessage: Optional[TTempMessage] = None
         try:
-            commandClient = Command.prisma()
-            tempMessageClient = TempMessage.prisma()
+            session = initDb()
             now = datetime.datetime.now(datetime.timezone.utc)
-            # Create a record 2 days back to the past and set outdated range 1 day closer to the current time
             createdAt = now - datetime.timedelta(days=2)
             outdatedDate = now - datetime.timedelta(days=1)
-            updateId = randrange(1, 9999)
-            messageId = randrange(1, 9999)
-            userId = randrange(1, 9999)
-            userStr = 'Test user'
-            # createdAt = createdAt
-            command = commandClient.create(
-                data={
-                    'updateId': updateId,
-                    'messageId': messageId,
-                    'userId': userId,
-                    'userStr': userStr,
-                    'createdAt': createdAt,
-                },
+            command = Command(
+                updateId=randrange(1, 9999),
+                messageId=randrange(1, 9999),
+                userId=randrange(1, 9999),
+                userStr='Test user',
+                createdAt=createdAt,
             )
-            tempMessage = tempMessageClient.create(
-                data={
-                    'commandId': command.id,
-                    # 'updateId': updateId,
-                    'messageId': messageId,
-                    # 'userId': userId,
-                    # 'userStr': userStr,
-                    'createdAt': createdAt,
-                },
+            session.add(command)
+            session.commit()
+            tempMessage = TempMessage(
+                commandId=command.id,
+                messageId=command.messageId,
+                createdAt=createdAt,
             )
-            # Try to remove...
+            session.add(tempMessage)
+            session.commit()
             deleteOutdatedTempMessages(outdatedDate=outdatedDate)
-            # Try to find supposed to be absent...
-            removedTempMessage = tempMessageClient.find_unique(
-                where={
-                    'id': tempMessage.id,
-                },
-            )
+            removedTempMessage = session.get(TempMessage, tempMessage.id)
             self.assertIsNone(removedTempMessage)
             tempMessage = None
         except Exception as err:
@@ -87,21 +65,18 @@ class Test_deleteOutdatedTempMessages_test(TestCase):
             print('Error: ' + errMsg)
             raise Exception(errMsg)
         finally:
-            # Clean up...
             if tempMessage:
-                tempMessageClient = TempMessage.prisma()
-                tempMessageClient.delete(
-                    where={
-                        'id': tempMessage.id,
-                    },
-                )
+                session = initDb()
+                db_temp = session.get(TempMessage, tempMessage.id)
+                if db_temp:
+                    session.delete(db_temp)
+                    session.commit()
             if command:
-                commandClient = Command.prisma()
-                commandClient.delete(
-                    where={
-                        'id': command.id,
-                    },
-                )
+                session = initDb()
+                db_command = session.get(Command, command.id)
+                if db_command:
+                    session.delete(db_command)
+                    session.commit()
 
 
 if __name__ == '__main__':

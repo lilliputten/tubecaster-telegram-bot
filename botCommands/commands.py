@@ -31,7 +31,7 @@ from core.helpers.urls import isYoutubeLink
 from core.logger import getDebugLogger
 from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
 from core.utils import debugObj
-from db import initDb
+from db.user import findUser, updateUser
 
 from .castCommand import castCommand, castForUrlStep, startWaitingForCastUrl
 from .castTestCommand import castTestCommand
@@ -187,9 +187,8 @@ def rejectUserQuery(query: types.CallbackQuery):
 def restoreAccount(message: types.Message):
     sendCommandInfo(message, 'restoreAccount')
     userId = message.from_user.id if message.from_user else message.chat.id
-    prisma = initDb()
     try:
-        user = prisma.user.find_first(where={'id': userId, 'isDeleted': True})
+        user = findUser({'id': userId, 'isDeleted': True})
         if not user:
             botApp.reply_to(
                 message,
@@ -197,7 +196,7 @@ def restoreAccount(message: types.Message):
                 " You either don't have an account at all yet, or it's not deleted.",
             )
             return
-        prisma.user.update(where={'id': userId}, data={'isDeleted': False})
+        updateUser(userId, {'isDeleted': False, 'deletedAt': None})
         contentItems = [
             'Your account has been already restored.',
         ]
@@ -231,13 +230,12 @@ def removeAccountYes(query: types.CallbackQuery):
         botApp.send_message(message.chat.id, emojies.error + ' ' + errMsg)
         return
     userId = query.from_user.id if query.from_user else message.chat.id
-    prisma = initDb()
     try:
-        user = prisma.user.find_first(where={'id': userId, 'isDeleted': False})
+        user = findUser({'id': userId, 'isDeleted': False})
         if not user or user.isDeleted:
             botApp.reply_to(message, emojies.error + ' ' + 'No such account found!')
             return
-        prisma.user.update(where={'id': userId}, data={'isDeleted': True, 'deletedAt': datetime.now()})
+        updateUser(userId, {'isDeleted': True, 'deletedAt': datetime.now()})
         contentItems = [
             'Your account has been marked to deletion and will be completely wiped out in a month.',
             'You can restore the account during this time via /restore_account command.',

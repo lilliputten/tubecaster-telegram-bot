@@ -1,21 +1,17 @@
-from prisma.models import TempMessage
-
+from ._init import initDb
 from ._types import TCommandId, TMessageId
+from .models import TempMessage
 
 
 def addTempMessage(
     commandId: TCommandId,
     messageId: TMessageId,
 ):
-    try:
-        # TODO: Check if this command (by messageId) exists in the database?
-        tempMessageClient = TempMessage.prisma()
-        tempMessage = tempMessageClient.create(
-            data={
-                'commandId': commandId,
-                'messageId': messageId,
-            },
-        )
-        return tempMessage
-    finally:
-        pass
+    session = initDb()
+    tempMessage = TempMessage(
+        commandId=commandId,
+        messageId=messageId,
+    )
+    session.add(tempMessage)
+    session.commit()
+    return tempMessage

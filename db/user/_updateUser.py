@@ -1,33 +1,39 @@
 import traceback
-from typing import Union, cast
-
-from prisma.models import User
-from prisma.types import UserCreateInput, UserUpdateInput
+from typing import Any, TypedDict, Union
 
 from core.helpers.errors import errorToString
 
-# Use Union to accept fields from either type
-UserCommonData = Union[UserCreateInput, UserUpdateInput]
+from .._init import initDb
+from ..models import User
+
+UserCommonData = dict[str, Any]
+
+
+class UserUpdateData(TypedDict, total=False):
+    userStr: str
+    languageCode: str | None
+    isDeleted: bool
+    deletedAt: Any
 
 
 def updateUser(
     userId: int,
-    data: UserCommonData,
+    data: Union[UserCommonData, UserUpdateData],
 ):
-    userClient = User.prisma()
+    session = initDb()
     try:
-        createData = cast(UserCreateInput, {'id': userId, **data})
-        updateData = cast(UserUpdateInput, data)
-
-        user = userClient.upsert(
-            where={'id': userId},
-            data={
-                'create': createData,
-                'update': updateData,
-            },
-        )
+        user = session.get(User, userId)
+        payload = dict(data)
+        if user is None:
+            user = User(id=userId, **payload)
+            session.add(user)
+        else:
+            for key, value in payload.items():
+                setattr(user, key, value)
+        session.commit()
         return user
     except Exception as err:
+        session.rollback()
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Error: ' + errText

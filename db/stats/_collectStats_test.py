@@ -8,12 +8,12 @@ from random import randrange
 from typing import Optional
 from unittest import TestCase, main, mock
 
-from prisma.models import MonthlyStats, TotalStats, User
-
 from core.helpers.errors import errorToString
 
 from .._init import closeDb, initDb
 from .._testDbConfig import testEnv
+from .._testHelpers import setup_test_db
+from ..models import MonthlyStats, TotalStats, User, UserStatus
 from ._collectStats import collectStats
 from ._updateStats import updateStats
 
@@ -23,41 +23,28 @@ class Test_collectStats(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        initDb()
+        setup_test_db()
 
     @classmethod
     def tearDownClass(cls):
         closeDb()
 
     def setUp(self):
-        # Create test user
-        userClient = User.prisma()
+        session = initDb()
         userId = randrange(100, 999)
-        self.user = userClient.create(
-            data={
-                'id': userId,
-                'userStr': f'Test {userId}',
-                'userStatus': {
-                    'create': {
-                        'userMode': 'PAID',
-                    },
-                },
-            },
-            include={
-                'userStatus': True,
-                'totalStats': True,
-                'monthlyStats': True,
-            },
-        )
+        self.user = User(id=userId, userStr=f'Test {userId}')
+        session.add(self.user)
+        session.flush()
+        session.add(UserStatus(userId=userId, userMode='PAID'))
+        session.commit()
 
     def tearDown(self):
         if self.user:
-            userClient = User.prisma()
-            userClient.delete(
-                where={
-                    'id': self.user.id,
-                },
-            )
+            session = initDb()
+            user = session.get(User, self.user.id)
+            if user:
+                session.delete(user)
+                session.commit()
             self.user = None
 
     def test_collectStats_should_return_total_and_monthly_stats(self):
@@ -73,20 +60,16 @@ class Test_collectStats(TestCase):
             userId = self.user.id
             volume = 500
 
-            # Update stats twice
             updateStats(userId, requests=1, volume=volume)
             updateStats(userId, requests=1, volume=volume)
 
-            # Collect stats
             (totalStats, monthlyStats) = collectStats(userId)
 
-            # Check total
             self.assertIsNotNone(totalStats)
             if totalStats:
                 self.assertEqual(totalStats.requests, 2)
                 self.assertEqual(totalStats.volume, volume * 2)
 
-            # Check monthly
             self.assertIsInstance(monthlyStats, list)
             if monthlyStats:
                 self.assertEqual(len(monthlyStats), 1)
@@ -103,22 +86,18 @@ class Test_collectStats(TestCase):
             print('Traceback for the following error:' + sTraceback)
             print('Error: ' + errMsg)
         finally:
-            # Clean up
+            session = initDb()
             if totalStats:
-                totalStatsClient = TotalStats.prisma()
-                totalStatsClient.delete(where={'userId': totalStats.userId})
+                db_total = session.get(TotalStats, totalStats.userId)
+                if db_total:
+                    session.delete(db_total)
+                    session.commit()
             if monthlyStats:
-                monthlyStatsClient = MonthlyStats.prisma()
                 for monthly in monthlyStats:
-                    monthlyStatsClient.delete(
-                        where={
-                            'userId_year_month': {
-                                'userId': monthly.userId,
-                                'year': monthly.year,
-                                'month': monthly.month,
-                            }
-                        }
-                    )
+                    db_monthly = session.get(MonthlyStats, (monthly.userId, monthly.year, monthly.month))
+                    if db_monthly:
+                        session.delete(db_monthly)
+                        session.commit()
 
 
 if __name__ == '__main__':

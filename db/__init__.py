@@ -11,6 +11,7 @@ from ._deleteOutdatedCommands import deleteOutdatedCommands
 from ._deleteOutdatedTempMessages import deleteOutdatedTempMessages
 from ._getTempMessagesForCommand import getTempMessagesForCommand
 from ._init import closeDb, initDb, openDb
+from .models import Command, MonthlyStats, TempMessage, TotalStats, User, UserStatus
 from .stats import collectStats, getCurrentMonthStats, getMonthlyStats, getTotalStats, updateStats
 from .status import getUserStatus, updateUserStatus
 from .user import ensureValidUser, findUser, getActiveUser, updateUser, wipeOutDeletedUsers
@@ -21,6 +22,12 @@ __all__ = [
     'openDb',
     'closeDb',
     'initDb',
+    'Command',
+    'MonthlyStats',
+    'TempMessage',
+    'TotalStats',
+    'User',
+    'UserStatus',
     # common
     'addCommand',
     'addTempMessage',

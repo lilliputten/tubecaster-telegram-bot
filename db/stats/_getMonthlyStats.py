@@ -1,24 +1,15 @@
 import traceback
-from datetime import date
-
-from prisma.models import MonthlyStats
 
 from core.helpers import errorToString
+
+from .._init import initDb
+from ..models import MonthlyStats
 
 
 def getMonthlyStats(userId: int, year: int, month: int):
     try:
-        monthlyStatsClient = MonthlyStats.prisma()
-        monthlyStats = monthlyStatsClient.find_unique(
-            where={
-                'userId_year_month': {
-                    'userId': userId,
-                    'year': year,
-                    'month': month,
-                }
-            },
-        )
-        return monthlyStats
+        session = initDb()
+        return session.get(MonthlyStats, (userId, year, month))
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

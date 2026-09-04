@@ -1,24 +1,15 @@
-from prisma.models import Command
+from sqlalchemy import select
 
+from ._init import initDb
 from ._types import TMessageId
+from .models import Command
 
 
 def checkCommandExistsForMessageId(messageId: TMessageId):
-    commandClient = Command.prisma()
-    try:
-        command = commandClient.find_first(
-            where={
-                'messageId': messageId,
-            },
-        )
-        if command:
-            # Update counter and return the object if exists...
-            commandClient.update(
-                where={'id': command.id},
-                data={'repeated': {'increment': 1}},
-            )
-            return command
-        # Return falsy value otherwise (all is ok)
-        return None
-    finally:
-        pass
+    session = initDb()
+    command = session.scalars(select(Command).where(Command.messageId == messageId)).first()
+    if command:
+        command.repeated = (command.repeated or 0) + 1
+        session.commit()
+        return command
+    return None

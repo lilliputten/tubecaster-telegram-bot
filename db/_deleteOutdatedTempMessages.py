@@ -2,43 +2,30 @@ import datetime
 import traceback
 from datetime import date
 
-from prisma.models import TempMessage
+from sqlalchemy import delete
 
 from core.helpers.errors import errorToString
+
+from ._init import initDb
+from .models import TempMessage
 
 validHours = 1
 
 
-def deleteOutdatedTempMessages(outdatedDate: date | None = None):
-    commandClient = TempMessage.prisma()
+def deleteOutdatedTempMessages(outdatedDate: date | datetime.datetime | None = None):
+    session = initDb()
     try:
         now = datetime.datetime.now(datetime.timezone.utc)
         if outdatedDate is None:
             outdatedDate = now - datetime.timedelta(hours=validHours)
-        # commands = commandClient.find_many(
-        #     where={
-        #         'createdAt': {'lt': outdatedDate},
-        #     },
-        # )
-        # command = commands[0] if len(commands) > 0 else None
-        # print(f'Found {len(commands)} commands: {commands}')
-        # if command:
-        #     print('command.id', command.id)
-        #     print('              now:', now)
-        #     print('         outdatedDate:', outdatedDate)
-        #     print('command.createdAt:', command.createdAt)
-        #     print('command.updatedAt:', command.updatedAt)
-        return commandClient.delete_many(
-            where={
-                'createdAt': {'lt': outdatedDate},  # type: ignore
-            },
-        )
+        result = session.execute(delete(TempMessage).where(TempMessage.createdAt < outdatedDate))
+        session.commit()
+        return result.rowcount
     except Exception as err:
+        session.rollback()
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'
         errMsg = 'Error: ' + errText
         print('Traceback for the following error:' + sTraceback)
         print('Error: ' + errMsg)
         raise Exception(errMsg)
-    finally:
-        pass

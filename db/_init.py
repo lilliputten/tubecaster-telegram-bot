@@ -2,38 +2,35 @@ import traceback
 from typing import Optional
 
 from flask.ctx import _AppCtxGlobals
+from sqlalchemy.orm import Session
 
 from core.helpers.errors import errorToString
 from core.logger import getDebugLogger
-from core.logger.utils import errorStyle, primaryStyle, secondaryStyle, titleStyle, warningStyle
-from prisma import Prisma, get_client, register
+from core.logger.utils import errorStyle, warningStyle
+
+from .database import close_sessions, get_session_factory
 
 TGlobalCtx = _AppCtxGlobals
-
-_db: Optional[Prisma] = None
 
 _logger = getDebugLogger()
 
 _logTraceback = False
 
-# Already registered prisma creator
-_hasBeenRegistered = False
 
+def openDb(g: Optional[TGlobalCtx] = None) -> Session:
+    # Cache the Engine and scoped_session factory (process-wide). A single
+    # Session instance is not shared across requests; scoped_session keeps a
+    # thread-local session, which is the usual SQLAlchemy practice.
+    if g is not None and 'DB' in g and g.DB is not None:
+        return g.DB
 
-def openDb(g: Optional[TGlobalCtx] = None) -> Prisma:
-    global _db
-    # gs = globals()
-    if not _db:
-        if g is not None and 'DB' in g:
-            # Try to get db from global object...
-            _db = g.DB
-        _db = Prisma()
+    session_factory = get_session_factory()
+    session = session_factory()
+
     if g is not None:
-        # TODO: Check for _AppCtxGlobals
-        g.DB = _db
-    if not _db.is_connected():
-        _db.connect()
-    return _db
+        g.DB = session
+
+    return session
 
 
 def closeDb(err: Optional[BaseException] = None):
@@ -48,11 +45,9 @@ def closeDb(err: Optional[BaseException] = None):
         _logger.error(errorStyle(errMsg))
 
     try:
-        client = get_client()
-        if client.is_connected():
-            client.disconnect()
-    except Exception as err:
-        sError = errorToString(err, show_stacktrace=False)
+        close_sessions()
+    except Exception as closeErr:
+        sError = errorToString(closeErr, show_stacktrace=False)
         sTraceback = str(traceback.format_exc())
         errMsg = 'closeDb: Caught error: ' + sError
         if _logTraceback:
@@ -62,10 +57,12 @@ def closeDb(err: Optional[BaseException] = None):
         _logger.error(errorStyle(errMsg))
 
 
-def initDb(g: Optional[TGlobalCtx] = None):
-    global _hasBeenRegistered
-    if not _hasBeenRegistered:
-        register(openDb)
-        _hasBeenRegistered = True
-    # flaskApp.teardown_appcontext(closeDb)
+def initDb(g: Optional[TGlobalCtx] = None) -> Session:
     return openDb(g)
+
+
+__all__ = [
+    'closeDb',
+    'initDb',
+    'openDb',
+]

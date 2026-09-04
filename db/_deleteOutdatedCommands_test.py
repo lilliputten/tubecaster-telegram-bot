@@ -1,26 +1,20 @@
 # -*- coding:utf-8 -*-
 # @see https://docs.python.org/3/library/unittest.html
 
-# NOTE: For running only current test use:
-#  - `python -m unittest -v -f botCore/helpers/_deleteOutdatedCommands_test.py` (under venv)
-#  - `poetry run python -m unittest -v -f botCore/helpers/_deleteOutdatedCommands_test.py`
-#  - `poetry run python -m unittest -v -f -p '*_test.py' -k _deleteOutdatedCommands_test`
-
 import datetime
 import os
-import time
 import traceback
 from typing import Optional
 from unittest import TestCase, main, mock
-
-from prisma.models import Command
 
 from core.helpers.errors import errorToString
 
 from ._deleteOutdatedCommands import deleteOutdatedCommands
 from ._init import closeDb, initDb
 from ._testDbConfig import testEnv
+from ._testHelpers import setup_test_db
 from ._types import TPrismaCommand
+from .models import Command
 
 
 @mock.patch.dict(os.environ, testEnv)
@@ -28,7 +22,7 @@ class Test_deleteOutdatedCommands_test(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.enterClassContext(mock.patch.dict(os.environ, testEnv))
-        initDb()
+        setup_test_db()
 
     @classmethod
     def tearDownClass(cls):
@@ -37,28 +31,21 @@ class Test_deleteOutdatedCommands_test(TestCase):
     def test_deleteOutdatedCommands_should_delete_old_commands(self):
         command: Optional[TPrismaCommand] = None
         try:
-            commandClient = Command.prisma()
+            session = initDb()
             now = datetime.datetime.now(datetime.timezone.utc)
-            # Create a record 2 days back to the past and set outdated range 1 day closer to the current time
             createdAt = now - datetime.timedelta(days=2)
             outdatedDate = now - datetime.timedelta(days=1)
-            command = commandClient.create(
-                data={
-                    'updateId': 1,
-                    'messageId': 1,
-                    'userId': 1,
-                    'userStr': 'Test user',
-                    'createdAt': createdAt,
-                },
+            command = Command(
+                updateId=1,
+                messageId=1,
+                userId=1,
+                userStr='Test user',
+                createdAt=createdAt,
             )
-            # Try to remove...
+            session.add(command)
+            session.commit()
             deleteOutdatedCommands(outdatedDate=outdatedDate)
-            # Try to find supposed to be absent...
-            removedCommand = commandClient.find_unique(
-                where={
-                    'id': command.id,
-                },
-            )
+            removedCommand = session.get(Command, command.id)
             self.assertIsNone(removedCommand)
             command = None
         except Exception as err:
@@ -67,16 +54,13 @@ class Test_deleteOutdatedCommands_test(TestCase):
             errMsg = 'Error: ' + errText
             print('Traceback for the following error:' + sTraceback)
             print('Error: ' + errMsg)
-            #  raise Exception(errMsg)
         finally:
-            # Clean up...
             if command:
-                commandClient = Command.prisma()
-                commandClient.delete(
-                    where={
-                        'id': command.id,
-                    },
-                )
+                session = initDb()
+                db_command = session.get(Command, command.id)
+                if db_command:
+                    session.delete(db_command)
+                    session.commit()
 
 
 if __name__ == '__main__':

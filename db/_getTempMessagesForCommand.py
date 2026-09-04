@@ -1,19 +1,12 @@
-from prisma.models import TempMessage
+from sqlalchemy import select
 
+from ._init import initDb
 from ._types import TCommandId
+from .models import TempMessage
 
 
 def getTempMessagesForCommand(
     commandId: TCommandId,
 ):
-    try:
-        # TODO: Check if this command (by messageId) exists in the database?
-        tempMessageClient = TempMessage.prisma()
-        tempMessages = tempMessageClient.find_many(
-            where={
-                'commandId': commandId,
-            },
-        )
-        return tempMessages
-    finally:
-        pass
+    session = initDb()
+    return list(session.scalars(select(TempMessage).where(TempMessage.commandId == commandId)).all())

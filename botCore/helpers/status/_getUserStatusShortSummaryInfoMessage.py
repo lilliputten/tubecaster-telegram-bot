@@ -1,11 +1,11 @@
 from typing import cast
 
 from dateutil.relativedelta import relativedelta
-from prisma.models import MonthlyStats, TotalStats, UserStatus
 
 from botCore.constants import limits
 from botCore.types import TUserMode
 from core.helpers.time import formatTime, getCurrentDateTime
+from db.models import MonthlyStats, TotalStats, UserStatus
 from db.stats import getCurrentMonthStats, getTotalStats
 from db.status import getUserStatus
 from db.user import findUser

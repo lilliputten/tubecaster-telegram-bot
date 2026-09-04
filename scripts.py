@@ -33,33 +33,15 @@ def check_all():
     lint()
 
 
-def prisma_format():
-    print('Prisma: format...')
-    subprocess.run(['prisma', 'format'])
+def db_upgrade():
+    print('Alembic: upgrade head...')
+    subprocess.run(['alembic', 'upgrade', 'head'])
 
 
-def prisma_format_and_validate():
-    prisma_format()
-    print('Prisma: validate...')
-    subprocess.run(['prisma', 'validate'])
+def import_sqlite_db():
+    from poetry_scripts.import_sqlite import main
 
-
-def prisma_db_push():
-    print('Prisma: db push...')
-    subprocess.run(['prisma', 'db', 'push'])
-
-
-def prisma_db_push_test():
-    import os
-
-    os.environ['DATABASE_URL'] = 'file:.test.db'
-    print('Prisma: db push test...')
-    subprocess.run(['prisma', 'db', 'push'])
-
-
-def prisma_db_push_all():
-    prisma_db_push()
-    prisma_db_push_test()
+    main()
 
 
 commands = {
@@ -68,11 +50,8 @@ commands = {
     'lint': lint,
     'format': format,
     'check_all': check_all,
-    'prisma_format': prisma_format,
-    'prisma_format_and_validate': prisma_format_and_validate,
-    'prisma_db_push': prisma_db_push,
-    'prisma_db_push_test': prisma_db_push_test,
-    'prisma_db_push_all': prisma_db_push_all,
+    'db_upgrade': db_upgrade,
+    'import_sqlite_db': import_sqlite_db,
 }
 
 if __name__ == '__main__':

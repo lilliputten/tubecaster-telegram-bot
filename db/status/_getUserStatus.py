@@ -1,19 +1,15 @@
 import traceback
 
-from prisma.models import UserStatus
-
 from core.helpers import errorToString
+
+from .._init import initDb
+from ..models import UserStatus
 
 
 def getUserStatus(userId: int):
     try:
-        userStatusClient = UserStatus.prisma()
-        userStatus = userStatusClient.find_unique(
-            where={
-                'userId': userId,
-            },
-        )
-        return userStatus
+        session = initDb()
+        return session.get(UserStatus, userId)
     except Exception as err:
         errText = errorToString(err, show_stacktrace=False)
         sTraceback = '\n\n' + str(traceback.format_exc()) + '\n\n'

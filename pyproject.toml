@@ -26,9 +26,11 @@ concurrent-log-handler = "^0.9.25" # Write logs to a reotating files
 # librosa = "^0.10.2.post1" # NOTE: ffmpeg is required, see: https://www.ffmpeg.org/download.html
 # pydub = "^0.25.1"
 # ffmpeg-python = "^0.2.0" # @see https://kkroening.github.io/ffmpeg-python/
-prisma = "^0.15.0"
 colorama = "^0.4.6"
 python-dateutil = "^2.9.0.post0"
+sqlalchemy = "^2.0.43"
+alembic = "^1.16.4"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
@@ -62,8 +64,6 @@ lint = "poetry_scripts:lint"
 format = "poetry_scripts:format"
 isort = "poetry_scripts:isort"
 export_requirements = "poetry_scripts.export_requirements:export_requirements"
-prisma_format = "poetry_scripts.prisma:format"
-prisma_format_and_validate = "poetry_scripts.prisma:format_and_validate"
-prisma_db_push = "poetry_scripts.prisma:db_push"
-prisma_db_push_test = "poetry_scripts.prisma:db_push_test"
-prisma_db_push_all = "poetry_scripts.prisma:db_push_all"
+db_upgrade = "poetry_scripts.alembic_cmds:upgrade"
+db_current = "poetry_scripts.alembic_cmds:current"
+import_sqlite_db = "poetry_scripts.import_sqlite:main"

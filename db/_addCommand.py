@@ -1,14 +1,11 @@
-from prisma.models import Command
-
+from ._init import initDb
 from ._types import TNewCommandData
+from .models import Command
 
 
 def addCommand(data: TNewCommandData):
-    commandClient = Command.prisma()
-    try:
-        command = commandClient.create(
-            data=data,
-        )
-        return command
-    finally:
-        pass
+    session = initDb()
+    command = Command(**data)
+    session.add(command)
+    session.commit()
+    return command
