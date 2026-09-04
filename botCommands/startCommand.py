@@ -70,6 +70,7 @@ def startCommand(chat: types.Chat, message: types.Message):
     # Prepare and send extra content (the limit for photo captions is 1024B)
     msgItems = [
         'USAGE NOTES.',
+        'Just send a video url to the bot, or:',
         'Use /cast to download an audio from the youtube video url, /info to get the video details, or just send me its url as a message.',
         'Also, /stats command will display your usage statistics, /status will show your usage plan and limits (if applicable), /plans will show details on available usage plans.',
         'Type /help to find all the available commands.',
