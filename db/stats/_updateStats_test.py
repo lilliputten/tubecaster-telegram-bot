@@ -74,6 +74,9 @@ class Test_updateStats(TestCase):
 
             updateStats(userId, requests=1, volume=volume)
 
+            # Close previous session and create a fresh one to ensure we get latest data
+            session.close()  # Explicitly close the session
+            session = initDb()
             totalStats = session.get(TotalStats, userId)
             self.assertIsNotNone(totalStats)
             if totalStats:
