@@ -33,7 +33,7 @@
     "pyformat": "echo --Run blue python formatter-- && poetry run blue .",
     "isort": "echo --Sort imports-- && isort --only-modified .",
     "check-all": "echo --Run all formatters, linters and tests-- && npm-run-all isort pyformat pylint",
-    "pytests": "echo --Run python tests with poetry-- && poetry run python -m unittest discover -v -f -t . -s . -p *_test.py",
+    "pytests": "echo --Run python tests with poetry-- && poetry run python -m unittest discover -v -f -t . -s . -p \"*_test.py\"",
     "dev": "echo --Run flask dev server via poetry-- && poetry run flask --app api --debug run",
     "export-requirements": "echo --Export requirements from poetry-- && poetry export -f requirements.txt --output requirements.txt --without-hashes && echo OK",
     "help": "echo --List all available script commands-- && npm-package-user-scripts-list"
