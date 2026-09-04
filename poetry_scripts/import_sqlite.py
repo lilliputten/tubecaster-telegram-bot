@@ -6,7 +6,12 @@ import argparse
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
 from typing import Any
+
+# Add the project root directory to the Python path to ensure 'db' module can be found
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from dateutil import parser as date_parser
 from sqlalchemy import create_engine, text
