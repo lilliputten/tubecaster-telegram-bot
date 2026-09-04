@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tubecaster-telegram-bot"
-version = "0.2.2"
+version = "0.2.3"
 description = "Simple video to audio caster telegram bot"
 authors = ["lilliputten <lilliputten@gmail.com>"]
 readme = "README.md"
